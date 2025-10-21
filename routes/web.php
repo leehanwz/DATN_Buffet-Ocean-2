@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+// shop
 Route::get('/', function () {
     return view('restaurants.home');
 })->name('home');
@@ -34,10 +35,32 @@ Route::get('/testimonial', function () {
     return view('restaurants.testimonial');
 })->name('testimonial');
 
-Route::get('/admin/dasboard', function () {
-    return view('admins.index');
-})->name('home');
+// admin
+Route::get('/admin/dashboard', function () {
+    return view('admins.dashboard');
+})->name('dashboard');
 
+Route::get('/admin/san-pham', function () {
+    return view('admins.san-pham');
+})->name('san-pham');
+
+Route::get('/admin/form-add-san-pham', function () {
+    return view('admins.form-add-san-pham');
+})->name('form-add-san-pham');
+
+Route::get('/admin/nhan-vien', function () {
+    return view('admins.nhan-vien');
+})->name('nhan-vien');
+
+Route::get('/admin/don-hang', function () {
+    return view('admins.don-hang');
+})->name('don-hang');
+
+// auth
 Route::get('/auth/login', function () {
-    return view('auths.index');
-})->name('home');
+    return view('auths.login');
+})->name('login');
+
+Route::get('/auth/forgot', function () {
+    return view('auths.forgot');
+})->name('forgot');

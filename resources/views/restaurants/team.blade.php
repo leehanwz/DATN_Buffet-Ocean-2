@@ -1,4 +1,4 @@
-@extends('layouts.restaurants.app')
+@extends('layouts.restaurants.layout-shop')
 @section('title', 'Home')
 @section('content')
 
