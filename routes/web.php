@@ -80,7 +80,6 @@ Route::get('/admin/ban-an/create', [BanAnController::class, 'create'])
     ->name('ban-an.create');
 Route::post('/admin/ban-an/store', [BanAnController::class, 'store'])
     ->name('ban-an.store');
-// 👇 ĐÃ THÊM ROUTE HIỂN THỊ FORM SỬA BÀN ĂN 👇
 Route::get('/admin/ban-an/{id}/edit', [BanAnController::class, 'edit'])
     ->name('ban-an.edit');
 Route::post('/admin/ban-an/{id}/update', [BanAnController::class, 'update'])
