@@ -16,10 +16,13 @@ return new class extends Migration
             $table->string('ma_qr')->nullable();
             $table->string('duong_dan_qr')->nullable();
             $table->integer('so_ghe');
-            $table->string('trang_thai');
+            $table->enum('trang_thai', ['trong', 'dang_phuc_vu', 'da_dat', 'khong_su_dung'])->default('trong');
             $table->timestamps();
 
-            $table->foreign('khu_vuc_id')->references('id')->on('khu_vuc')->onDelete('cascade');
+            $table->foreign('khu_vuc_id')
+                ->references('id')
+                ->on('khu_vuc')
+                ->onDelete('cascade');
         });
     }
 
