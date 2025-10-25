@@ -57,5 +57,4 @@
 @endsection
 
 @section('script')
-    {{-- Không cần JS cụ thể cho form này --}}
 @endsection

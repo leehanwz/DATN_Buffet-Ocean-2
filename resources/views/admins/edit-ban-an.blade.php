@@ -30,7 +30,6 @@
                             <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
 
-                        {{-- Form trỏ đến route Update --}}
                         <form class="row" method="POST" action="{{ route('ban-an.update', $banAn->id) }}">
                             @csrf
                              <div class="form-group col-md-6">
@@ -55,7 +54,6 @@
                             <div class="form-group col-md-6">
                                 <label class="control-label">Trạng Thái (*)</label>
                                 <select class="form-control" name="trang_thai" required>
-                                    {{-- SỬA: Gửi giá trị không dấu --}}
                                     <option value="trong" {{ old('trang_thai', $banAn->trang_thai) == 'trong' ? 'selected' : '' }}>Trống</option>
                                     <option value="dang_phuc_vu" {{ old('trang_thai', $banAn->trang_thai) == 'dang_phuc_vu' ? 'selected' : '' }}>Đang phục vụ</option>
                                     <option value="da_dat" {{ old('trang_thai', $banAn->trang_thai) == 'da_dat' ? 'selected' : '' }}>Đã đặt</option>
@@ -75,5 +73,4 @@
 @endsection
 
 @section('script')
-    {{-- Không cần JS cụ thể cho form này --}}
 @endsection

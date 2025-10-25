@@ -34,7 +34,6 @@
                 <div class="tile">
                     <div class="tile-body">
 
-                        {{-- PHẦN NÚT HÀNH ĐỘNG --}}
                         <div class="row element-button">
                             <div class="col-sm-2">
                                 <a class="btn btn-add btn-sm" href="{{ route('khu-vuc.create') }}" title="Thêm Khu Vực">
@@ -48,7 +47,6 @@
                             </div>
                         </div>
 
-                        {{-- HIỂN THỊ DỮ LIỆU BẰNG BLADE --}}
                         <div class="container-fluid mt-4">
                             <h4 class="mb-3 text-primary">Danh Sách Bàn Ăn Theo Khu Vực</h4>
                             <div id="danh-sach-khu-vuc" class="row">
@@ -84,7 +82,6 @@
                                                             $badgeClass = '';
                                                             $trangThaiDisplay = $ban->trang_thai; // Mặc định
 
-                                                            // SỬA LỖI: Chuẩn hóa giá trị không dấu
                                                             $trangThaiNormalized = trim(strtolower($ban->trang_thai));
 
                                                             switch ($trangThaiNormalized) {
@@ -92,7 +89,7 @@
                                                                     $badgeClass = 'bg-success';
                                                                     $trangThaiDisplay = 'Trống';
                                                                     break;
-                                                                case 'dang_phuc_vu': // SỬA: Đổi 'co_khach' thành 'dang_phuc_vu'
+                                                                case 'dang_phuc_vu': 
                                                                     $badgeClass = 'bg-danger text-white';
                                                                     $trangThaiDisplay = 'Đang phục vụ';
                                                                     break;
@@ -175,5 +172,4 @@
 @endsection
 
 @section('script')
-    {{-- Đã xóa JS không cần thiết --}}
 @endsection
