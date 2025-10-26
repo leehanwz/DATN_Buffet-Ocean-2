@@ -32,12 +32,12 @@ class DanhmucmonController extends Controller
         return redirect()->route('admin.danhmucmons.index')->with('success', 'Thêm danh mục thành công!');
     }
 
-    public function edit(Danhmucmon $danh_muc)
+    public function edit(Danhmucmon $danhmucmon)
     {
-        return view('admins.danhmucmons.edit', compact('danhmucmons'));
+        return view('admins.danhmucmons.edit', ['danhmucmon' => $danhmucmon]);
     }
 
-    public function update(Request $request, Danhmucmon $danh_muc)
+    public function update(Request $request, Danhmucmon $danhmucmon)
     {
         $request->validate([
             'ten_danh_muc' => 'required|string|max:255',
@@ -45,20 +45,20 @@ class DanhmucmonController extends Controller
             'hien_thi' => 'required|boolean'
         ]);
 
-        $danh_muc->update($request->all());
+        $danhmucmon->update($request->all());
 
         return redirect()->route('admin.danhmucmons.index')->with('success', 'Cập nhật danh mục thành công!');
     }
 
-    public function destroy(Danhmucmon $danh_muc)
+    public function destroy(Danhmucmon $danhmucmon)
     {
         // Nếu có món ăn liên quan, bạn có thể xử lý trước khi xóa
-        if ($danh_muc->mons()->count() > 0) {
+        if ($danhmucmon->mons()->count() > 0) {
             return redirect()->route('admins.danhmucmons.index')
                 ->with('error', 'Không thể xóa danh mục đang có món ăn.');
         }
 
-        $danh_muc->delete();
+        $danhmucmon->delete();
         return redirect()->route('admins.danhmucmons.index')->with('success', 'Xóa danh mục thành công!');
     }
 }
