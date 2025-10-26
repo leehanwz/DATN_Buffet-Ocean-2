@@ -1,6 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DanhmucmonController;
+
+//Route admin
+//Danh mục món
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('danhmucmons', DanhmucmonController::class);
+});
+
 
 // shop
 Route::get('/', function () {
