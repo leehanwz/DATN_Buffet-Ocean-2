@@ -10,7 +10,8 @@
   <link rel="stylesheet" type="text/css" href="{{ asset('admin/css/css/main.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
-  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
@@ -47,32 +48,50 @@
     </div>
     <hr>
     <ul class="app-menu">
-          <li><a class="app-menu__item " href="{{route('dashboard')}}">
-              <i class='app-menu__icon bx bx-home'></i>
-              <span class="app-menu__label">Trang chủ</span>
-              </a>
-          </li> 
-          <li>
-          <a class="app-menu__item" href="{{route('san-pham')}}">
-              <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
-              <span class="app-menu__label">Quản lý sản phẩm</span>
+      <li><a class="app-menu__item " href="{{route('admin.dashboard')}}">
+          <i class='app-menu__icon bx bx-home'></i>
+          <span class="app-menu__label">Trang chủ</span>
+        </a>
+      </li>
+     <li class="treeview">
+      <a class="app-menu__item" href="{{ route('admin.san-pham') }}" data-toggle="treeview">
+        <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
+        <span class="app-menu__label">Quản lý sản phẩm</span>
+        <i class="treeview-indicator bx bx-chevron-right"></i>
+      </a>
+      <ul class="treeview-menu">
+        <li>
+          <a class="treeview-item" href="">
+            <i class="icon bx bx-circle"></i> Danh sách sản phẩm
           </a>
-          </li>
-          <li>
-          <a class="app-menu__item " href="{{route('nhan-vien')}}">
-              <i class='app-menu__icon bx bx-id-card'></i>
-              <span class="app-menu__label">Quản lý người dùng</span>
+        </li>
+        <li>
+          <a class="treeview-item" href="">
+            <i class="icon bx bx-circle"></i> Combo Buffet
           </a>
-          </li>         
-          <li>
-          <a class="app-menu__item" href="{{route('don-hang')}}">
-              <i class='app-menu__icon bx bx-task'></i>
-              <span class="app-menu__label">Quản lý đơn hàng</span>
+        </li>
+        <li>
+          <a class="treeview-item" href="{{ route('admin.mon-trong-combo.index') }}">
+            <i class="icon bx bx-circle"></i> Món trong Combo
           </a>
-          </li>
-          <li>
-       
+        </li>
       </ul>
+    </li>
+      <li>
+        <a class="app-menu__item " href="">
+          <i class='app-menu__icon bx bx-id-card'></i>
+          <span class="app-menu__label">Quản lý người dùng</span>
+        </a>
+      </li>
+      <li>
+        <a class="app-menu__item" href="{{route('admin.don-hang')}}">
+          <i class='app-menu__icon bx bx-task'></i>
+          <span class="app-menu__label">Quản lý đơn hàng</span>
+        </a>
+      </li>
+      <li>
+
+    </ul>
   </aside>
 
   <main>
@@ -91,7 +110,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
   <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script>
-  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+  <script type="text/javascript">
+    $('#sampleTable').DataTable();
+  </script>
 
   {{-- thời gian thực --}}
   <script type="text/javascript">
@@ -150,8 +171,9 @@
       }
     }
   </script>
-   
-   {{-- script riêng các trang --}}
-   @yield('script')
+
+  {{-- script riêng các trang --}}
+  @yield('script')
 </body>
+
 </html>

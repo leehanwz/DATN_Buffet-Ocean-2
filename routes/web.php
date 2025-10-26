@@ -2,65 +2,81 @@
 
 use Illuminate\Support\Facades\Route;
 
-// shop
-Route::get('/', function () {
-    return view('restaurants.home');
-})->name('home');
+// ======================= SHOP (CLIENT) =========================
+use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\AboutController;
+use App\Http\Controllers\Client\ContactController;
+use App\Http\Controllers\Client\BookingController;
+use App\Http\Controllers\Client\MenuController;
+use App\Http\Controllers\Client\ServiceController;
+use App\Http\Controllers\Client\TeamController;
+use App\Http\Controllers\Client\TestimonialController;
 
-Route::get('/about', function () {
-    return view('restaurants.about');
-})->name('about');
+// ======================= ADMIN =========================
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\SanPhamController;
+use App\Http\Controllers\Admin\NhanVienController;
+use App\Http\Controllers\Admin\DonHangController;
+use App\Http\Controllers\Admin\MonTrongComboController;
+use App\Http\Controllers\Admin\KhuVucController;
+use App\Http\Controllers\Admin\BanAnController;
 
-Route::get('/contact', function () {
-    return view('restaurants.contact');
-})->name('contact');
+// ======================= AUTH =========================
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
-Route::get('/booking', function () {
-    return view('restaurants.booking');
-})->name('booking');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/menu', function () {
-    return view('restaurants.menu');
-})->name('menu');
+// ==================== CLIENT SITE ====================
+// Route::prefix('/')->group(function () {
+//     Route::get('/', [HomeController::class, 'index'])->name('home');
+//     Route::get('/about', [AboutController::class, 'index'])->name('about');
+//     Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+//     Route::get('/booking', [BookingController::class, 'index'])->name('booking');
+//     Route::get('/menu', [MenuController::class, 'index'])->name('menu');
+//     Route::get('/service', [ServiceController::class, 'index'])->name('service');
+//     Route::get('/team', [TeamController::class, 'index'])->name('team');
+//     Route::get('/testimonial', [TestimonialController::class, 'index'])->name('testimonial');
+// });
 
-Route::get('/service', function () {
-    return view('restaurants.service');
-})->name('service');
+// ==================== ADMIN SITE ====================
+Route::prefix('admin')->name('admin.')->group(function () {
+    // ================= DASHBOARD =================
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/team', function () {
-    return view('restaurants.team');
-})->name('team');
+    // ================= SẢN PHẨM =================
+    Route::get('/san-pham', [SanPhamController::class, 'index'])->name('san-pham');
+    Route::get('/form-add-san-pham', [SanPhamController::class, 'create'])->name('form-add-san-pham');
+    Route::post('/san-pham/store', [SanPhamController::class, 'store'])->name('san-pham.store');
 
-Route::get('/testimonial', function () {
-    return view('restaurants.testimonial');
-})->name('testimonial');
+    // ================= NHÂN VIÊN =================
+    Route::get('/nhan-vien', [NhanVienController::class, 'index'])->name('nhan-vien');
 
-// admin
-Route::get('/admin/dashboard', function () {
-    return view('admins.dashboard');
-})->name('dashboard');
+    // ================= ĐƠN HÀNG =================
+    Route::get('/don-hang', [DonHangController::class, 'index'])->name('don-hang');
 
-Route::get('/admin/san-pham', function () {
-    return view('admins.san-pham');
-})->name('san-pham');
+    // ================= MÓN TRONG COMBO =================
+    Route::resource('mon-trong-combo', MonTrongComboController::class);
 
-Route::get('/admin/form-add-san-pham', function () {
-    return view('admins.form-add-san-pham');
-})->name('form-add-san-pham');
+    // ================= KHU VỰC =================
+    Route::resource('khu-vuc', KhuVucController::class);
+    Route::patch('khu-vuc/{id}/trang-thai', [KhuVucController::class, 'capNhatTrangThai'])
+        ->name('khu-vuc.cap-nhat-trang-thai');
 
-Route::get('/admin/nhan-vien', function () {
-    return view('admins.nhan-vien');
-})->name('nhan-vien');
+    // ================= BÀN ĂN =================
+    Route::resource('ban-an', BanAnController::class);
+    Route::patch('ban-an/{id}/trang-thai', [BanAnController::class, 'capNhatTrangThai'])
+        ->name('ban-an.cap-nhat-trang-thai');
+});
 
-Route::get('/admin/don-hang', function () {
-    return view('admins.don-hang');
-})->name('don-hang');
 
-// auth
-Route::get('/auth/login', function () {
-    return view('auths.login');
-})->name('login');
-
-Route::get('/auth/forgot', function () {
-    return view('auths.forgot');
-})->name('forgot');
+// // ==================== AUTH ====================
+// Route::prefix('auth')->name('auth.')->group(function () {
+//     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+//     Route::post('/login', [LoginController::class, 'login']);
+//     Route::get('/forgot', [ForgotPasswordController::class, 'showForgotForm'])->name('forgot');
+// });
