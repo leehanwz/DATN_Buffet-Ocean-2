@@ -16,9 +16,9 @@ class MonAnRequest extends FormRequest
             'gia' => 'required|numeric',
             'mo_ta' => 'nullable|string',
             'trang_thai' => 'required|boolean',
-            'thoi_gian_che_bien' => 'nullable|string|max:255',
+            'thoi_gian_che_bien' => 'required|integer|min:1|max:240',
             'loai_mon' => 'nullable|string|max:255',
-            'hinh_anh' => 'nullable|image|max:2048',
+            'hinh_anh' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
         ];
     }
 }

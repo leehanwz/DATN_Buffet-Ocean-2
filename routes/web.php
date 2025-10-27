@@ -1,14 +1,12 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MonAnController;
-use App\Http\Controllers\DanhMucController;
+use App\Http\Controllers\admins\DanhMucController;
+use App\Http\Controllers\admins\MonAnController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('danh-muc', DanhMucController::class);
     Route::resource('mon-an', MonAnController::class);
 });
-
 // shop
 Route::get('/', function () {
     return view('restaurants.home');
