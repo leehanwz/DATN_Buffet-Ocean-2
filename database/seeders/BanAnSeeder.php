@@ -20,8 +20,8 @@ class BanAnSeeder extends Seeder
                 'duong_dan_qr' => $faker->url(),
                 'so_ghe' => $faker->numberBetween(2, 10),
                 'trang_thai' => $faker->randomElement(['Trống', 'Đang phục vụ', 'Đặt trước']),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'ngay_tao' => now(),
+                'ngay_cap_nhat' => now(),
             ]);
         }
     }

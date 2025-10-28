@@ -22,8 +22,8 @@ class MonAnSeeder extends Seeder
                 'trang_thai' => $faker->randomElement(['Còn món', 'Hết món']),
                 'thoi_gian_che_bien' => $faker->numberBetween(5, 30),
                 'loai_mon' => $faker->randomElement(['Món chính', 'Khai vị', 'Tráng miệng', 'Đồ uống']),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'ngay_tao' => now(),
+                'ngay_cap_nhat' => now(),
             ]);
         }
     }

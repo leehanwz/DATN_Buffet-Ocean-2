@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('mat_khau');
             $table->string('vai_tro');
             $table->string('trang_thai');
-            $table->timestamps(); // created_at, updated_at
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
         });
     }
 

@@ -21,8 +21,8 @@ class ComboBuffetSeeder extends Seeder
                 'thoi_gian_bat_dau' => $faker->dateTimeBetween('-1 days', 'now'),
                 'thoi_gian_ket_thuc' => $faker->dateTimeBetween('now', '+2 days'),
                 'trang_thai' => $faker->randomElement(['Hoạt động', 'Tạm ngưng']),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'ngay_tao' => now(),
+                'ngay_cap_nhat' => now(),
             ]);
         }
     }

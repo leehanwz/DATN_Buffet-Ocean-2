@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id();
             $table->string('ma_dat_ban')->nullable();
             $table->string('ten_khach');
-            $table->string('sdt_khach');
+            $table->string('sdt_khach')->nullable();
             $table->integer('so_khach');
             $table->unsignedBigInteger('ban_id');
             $table->unsignedBigInteger('combo_id')->nullable();
@@ -25,7 +25,8 @@ return new class extends Migration
             $table->string('xac_thuc_ma')->nullable();
             $table->boolean('la_dat_online')->default(false);
             $table->text('ghi_chu')->nullable();
-            $table->timestamps();
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
 
             $table->foreign('ban_id')->references('id')->on('ban_an')->onDelete('cascade');
             $table->foreign('combo_id')->references('id')->on('combo_buffet')->onDelete('set null');

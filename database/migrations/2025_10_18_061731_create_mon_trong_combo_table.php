@@ -15,7 +15,8 @@ return new class extends Migration
             $table->unsignedBigInteger('mon_an_id');
             $table->integer('gioi_han_so_luong')->nullable();
             $table->decimal('phu_phi_goi_them', 12, 2)->nullable();
-            $table->timestamps();
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
 
             $table->foreign('combo_id')->references('id')->on('combo_buffet')->onDelete('cascade');
             $table->foreign('mon_an_id')->references('id')->on('mon_an')->onDelete('cascade');

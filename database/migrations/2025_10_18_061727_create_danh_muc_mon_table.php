@@ -14,7 +14,8 @@ return new class extends Migration
             $table->string('ten_danh_muc');
             $table->text('mo_ta')->nullable();
             $table->boolean('hien_thi')->default(true);
-            $table->timestamps();
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
         });
     }
 

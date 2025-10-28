@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('duong_dan_qr')->nullable();
             $table->integer('so_ghe');
             $table->string('trang_thai');
-            $table->timestamps();
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
 
             $table->foreign('khu_vuc_id')->references('id')->on('khu_vuc')->onDelete('cascade');
         });

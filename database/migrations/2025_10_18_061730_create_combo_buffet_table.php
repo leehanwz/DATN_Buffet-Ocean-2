@@ -18,7 +18,8 @@ return new class extends Migration
             $table->dateTime('thoi_gian_bat_dau')->nullable();
             $table->dateTime('thoi_gian_ket_thuc')->nullable();
             $table->string('trang_thai')->nullable();
-            $table->timestamps();
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
         });
     }
 

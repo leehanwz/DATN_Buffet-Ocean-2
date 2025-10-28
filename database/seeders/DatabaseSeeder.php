@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\NhanVien;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -22,6 +23,11 @@ class DatabaseSeeder extends Seeder
             MonAnSeeder::class,
             ComboBuffetSeeder::class,
             MonTrongComboSeeder::class,
+            DatBanSeeder::class,
+            HoaDonSeeder::class,
+            OrderMonSeeder::class,
+            ChiTietOrderSeeder::class,
+            NhanVienSeeder::class,
         ]);
     }
 }

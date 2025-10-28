@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('loai_mon')->nullable();
             $table->string('trang_thai')->nullable();
             $table->string('ghi_chu')->nullable();
-            $table->timestamps();
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
 
             $table->foreign('order_id')->references('id')->on('order_mon')->onDelete('cascade');
             $table->foreign('mon_an_id')->references('id')->on('mon_an')->onDelete('cascade');

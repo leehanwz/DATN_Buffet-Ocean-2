@@ -16,8 +16,8 @@ class DanhMucMonSeeder extends Seeder
                 'ten_danh_muc' => $item,
                 'mo_ta' => "Các món thuộc nhóm {$item}",
                 'hien_thi' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'ngay_tao' => now(),
+                'ngay_cap_nhat' => now(),
             ]);
         }
     }

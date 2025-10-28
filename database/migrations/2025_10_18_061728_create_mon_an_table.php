@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('trang_thai');
             $table->integer('thoi_gian_che_bien')->nullable();
             $table->string('loai_mon')->nullable();
-            $table->timestamps();
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
 
             $table->foreign('danh_muc_id')->references('id')->on('danh_muc_mon')->onDelete('cascade');
         });

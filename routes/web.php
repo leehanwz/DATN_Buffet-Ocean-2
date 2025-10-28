@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DashboardController;
 
 // shop
 Route::get('/', function () {
@@ -36,9 +37,7 @@ Route::get('/testimonial', function () {
 })->name('testimonial');
 
 // admin
-Route::get('/admin/dashboard', function () {
-    return view('admins.dashboard');
-})->name('dashboard');
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::get('/admin/san-pham', function () {
     return view('admins.san-pham');

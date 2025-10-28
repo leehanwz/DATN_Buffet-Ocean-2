@@ -11,15 +11,13 @@ return new class extends Migration
     {
         Schema::create('order_mon', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('dat_ban_id');
-            $table->unsignedBigInteger('ban_id');
+            $table->foreignId('dat_ban_id')->constrained('dat_ban')->onDelete('cascade');
+            $table->foreignId('ban_id')->constrained('ban_an')->onDelete('cascade');
             $table->integer('tong_mon')->nullable();
             $table->decimal('tong_tien', 12, 2)->nullable();
             $table->string('trang_thai')->nullable();
-            $table->timestamps();
-
-            $table->foreign('dat_ban_id')->references('id')->on('dat_ban')->onDelete('cascade');
-            $table->foreign('ban_id')->references('id')->on('ban_an')->onDelete('cascade');
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
         });
     }
 

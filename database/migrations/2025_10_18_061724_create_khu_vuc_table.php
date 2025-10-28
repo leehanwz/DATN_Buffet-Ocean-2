@@ -14,7 +14,8 @@ return new class extends Migration
             $table->string('ten_khu_vuc');
             $table->string('mo_ta');
             $table->integer('tang');
-            $table->timestamps();
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
         });
     }
 

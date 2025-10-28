@@ -17,7 +17,8 @@ return new class extends Migration
             $table->decimal('phu_thu', 12, 2)->nullable();
             $table->decimal('da_thanh_toan', 12, 2)->nullable();
             $table->string('phuong_thuc_tt')->nullable();
-            $table->timestamps();
+            $table->timestamp('ngay_tao')->nullable();
+            $table->timestamp('ngay_cap_nhat')->nullable();
 
             $table->foreign('dat_ban_id')->references('id')->on('dat_ban')->onDelete('cascade');
         });

@@ -17,8 +17,8 @@ class KhuVucSeeder extends Seeder
                 'ten_khu_vuc' => 'Khu vực ' . strtoupper($faker->randomLetter),
                 'mo_ta' => $faker->sentence(),
                 'tang' => $faker->numberBetween(1, 3),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'ngay_tao' => now(),
+                'ngay_cap_nhat' => now(),
             ]);
         }
     }
