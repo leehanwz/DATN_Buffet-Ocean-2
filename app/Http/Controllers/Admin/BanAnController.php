@@ -19,7 +19,7 @@ class BanAnController extends Controller
     public function create()
     {
         $khuVucs = KhuVuc::orderBy('tang')->get();
-        return view('admins.create-ban-an', ['khuVucs' => $khuVucs]);
+        return view('admins.ban-an.create-ban-an', ['khuVucs' => $khuVucs]);
     }
 
     /**
@@ -78,7 +78,7 @@ class BanAnController extends Controller
             $banAn = BanAn::findOrFail($id); 
             $khuVucs = KhuVuc::orderBy('tang')->get();
             
-            return view('admins.edit-ban-an', [
+            return view('admins.ban-an.edit-ban-an', [
                 'banAn' => $banAn, 
                 'khuVucs' => $khuVucs
             ]);

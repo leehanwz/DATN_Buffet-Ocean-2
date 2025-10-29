@@ -37,59 +37,62 @@ Route::get('/testimonial', function () {
     return view('restaurants.testimonial');
 })->name('testimonial');
 
-// admin
-Route::get('/admin/dashboard', function () {
-    return view('admins.dashboard');
-})->name('dashboard');
+// =====================================================================
+// === NHÓM ADMIN (SỬ DỤNG CHUNG PREFIX 'admin') ===
+// =====================================================================
+Route::prefix('admin')->group(function () {
 
-Route::get('/admin/san-pham', function () {
-    return view('admins.san-pham');
-})->name('san-pham');
+    // Các route admin cũ
+    Route::get('/dashboard', function () {
+        return view('admins.dashboard');
+    })->name('dashboard');
 
-Route::get('/admin/form-add-san-pham', function () {
-    return view('admins.form-add-san-pham');
-})->name('form-add-san-pham');
+    Route::get('/san-pham', function () {
+        return view('admins.san-pham');
+    })->name('san-pham');
 
-Route::get('/admin/nhan-vien', function () {
-    return view('admins.nhan-vien');
-})->name('nhan-vien');
+    Route::get('/form-add-san-pham', function () {
+        return view('admins.form-add-san-pham');
+    })->name('form-add-san-pham');
 
-Route::get('/admin/don-hang', function () {
-    return view('admins.don-hang');
-})->name('don-hang');
+    Route::get('/nhan-vien', function () {
+        return view('admins.nhan-vien');
+    })->name('nhan-vien');
 
-// ROUTE QUẢN LÝ KHU VỰC VÀ BÀN ĂN (SSR)
-// 1. READ (Hiển thị trang danh sách)
-Route::get('/admin/khu-vuc-ban-an', [KhuVucController::class, 'showManagementPage'])
-    ->name('khu-vuc-ban-an');
+    Route::get('/don-hang', function () {
+        return view('admins.don-hang');
+    })->name('don-hang');
 
-// 2. CRUD CHO KHU VỰC
-Route::get('/admin/khu-vuc/create', [KhuVucController::class, 'create'])
-    ->name('khu-vuc.create');
-Route::post('/admin/khu-vuc/store', [KhuVucController::class, 'store'])
-    ->name('khu-vuc.store');
-Route::get('/admin/khu-vuc/{id}/edit', [KhuVucController::class, 'edit'])
-    ->name('khu-vuc.edit');
-Route::post('/admin/khu-vuc/{id}/update', [KhuVucController::class, 'update'])
-    ->name('khu-vuc.update');
-Route::post('/admin/khu-vuc/{id}/delete', [KhuVucController::class, 'destroy'])
-    ->name('khu-vuc.destroy');
+    // --- ROUTE QUẢN LÝ KHU VỰC VÀ BÀN ĂN (SSR) ---
+    
+    // 1. READ (Hiển thị trang danh sách)
+    Route::get('/khu-vuc-ban-an', [KhuVucController::class, 'showManagementPage'])
+        ->name('khu-vuc-ban-an');
 
-// 3. CRUD CHO BÀN ĂN
-Route::get('/admin/ban-an/create', [BanAnController::class, 'create'])
-    ->name('ban-an.create');
-Route::post('/admin/ban-an/store', [BanAnController::class, 'store'])
-    ->name('ban-an.store');
-Route::get('/admin/ban-an/{id}/edit', [BanAnController::class, 'edit'])
-    ->name('ban-an.edit');
-Route::post('/admin/ban-an/{id}/update', [BanAnController::class, 'update'])
-    ->name('ban-an.update');
-Route::post('/admin/ban-an/{id}/delete', [BanAnController::class, 'destroy'])
-    ->name('ban-an.destroy');
-Route::post('/admin/ban-an/{id}/regenerate-qr', [BanAnController::class, 'regenerateQr'])
-    ->name('ban-an.qr');
+    // 2. CRUD CHO KHU VỰC (Sử dụng prefix 'khu-vuc' và name 'khu-vuc.')
+    Route::prefix('khu-vuc')->name('khu-vuc.')->controller(KhuVucController::class)->group(function () {
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::post('/{id}/update', 'update')->name('update');
+        Route::post('/{id}/delete', 'destroy')->name('destroy');
+    });
 
-// auth
+    // 3. CRUD CHO BÀN ĂN (Sử dụng prefix 'ban-an' và name 'ban-an.')
+    Route::prefix('ban-an')->name('ban-an.')->controller(BanAnController::class)->group(function () {
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::post('/{id}/update', 'update')->name('update');
+        Route::post('/{id}/delete', 'destroy')->name('destroy');
+        Route::post('/{id}/regenerate-qr', 'regenerateQr')->name('qr');
+    });
+
+}); // Kết thúc nhóm prefix('admin')
+
+// =====================================================================
+// === AUTH ===
+// =====================================================================
 Route::get('/auth/login', function () {
     return view('auths.login');
 })->name('login');
@@ -97,3 +100,4 @@ Route::get('/auth/login', function () {
 Route::get('/auth/forgot', function () {
     return view('auths.forgot');
 })->name('forgot');
+
