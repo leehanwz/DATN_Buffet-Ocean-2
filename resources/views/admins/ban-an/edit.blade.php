@@ -6,15 +6,21 @@
 <main class="app-content">
     <div class="app-title">
         <ul class="app-breadcrumb breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.khu-vuc-ban-an') }}">Quản lý Khu Vực & Bàn Ăn</a></li>
-            <li class="breadcrumb-item"><a href="#"><b>Sửa Bàn Ăn</b></a></li>
+            <li class="breadcrumb-item">
+                <a href="{{ route('admin.khu-vuc-ban-an') }}">Quản lý Khu Vực & Bàn Ăn</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="#"><b>Sửa Bàn Ăn</b></a>
+            </li>
         </ul>
     </div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="tile">
                 <h3 class="tile-title">Sửa Bàn Ăn: {{ $banAn->so_ban }}</h3>
                 <div class="tile-body">
+
                     {{-- Hiển thị lỗi Validation nếu có --}}
                     @if ($errors->any())
                     <div class="alert alert-danger">
@@ -25,14 +31,17 @@
                         </ul>
                     </div>
                     @endif
+
                     {{-- Hiển thị lỗi DB nếu có --}}
                     @if (session('error'))
                     <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                    {{-- Form trỏ đến route Update --}}
+                    {{-- Form cập nhật bàn ăn --}}
                     <form class="row" method="POST" action="{{ route('admin.ban-an.update', $banAn->id) }}">
                         @csrf
+                        @method('PUT') {{-- ✅ Cần có dòng này để Laravel hiểu là PUT request --}}
+
                         <div class="form-group col-md-6">
                             <label class="control-label">Khu Vực (*)</label>
                             <select class="form-control" name="khu_vuc_id" required>
@@ -45,20 +54,22 @@
                                 @endforeach
                             </select>
                         </div>
+
                         <div class="form-group col-md-6">
                             <label class="control-label">Số Bàn (*)</label>
                             <input class="form-control" type="text" name="so_ban"
                                 value="{{ old('so_ban', $banAn->so_ban) }}" required>
                         </div>
+
                         <div class="form-group col-md-6">
                             <label class="control-label">Số Ghế (*)</label>
                             <input class="form-control" type="number" name="so_ghe" min="1"
                                 value="{{ old('so_ghe', $banAn->so_ghe) }}" required>
                         </div>
+
                         <div class="form-group col-md-6">
                             <label class="control-label">Trạng Thái (*)</label>
                             <select class="form-control" name="trang_thai" required>
-                                {{-- SỬA: Gửi giá trị không dấu --}}
                                 <option value="trong"
                                     {{ old('trang_thai', $banAn->trang_thai) == 'trong' ? 'selected' : '' }}>Trống
                                 </option>
@@ -73,11 +84,13 @@
                                     Không sử dụng</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-12">
+
+                        <div class="form-group col-md-12 mt-3">
                             <button class="btn btn-save" type="submit">Cập nhật</button>
                             <a class="btn btn-cancel" href="{{ route('admin.khu-vuc-ban-an') }}">Hủy bỏ</a>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
