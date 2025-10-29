@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\KhuVucController;
 use App\Http\Controllers\Admin\BanAnController;
 
-// shop
+// =====================================================================
+// === SHOP (TRANG NGƯỜI DÙNG) ===
+// =====================================================================
 Route::get('/', function () {
     return view('restaurants.home');
 })->name('home');
@@ -38,11 +40,10 @@ Route::get('/testimonial', function () {
 })->name('testimonial');
 
 // =====================================================================
-// === NHÓM ADMIN (SỬ DỤNG CHUNG PREFIX 'admin') ===
+// === NHÓM ADMIN (PREFIX: /admin) ===
 // =====================================================================
 Route::prefix('admin')->group(function () {
 
-    // Các route admin cũ
     Route::get('/dashboard', function () {
         return view('admins.dashboard');
     })->name('dashboard');
@@ -65,11 +66,10 @@ Route::prefix('admin')->group(function () {
 
     // --- ROUTE QUẢN LÝ KHU VỰC VÀ BÀN ĂN (SSR) ---
     
-    // 1. READ (Hiển thị trang danh sách)
     Route::get('/khu-vuc-ban-an', [KhuVucController::class, 'showManagementPage'])
         ->name('khu-vuc-ban-an');
 
-    // 2. CRUD CHO KHU VỰC (Sử dụng prefix 'khu-vuc' và name 'khu-vuc.')
+    // CRUD CHO KHU VỰC (Prefix: /admin/khu-vuc)
     Route::prefix('khu-vuc')->name('khu-vuc.')->controller(KhuVucController::class)->group(function () {
         Route::get('/create', 'create')->name('create');
         Route::post('/store', 'store')->name('store');
@@ -78,7 +78,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/{id}/delete', 'destroy')->name('destroy');
     });
 
-    // 3. CRUD CHO BÀN ĂN (Sử dụng prefix 'ban-an' và name 'ban-an.')
+    // CRUD CHO BÀN ĂN (Prefix: /admin/ban-an)
     Route::prefix('ban-an')->name('ban-an.')->controller(BanAnController::class)->group(function () {
         Route::get('/create', 'create')->name('create');
         Route::post('/store', 'store')->name('store');
@@ -91,13 +91,17 @@ Route::prefix('admin')->group(function () {
 }); // Kết thúc nhóm prefix('admin')
 
 // =====================================================================
-// === AUTH ===
+// === AUTH (PREFIX: /auth) ===
 // =====================================================================
-Route::get('/auth/login', function () {
-    return view('auths.login');
-})->name('login');
+Route::prefix('auth')->name('auth.')->group(function () {
+    
+    Route::get('/login', function () {
+        return view('auths.login');
+    })->name('login'); // Tên route: auth.login
 
-Route::get('/auth/forgot', function () {
-    return view('auths.forgot');
-})->name('forgot');
+    Route::get('/forgot', function () {
+        return view('auths.forgot');
+    })->name('forgot'); // Tên route: auth.forgot
+
+});
 
