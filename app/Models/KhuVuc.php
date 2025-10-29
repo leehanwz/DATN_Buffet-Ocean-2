@@ -11,16 +11,25 @@ class KhuVuc extends Model
 
     protected $table = 'khu_vuc';
 
-    // Giữ đúng các cột đang có trong CSDL
+    // Các trường cho phép gán giá trị
     protected $fillable = [
         'ten_khu_vuc',
         'mo_ta',
-        'tang',          // có trong database gốc
-        'trang_thai'     // bạn thêm cũng được, nếu có trạng thái kích hoạt/tạm ngưng
+        'tang'
     ];
 
-    public function banAn()
+    // Tắt timestamps mặc định và định nghĩa lại tên cột của bạn
+    public $timestamps = false;
+    protected $dates = [
+        'ngay_tao',
+        'ngay_cap_nhat'
+    ];
+
+    // Định nghĩa mối quan hệ: Một Khu vực có nhiều Bàn ăn
+    public function banAns()
     {
+        // 'banAns' là tên mối quan hệ dùng trong Controller/View
+        // 'khu_vuc_id' là khóa ngoại trong bảng ban_an
         return $this->hasMany(BanAn::class, 'khu_vuc_id');
     }
 }

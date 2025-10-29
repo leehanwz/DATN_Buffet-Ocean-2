@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 // ======================= SHOP (CLIENT) =========================
-use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Shop\HomeController;
 use App\Http\Controllers\Client\AboutController;
 use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Client\BookingController;
@@ -32,8 +32,8 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 */
 
 // ==================== CLIENT SITE ====================
-// Route::prefix('/')->group(function () {
-//     Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::prefix('/')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 //     Route::get('/about', [AboutController::class, 'index'])->name('about');
 //     Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 //     Route::get('/booking', [BookingController::class, 'index'])->name('booking');
@@ -41,7 +41,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 //     Route::get('/service', [ServiceController::class, 'index'])->name('service');
 //     Route::get('/team', [TeamController::class, 'index'])->name('team');
 //     Route::get('/testimonial', [TestimonialController::class, 'index'])->name('testimonial');
-// });
+});
 
 // ==================== ADMIN SITE ====================
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -71,6 +71,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('ban-an', BanAnController::class);
     Route::patch('ban-an/{id}/trang-thai', [BanAnController::class, 'capNhatTrangThai'])
         ->name('ban-an.cap-nhat-trang-thai');
+    Route::post('admin/ban-an/{id}/qr', [BanAnController::class, 'regenerateQr'])->name('ban-an.qr');
+
+
+    // ================= KHU VỰC & BÀN ĂN =================
+    Route::get('khu-vuc-ban-an', [KhuVucController::class, 'index'])->name('khu-vuc-ban-an');
 });
 
 

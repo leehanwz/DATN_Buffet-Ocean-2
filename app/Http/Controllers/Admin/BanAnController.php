@@ -6,148 +6,173 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BanAn;
 use App\Models\KhuVuc;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class BanAnController extends Controller
 {
-    // ================== DANH SÁCH ==================
-    public function index(Request $request)
-    {
-        $khuVucs = KhuVuc::all();
-        $query = BanAn::with('khuVuc')->orderByDesc('id');
-
-        if ($request->filled('khu_vuc_id')) {
-            $query->where('khu_vuc_id', $request->khu_vuc_id);
-        }
-
-        $banAns = $query->get();
-
-        return view('admins.ban-an.index', compact('banAns', 'khuVucs'));
-    }
-
-    // ================== FORM CREATE ==================
+    /**
+     * Hiển thị Form Tạo Bàn Ăn Mới.
+     */
     public function create()
     {
-        $khuVucs = KhuVuc::where('trang_thai', 1)->get();
-        return view('admins.ban-an.create', compact('khuVucs'));
+        $khuVucs = KhuVuc::orderBy('tang')->get();
+        return view('admins.ban-an.create', ['khuVucs' => $khuVucs]);
     }
 
-    // ================== LƯU MỚI ==================
+    /**
+     * Lưu Bàn Ăn mới vào database.
+     */
     public function store(Request $request)
     {
-        $request->validate([
+        // SỬA: Validate giá trị không dấu
+        $rules = [
             'khu_vuc_id' => 'required|exists:khu_vuc,id',
             'so_ban' => 'required|string|max:50|unique:ban_an,so_ban',
             'so_ghe' => 'required|integer|min:1',
-            'trang_thai' => 'nullable|in:trống,đã đặt',
-        ]);
+            'trang_thai' => 'required|in:trong,khong_su_dung',
+        ];
+
+        // Định nghĩa thông báo lỗi tiếng Việt
+        $messages = [
+            'khu_vuc_id.required' => 'Vui lòng chọn Khu vực.',
+            'so_ban.required' => 'Vui lòng nhập Số bàn.',
+            'so_ban.unique' => 'Số bàn này đã tồn tại.',
+            'so_ghe.required' => 'Vui lòng nhập Số ghế.',
+            'trang_thai.required' => 'Vui lòng chọn Trạng thái mặc định.',
+            'trang_thai.in' => 'Trạng thái mặc định không hợp lệ.',
+        ];
+
+        $request->validate($rules, $messages);
 
         try {
-            // 1️⃣ Tạo bản ghi bàn ăn
-            $banAn = BanAn::create([
+            $uniqueCode = Str::random(12);
+            $baseUrl = config('app.url') . '/order';
+
+            BanAn::create([
                 'khu_vuc_id' => $request->khu_vuc_id,
                 'so_ban' => $request->so_ban,
                 'so_ghe' => $request->so_ghe,
-                'trang_thai' => $request->trang_thai ?? 'trống',
+                'trang_thai' => trim($request->trang_thai), // Lưu giá trị không dấu
+                'ma_qr' => $uniqueCode,
+                'duong_dan_qr' => $baseUrl . '?table_code=' . $uniqueCode,
             ]);
 
-            // 2️⃣ Sinh mã QR và file ảnh
-            $maQR = Str::upper('BAN' . str_pad($banAn->id, 3, '0', STR_PAD_LEFT));
-            $folder = public_path('uploads/qr');
-            if (!File::exists($folder)) {
-                File::makeDirectory($folder, 0755, true);
-            }
-
-            $qrContent = url('/ban-an/' . $banAn->id);
-            $fileName = $maQR . '_' . time() . '.png';
-            $qrPath = 'uploads/qr/' . $fileName;
-
-            QrCode::format('png')->size(300)->generate($qrContent, public_path($qrPath));
-
-            $banAn->update([
-                'ma_qr' => $maQR,
-                'duong_dan_qr' => $qrPath
-            ]);
-
-            return redirect()->route('admin.ban-an.index')->with('success', 'Thêm bàn ăn thành công!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Lỗi khi tạo bàn: ' . $e->getMessage());
+            return redirect()->route('ban-an')
+                ->with('success', 'Tạo bàn ăn mới thành công!');
+        } catch (QueryException $e) {
+            Log::error("DB CREATE FAILED (BanAn): " . $e->getMessage());
+            return back()->with('error', 'Lỗi DB: Bàn ăn có thể đã tồn tại hoặc dữ liệu không hợp lệ.');
         }
     }
 
-    // ================== FORM EDIT ==================
+    /**
+     * Hiển thị Form Sửa Bàn Ăn.
+     */
     public function edit($id)
     {
-        $banAn = BanAn::findOrFail($id);
-        $khuVucs = KhuVuc::where('trang_thai', 1)->get();
-        return view('admins.ban-an.edit', compact('banAn', 'khuVucs'));
+        try {
+            $banAn = BanAn::findOrFail($id);
+            $khuVucs = KhuVuc::orderBy('tang')->get();
+
+            return view('admins.ban-an.edit', [
+                'banAn' => $banAn,
+                'khuVucs' => $khuVucs
+            ]);
+        } catch (\Exception $e) {
+            Log::error("EDIT BAN AN FAILED: " . $e->getMessage());
+            return redirect()->route('ban-an')
+                ->with('error', 'Không tìm thấy Bàn ăn để sửa.');
+        }
     }
 
-    // ================== CẬP NHẬT ==================
+    /**
+     * Cập nhật Bàn Ăn trong database.
+     */
     public function update(Request $request, $id)
     {
         $banAn = BanAn::findOrFail($id);
 
-        $request->validate([
+        // SỬA: Validate giá trị không dấu (dùng danh sách mới của bạn)
+        $rules = [
             'khu_vuc_id' => 'required|exists:khu_vuc,id',
-            'so_ban' => 'required|string|max:50|unique:ban_an,so_ban,' . $banAn->id,
+            'so_ban' => ['required', 'string', 'max:50', Rule::unique('ban_an', 'so_ban')->ignore($banAn->id)],
             'so_ghe' => 'required|integer|min:1',
-            'trang_thai' => 'required|in:trống,đã đặt',
-        ]);
-
-        $banAn->update([
-            'khu_vuc_id' => $request->khu_vuc_id,
-            'so_ban' => $request->so_ban,
-            'so_ghe' => $request->so_ghe,
-            'trang_thai' => $request->trang_thai,
-        ]);
-
-        return redirect()->route('admin.ban-an.index')->with('success', 'Cập nhật bàn ăn thành công!');
-    }
-
-    // ================== CẬP NHẬT TRẠNG THÁI ==================
-    public function capNhatTrangThai(Request $request, $id)
-    {
-        $banAn = BanAn::findOrFail($id);
-        $trangThaiMoi = $request->trang_thai;
-
-        if ($trangThaiMoi === 'đã đặt' && $banAn->trang_thai !== 'đã đặt') {
-            $banAn->thoi_gian_bat_dau = now();
-        }
-
-        if ($trangThaiMoi === 'trống' && $banAn->trang_thai !== 'trống') {
-            $banAn->thoi_gian_bat_dau = null;
-        }
-
-        $banAn->trang_thai = $trangThaiMoi;
-        $banAn->save();
-
-        return redirect()->back()->with('success', 'Cập nhật trạng thái bàn thành công!');
-    }
-
-    // ================== XOÁ BÀN ==================
-    public function destroy($id)
-    {
-        $banAn = BanAn::findOrFail($id);
+            'trang_thai' => 'required|in:trong,dang_phuc_vu,da_dat,khong_su_dung',
+        ];
+        $messages = [
+            'khu_vuc_id.required' => 'Vui lòng chọn Khu vực.',
+            'so_ban.required' => 'Vui lòng nhập Số bàn.',
+            'so_ban.unique' => 'Số bàn này đã tồn tại.',
+            'so_ghe.required' => 'Vui lòng nhập Số ghế.',
+            'trang_thai.required' => 'Vui lòng chọn Trạng thái.',
+            'trang_thai.in' => 'Trạng thái không hợp lệ.',
+        ];
+        $request->validate($rules, $messages);
 
         try {
-            if ($banAn->duong_dan_qr && File::exists(public_path($banAn->duong_dan_qr))) {
-                File::delete(public_path($banAn->duong_dan_qr));
+            $updateData = $request->all();
+            $updateData['trang_thai'] = trim($request->trang_thai); // Lưu giá trị không dấu
+
+            $banAn->update($updateData);
+
+            return redirect()->route('ban-an')
+                ->with('success', "Cập nhật Bàn {$banAn->so_ban} thành công!");
+        } catch (\Exception $e) {
+            Log::error("DB UPDATE FAILED (BanAn): " . $e->getMessage());
+            return back()->with('error', 'Lỗi hệ thống khi cập nhật bàn ăn.');
+        }
+    }
+
+    /**
+     * Xóa Bàn Ăn khỏi database.
+     */
+    public function destroy($id)
+    {
+        try {
+            $banAn = BanAn::findOrFail($id);
+            $trangThai = trim(strtolower($banAn->trang_thai));
+
+            // SỬA: So sánh với giá trị không dấu (dùng danh sách mới của bạn)
+            if (in_array($trangThai, ['dang_phuc_vu', 'da_dat'])) {
+                return back()->with('error', "❌ Không thể xóa Bàn {$banAn->so_ban} vì bàn đang có khách hoặc đã được đặt.");
+            }
+
+            if (!in_array($trangThai, ['trong', 'khong_su_dung'])) {
+                Log::warning("Attempted to delete BanAn ID {$id} with invalid status: '{$banAn->trang_thai}'");
+                return back()->with('error', "⚠️ Trạng thái bàn ('{$banAn->trang_thai}') không hợp lệ, không thể xóa.");
             }
 
             $banAn->delete();
-            return redirect()->route('admin.ban-an.index')->with('success', 'Xóa bàn ăn thành công!');
+            return redirect()->route('ban-an')
+                ->with('success', "✅ Xóa Bàn {$banAn->so_ban} thành công!");
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Lỗi khi xóa bàn: ' . $e->getMessage());
+            Log::error("DELETE BAN AN FAILED: " . $e->getMessage());
+            return back()->with('error', 'Lỗi hệ thống khi xóa bàn.');
         }
     }
 
-    // ================== API LẤY BÀN THEO KHU VỰC ==================
-    public function theoKhuVuc($khuVucId)
+    /**
+     * Tái tạo Mã QR cho Bàn Ăn.
+     */
+    public function regenerateQr($id)
     {
-        $banAns = BanAn::where('khu_vuc_id', $khuVucId)->get();
-        return response()->json($banAns);
+        try {
+            $banAn = BanAn::findOrFail($id);
+            $newUniqueCode = Str::random(12);
+            $baseUrl = config('app.url') . '/order';
+
+            $banAn->update([
+                'ma_qr' => $newUniqueCode,
+                'duong_dan_qr' => $baseUrl . '?table_code=' . $newUniqueCode,
+            ]);
+
+            return back()->with('success', "🔄 Tái tạo QR cho Bàn {$banAn->so_ban} thành công!");
+        } catch (\Exception $e) {
+            Log::error("REGENERATE QR FAILED: " . $e->getMessage());
+            return back()->with('error', 'Lỗi hệ thống khi tạo lại QR.');
+        }
     }
 }
