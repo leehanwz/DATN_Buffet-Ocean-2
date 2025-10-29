@@ -14,10 +14,9 @@ use App\Http\Controllers\Admin\MonTrongComboController;
 |--------------------------------------------------------------------------
 */
 
-// =S===================================================================
+// =====================================================================
 // === SHOP (TRANG NGƯỜI DÙNG) ===
 // =====================================================================
-// (Giữ nguyên)
 Route::get('/', function () {
     return view('restaurants.home');
 })->name('home');
@@ -53,46 +52,44 @@ Route::get('/testimonial', function () {
 // =====================================================================
 // === NHÓM ADMIN (PREFIX: /admin) ===
 // =====================================================================
-
-// *** THAY ĐỔI QUAN TRỌNG: Đã thêm ->name('admin.') ***
 Route::prefix('admin')->name('admin.')->group(function () {
 
     // --- Dashboard ---
     Route::get('/dashboard', function () {
         return view('admins.dashboard');
-    })->name('dashboard'); // Tên mới: 'admin.dashboard'
+    })->name('dashboard');
 
     // --- Sản Phẩm ---
     Route::get('/san-pham', function () {
         return view('admins.san-pham');
-    })->name('san-pham'); // Tên mới: 'admin.san-pham'
+    })->name('san-pham');
 
     Route::get('/form-add-san-pham', function () {
         return view('admins.form-add-san-pham');
-    })->name('form-add-san-pham'); // Tên mới: 'admin.form-add-san-pham'
+    })->name('form-add-san-pham');
     
-    Route::post('/san-pham/store', [SanPhamController::class, 'store'])->name('san-pham.store'); // Tên mới: 'admin.san-pham.store'
+    Route::post('/san-pham/store', [SanPhamController::class, 'store'])->name('san-pham.store');
 
     // --- Nhân Viên ---
     Route::get('/nhan-vien', function () {
         return view('admins.nhan-vien');
-    })->name('nhan-vien'); // Tên mới: 'admin.nhan-vien'
+    })->name('nhan-vien');
 
     // --- Đơn Hàng ---
     Route::get('/don-hang', function () {
         return view('admins.don-hang');
-    })->name('don-hang'); // Tên mới: 'admin.don-hang'
+    })->name('don-hang');
     
     // --- Món Trong Combo (Resource) ---
-    Route::resource('mon-trong-combo', MonTrongComboController::class); // Tên mới: 'admin.mon-trong-combo.index', 'admin.mon-trong-combo.create', ...
+    Route::resource('mon-trong-combo', MonTrongComboController::class);
 
     // --- Quản lý Khu Vực & Bàn Ăn ---
     Route::get('/khu-vuc-ban-an', [KhuVucController::class, 'showManagementPage'])
-        ->name('khu-vuc-ban-an'); // Tên mới: 'admin.khu-vuc-ban-an'
+        ->name('khu-vuc-ban-an');
 
     // --- CRUD Khu Vực ---
     Route::prefix('khu-vuc')->name('khu-vuc.')->controller(KhuVucController::class)->group(function () {
-        Route::get('/create', 'create')->name('create'); // Tên mới: 'admin.khu-vuc.create'
+        Route::get('/create', 'create')->name('create');
         Route::post('/store', 'store')->name('store');
         Route::get('/{id}/edit', 'edit')->name('edit');
         Route::post('/{id}/update', 'update')->name('update');
@@ -102,7 +99,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // --- CRUD Bàn Ăn ---
     Route::prefix('ban-an')->name('ban-an.')->controller(BanAnController::class)->group(function () {
-        Route::get('/create', 'create')->name('create'); // Tên mới: 'admin.ban-an.create'
+        Route::get('/create', 'create')->name('create');
         Route::post('/store', 'store')->name('store');
         Route::get('/{id}/edit', 'edit')->name('edit');
         Route::post('/{id}/update', 'update')->name('update');
@@ -116,7 +113,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // =====================================================================
 // === AUTH (PREFIX: /auth) ===
 // =====================================================================
-// (Giữ nguyên)
 Route::prefix('auth')->name('auth.')->group(function () {
     
     Route::get('/login', function () {

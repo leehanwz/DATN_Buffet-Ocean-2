@@ -66,9 +66,9 @@
       </li>
       <li>
         {{-- SỬA LỖI: Thêm 'admin.' --}}
-        <a class="app-menu__item" href="{{ route('admin.don-hang') }}">
+        <a class="app-menu__item" href="{{ route('admin.mon-trong-combo.index') }}">
           <i class='app-menu__icon bx bx-task'></i>
-          <span class="app-menu__label">Quản lý đơn hàng</span>
+          <span class="app-menu__label">Món trong combo</span>
         </a>
       </li>
 
