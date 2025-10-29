@@ -1,7 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\admins\DanhMucController;
-use App\Http\Controllers\admins\MonAnController;
+use App\Http\Controllers\Admin\DanhMucController;
+use App\Http\Controllers\Admin\MonAnController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('danh-muc', DanhMucController::class);

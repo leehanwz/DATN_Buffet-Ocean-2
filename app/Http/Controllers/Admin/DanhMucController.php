@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\admins;
+namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Admins\DanhMuc;
+use App\Models\DanhMuc;
 
 class DanhMucController extends Controller
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\admins;
+namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
-use App\Models\Admins\MonAn;
-use App\Models\Admins\DanhMuc;
+use App\Models\MonAn;
+use App\Models\DanhMuc;
 use Illuminate\Http\Request;
 use App\Http\Requests\MonAnRequest; // nếu bạn dùng FormRequest để validate
 
