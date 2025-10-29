@@ -41,4 +41,71 @@
         <button type="submit" class="btn btn-primary">Cập nhật danh mục</button>
     </form>
 </div>
+{{-- Thêm CSS fix layout --}}
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .app-sidebar {
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background-color: #002b5b;
+            color: white;
+            overflow-y: auto;
+        }
+
+        main {
+            margin-left: 250px; /* chừa chỗ cho sidebar */
+            min-height: 100vh;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .app-header {
+            margin-left: 250px;
+            background-color: #002b5b;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .app-sidebar__user-avatar {
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .app-menu__item {
+            color: white;
+            transition: background 0.3s ease;
+        }
+
+        .app-menu__item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .app-menu__label {
+            font-weight: 500;
+        }
+
+        .app-sidebar__user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+        }
+
+        .app-sidebar__user-name {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .app-sidebar__user-designation {
+            margin: 0;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+    </style>
 @endsection

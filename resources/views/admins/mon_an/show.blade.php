@@ -7,7 +7,7 @@
     <div class="card shadow-lg border-0 rounded-4 mx-auto" style="max-width: 700px;">
         <!-- Header -->
         <div class="card-header text-white py-3 px-4 rounded-top-4 d-flex justify-content-between align-items-center"
-             style="background-color: #002b5b;">
+             style="background-color: #2d2d2eff;">
             <h3 class="mb-0 fw-bold"><i class='bx bx-restaurant me-2'></i>Chi tiết món ăn</h3>
             <a href="{{ route('admin.mon-an.index') }}" class="btn btn-light btn-sm fw-semibold shadow-sm">
                 <i class='bx bx-arrow-back'></i> Quay lại

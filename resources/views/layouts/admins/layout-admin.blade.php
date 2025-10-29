@@ -84,7 +84,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main>
         @yield('content')
     </main>
 
@@ -139,20 +139,5 @@
 
     @yield('script')
 </body>
-<style>
-    .main-content {
-    transition: margin-left 0.3s ease;
-    padding: 20px;
-}
-
-.app.sidebar-mini .main-content {
-    margin-left: 250px;
-}
-
-/* Nếu sidebar bị thu gọn */
-.app.sidebar-mini.sidenav-toggled .main-content {
-    margin-left: 80px;
-}
-</style>
 
 </html>

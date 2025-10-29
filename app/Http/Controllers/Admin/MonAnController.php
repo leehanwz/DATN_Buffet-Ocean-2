@@ -47,25 +47,34 @@ class MonAnController extends Controller
         $danhMucs = DanhMuc::where('hien_thi', 1)->get();
         return view('admins.mon_an.edit', compact('mon_an', 'danhMucs'));
     }
+public function update(MonAnRequest $request, MonAn $mon_an)
+{
+    $data = $request->validated();
 
-    public function update(MonAnRequest $request, MonAn $mon_an)
-    {
-        $data = $request->validated();
-
-        if ($request->hasFile('hinh_anh')) {
-            if ($mon_an->hinh_anh && file_exists(public_path($mon_an->hinh_anh))) {
-                unlink(public_path($mon_an->hinh_anh));
-            }
-            $file = $request->file('hinh_anh');
-            $fileName = time().'_'.$file->getClientOriginalName();
-            $file->move(public_path('uploads/monan'), $fileName);
-            $data['hinh_anh'] = 'uploads/monan/'.$fileName;
+    // ✅ Nếu có ảnh mới thì thay thế
+    if ($request->hasFile('hinh_anh')) {
+        // Xóa ảnh cũ nếu tồn tại
+        if ($mon_an->hinh_anh && file_exists(public_path($mon_an->hinh_anh))) {
+            unlink(public_path($mon_an->hinh_anh));
         }
 
-        $mon_an->update($data);
+        // Lưu ảnh mới
+        $file = $request->file('hinh_anh');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/monan'), $fileName);
 
-        return redirect()->route('admin.mon-an.index')->with('success', 'Cập nhật món ăn thành công!');
+        // Cập nhật đường dẫn ảnh mới
+        $data['hinh_anh'] = 'uploads/monan/' . $fileName;
+    } else {
+        // ✅ Nếu không upload ảnh mới → giữ nguyên ảnh cũ
+        $data['hinh_anh'] = $mon_an->hinh_anh;
     }
+
+    // ✅ Cập nhật dữ liệu
+    $mon_an->update($data);
+
+    return redirect()->route('admin.mon-an.index')->with('success', 'Cập nhật món ăn thành công!');
+}
 
     public function destroy(MonAn $mon_an)
     {
