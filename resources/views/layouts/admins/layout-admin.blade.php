@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <title>@yield('title')</title>
@@ -17,7 +17,12 @@
     <script src="http://code.jquery.com/jquery.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="{{ asset('admin/ckeditor/ckeditor.js') }}"></script>
 
+
+
     @yield('style')
+
+    {{-- Thêm CSS fix layout --}}
+
 </head>
 
 <body onload="time()" class="app sidebar-mini rtl">
@@ -28,11 +33,15 @@
         <!-- Navbar Right Menu-->
         <ul class="app-nav">
 
+            <!-- Navbar -->
+            <header class="app-header">
+                <!-- Sidebar toggle button -->
+                <a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>
 
-            <!-- User Menu-->
-            <li><a class="app-nav__item" href="../index.html"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+                <!-- User Menu-->
+                <li><a class="app-nav__item" href="../index.html"><i class='bx bx-log-out bx-rotate-180'></i> </a>
 
-            </li>
+                </li>
         </ul>
     </header>
     <!-- Sidebar menu-->
@@ -47,7 +56,7 @@
         </div>
         <hr>
         <ul class="app-menu">
-            <li><a class="app-menu__item " href="{{route('dashboard')}}">
+            <li><a class="app-menu__item " href="{{route('admin.dashboard')}}">
                     <i class='app-menu__icon bx bx-home'></i>
                     <span class="app-menu__label">Trang chủ</span>
                 </a>
@@ -74,6 +83,12 @@
                 <a class="app-menu__item " href="{{route('admin.danhmucmons.index')}}">
                     <i class="app-menu__icon bx bx-menu"></i>
                     <span class="app-menu__label">Danh mục món</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item" href="{{ route('admin.mon-an.index') }}">
+                    <i class='app-menu__icon bx bx-restaurant'></i>
+                    <span class="app-menu__label">Quản lý món ăn</span>
                 </a>
             </li>
 

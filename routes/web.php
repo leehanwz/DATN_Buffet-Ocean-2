@@ -2,14 +2,28 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DanhmucmonController;
+use App\Http\Controllers\Admin\MonAnController;
 
 //Route admin
 //Danh mục món
 Route::prefix('admin')->name('admin.')->group(function () {
+    //Dashboard
+    Route::view('/dashboard', 'admins.dashboard')->name('dashboard');
+
+    //danh muc mon
     Route::resource('danhmucmons', DanhmucmonController::class);
+
+    //Mon an
+    Route::resource('mon-an', MonAnController::class);
 });
 
 
+
+
+
+
+
+// phan cu
 // shop
 Route::get('/', function () {
     return view('restaurants.home');
@@ -44,9 +58,9 @@ Route::get('/testimonial', function () {
 })->name('testimonial');
 
 // admin
-Route::get('/admin/dashboard', function () {
-    return view('admins.dashboard');
-})->name('dashboard');
+// Route::get('/admin/dashboard', function () {
+//     return view('admins.dashboard');
+// })->name('dashboard');
 
 Route::get('/admin/san-pham', function () {
     return view('admins.san-pham');

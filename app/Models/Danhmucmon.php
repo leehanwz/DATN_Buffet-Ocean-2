@@ -17,4 +17,8 @@ class Danhmucmon extends Model
         'hien_thi',
     ];
 
+    public function monans()
+    {
+        return $this->hasMany(MonAn::class, 'danh_muc_id', 'id');
+    }
 }

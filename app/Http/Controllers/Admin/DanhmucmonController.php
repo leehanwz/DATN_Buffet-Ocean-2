@@ -53,12 +53,12 @@ class DanhmucmonController extends Controller
     public function destroy(Danhmucmon $danhmucmon)
     {
         // Nếu có món ăn liên quan, bạn có thể xử lý trước khi xóa
-        if ($danhmucmon->mons()->count() > 0) {
+        if ($danhmucmon->monans()->count() > 0) {
             return redirect()->route('admins.danhmucmons.index')
                 ->with('error', 'Không thể xóa danh mục đang có món ăn.');
         }
 
         $danhmucmon->delete();
-        return redirect()->route('admins.danhmucmons.index')->with('success', 'Xóa danh mục thành công!');
+        return redirect()->route('admin.danhmucmons.index')->with('success', 'Xóa danh mục thành công!');
     }
 }
