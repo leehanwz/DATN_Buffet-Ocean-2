@@ -71,7 +71,7 @@ class KhuVucController extends Controller
         try {
             KhuVuc::create($request->all());
 
-            return redirect()->route('khu-vuc-ban-an')
+            return redirect()->route('admin.khu-vuc-ban-an')
                              ->with('success', 'Tạo khu vực mới thành công!');
         } catch (QueryException $e) {
              Log::error("DB CREATE FAILED (KhuVuc): " . $e->getMessage());
@@ -89,7 +89,7 @@ class KhuVucController extends Controller
             return view('admins.khu-vuc.edit-khu-vuc', ['khuVuc' => $khuVuc]);
         } catch (\Exception $e) {
             Log::error("EDIT KHUVUC FAILED: " . $e->getMessage());
-            return redirect()->route('khu-vuc-ban-an')
+            return redirect()->route('admin.khu-vuc-ban-an')
                              ->with('error', 'Không tìm thấy Khu vực để sửa.');
         }
     }
@@ -122,7 +122,7 @@ class KhuVucController extends Controller
 
          try {
             $khuVuc->update($request->all());
-            return redirect()->route('khu-vuc-ban-an')
+            return redirect()->route('admin.khu-vuc-ban-an')
                           ->with('success', "Cập nhật Khu vực {$khuVuc->ten_khu_vuc} thành công!");
          } catch (\Exception $e) {
              Log::error("DB UPDATE FAILED (KhuVuc): " . $e->getMessage());
@@ -144,7 +144,7 @@ class KhuVucController extends Controller
             
             $khuVuc->delete();
             
-            return redirect()->route('khu-vuc-ban-an')
+            return redirect()->route('admin.khu-vuc-ban-an')
                              ->with('success', "Xóa Khu vực {$khuVuc->ten_khu_vuc} thành công!");
 
         } catch (\Exception $e) {

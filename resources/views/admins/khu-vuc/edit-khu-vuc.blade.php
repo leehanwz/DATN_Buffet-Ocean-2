@@ -6,7 +6,7 @@
     <main class="app-content">
         <div class="app-title">
             <ul class="app-breadcrumb breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('khu-vuc-ban-an') }}">Quản lý Khu Vực & Bàn Ăn</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('admin.khu-vuc-ban-an') }}">Quản lý Khu Vực & Bàn Ăn</a></li>
                 <li class="breadcrumb-item"><a href="#"><b>Sửa Khu Vực</b></a></li>
             </ul>
         </div>
@@ -28,7 +28,7 @@
                             <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
 
-                        <form class="row" method="POST" action="{{ route('khu-vuc.update', $khuVuc->id) }}">
+                        <form class="row" method="POST" action="{{ route('admin.khu-vuc.update', $khuVuc->id) }}">
                             @csrf
                             <div class="form-group col-md-6">
                                 <label class="control-label">Tên Khu Vực (*)</label>
@@ -44,7 +44,7 @@
                             </div>
                             <div class="form-group col-md-12">
                                 <button class="btn btn-save" type="submit">Cập nhật</button>
-                                <a class="btn btn-cancel" href="{{ route('khu-vuc-ban-an') }}">Hủy bỏ</a>
+                                <a class="btn btn-cancel" href="{{ route('admin.khu-vuc-ban-an') }}">Hủy bỏ</a>
                             </div>
                         </form>
                     </div>

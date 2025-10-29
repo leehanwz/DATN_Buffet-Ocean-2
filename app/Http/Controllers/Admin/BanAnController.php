@@ -60,7 +60,7 @@ class BanAnController extends Controller
                 'duong_dan_qr' => $baseUrl . '?table_code=' . $uniqueCode,
             ]);
 
-            return redirect()->route('khu-vuc-ban-an')
+            return redirect()->route('admin.khu-vuc-ban-an')
                              ->with('success', 'Tạo bàn ăn mới thành công!');
 
         } catch (QueryException $e) {
@@ -85,7 +85,7 @@ class BanAnController extends Controller
 
         } catch (\Exception $e) {
             Log::error("EDIT BAN AN FAILED: " . $e->getMessage());
-            return redirect()->route('khu-vuc-ban-an')
+            return redirect()->route('admin.khu-vuc-ban-an')
                              ->with('error', 'Không tìm thấy Bàn ăn để sửa.');
         }
     }
@@ -120,7 +120,7 @@ class BanAnController extends Controller
             
             $banAn->update($updateData);
             
-            return redirect()->route('khu-vuc-ban-an')
+            return redirect()->route('admin.khu-vuc-ban-an')
                              ->with('success', "Cập nhật Bàn {$banAn->so_ban} thành công!");
          } catch (\Exception $e) {
              Log::error("DB UPDATE FAILED (BanAn): " . $e->getMessage());
@@ -148,7 +148,7 @@ class BanAnController extends Controller
             }
 
             $banAn->delete();
-            return redirect()->route('khu-vuc-ban-an')
+            return redirect()->route('admin.khu-vuc-ban-an')
                              ->with('success', "✅ Xóa Bàn {$banAn->so_ban} thành công!");
 
         } catch (\Exception $e) {

@@ -36,12 +36,12 @@
 
                         <div class="row element-button">
                             <div class="col-sm-2">
-                                <a class="btn btn-add btn-sm" href="{{ route('khu-vuc.create') }}" title="Thêm Khu Vực">
+                                <a class="btn btn-add btn-sm" href="{{ route('admin.khu-vuc.create') }}" title="Thêm Khu Vực">
                                     <i class="fas fa-building"></i> Tạo mới Khu vực
                                 </a>
                             </div>
                             <div class="col-sm-2">
-                                <a class="btn btn-add btn-sm" href="{{ route('ban-an.create') }}" title="Thêm Bàn Ăn">
+                                <a class="btn btn-add btn-sm" href="{{ route('admin.ban-an.create') }}" title="Thêm Bàn Ăn">
                                     <i class="fas fa-chair"></i> Tạo mới Bàn ăn
                                 </a>
                             </div>
@@ -60,12 +60,12 @@
                                                     {{ $kv->tang }})
                                                 </h5>
                                                 <div>
-                                                    <a href="{{ route('khu-vuc.edit', $kv->id) }}"
+                                                    <a href="{{ route('admin.khu-vuc.edit', $kv->id) }}"
                                                         class="btn btn-sm btn-info" title="Sửa"><i
                                                             class="fas fa-edit"></i></a>
 
                                                     <form style="display:inline;" method="POST"
-                                                        action="{{ route('khu-vuc.destroy', $kv->id) }}"
+                                                        action="{{ route('admin.khu-vuc.destroy', $kv->id) }}"
                                                         onsubmit="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa Khu vực {{ $kv->ten_khu_vuc }}? (Phải xóa hết bàn ăn trước)');">
                                                         @csrf
                                                         <button type="submit" class="btn btn-sm btn-danger"
@@ -115,7 +115,7 @@
                                                                 <div class="mt-2">
 
                                                                     <form style="display:inline;" method="POST"
-                                                                        action="{{ route('ban-an.qr', $ban->id) }}">
+                                                                        action="{{ route('admin.ban-an.qr', $ban->id) }}">
                                                                         @csrf
                                                                         <button type="submit"
                                                                             class="btn btn-xs btn-outline-info"
@@ -124,14 +124,14 @@
                                                                         </button>
                                                                     </form>
 
-                                                                    <a href="{{ route('ban-an.edit', $ban->id) }}"
+                                                                    <a href="{{ route('admin.ban-an.edit', $ban->id) }}"
                                                                         class="btn btn-xs btn-outline-warning"
                                                                         title="Sửa bàn">
                                                                         <i class="fas fa-edit"></i>
                                                                     </a>
 
                                                                     <form style="display:inline;" method="POST"
-                                                                        action="{{ route('ban-an.destroy', $ban->id) }}"
+                                                                        action="{{ route('admin.ban-an.destroy', $ban->id) }}"
                                                                         onsubmit="return confirm('Bạn có chắc chắn muốn xóa Bàn {{ $ban->so_ban }}?');">
                                                                         @csrf
                                                                         <button type="submit"
