@@ -3,11 +3,11 @@
 @section('title', 'Chi tiết món ăn')
 
 @section('content')
-<div class="container-fluid px-4 mt-4">
+<div class="app-content" style="padding-top:18px; min-height: calc(100vh - 120px);">
     <div class="card shadow-lg border-0 rounded-4 mx-auto" style="max-width: 700px;">
         <!-- Header -->
         <div class="card-header text-white py-3 px-4 rounded-top-4 d-flex justify-content-between align-items-center"
-             style="background-color: #2d2d2eff;">
+            style="background-color: #2d2d2eff;">
             <h3 class="mb-0 fw-bold"><i class='bx bx-restaurant me-2'></i>Chi tiết món ăn</h3>
             <a href="{{ route('admin.mon-an.index') }}" class="btn btn-light btn-sm fw-semibold shadow-sm">
                 <i class='bx bx-arrow-back'></i> Quay lại
@@ -19,13 +19,13 @@
             <!-- Ảnh món ăn -->
             <div class="text-center mb-4">
                 @if($mon_an->hinh_anh)
-                    <img src="{{ asset($mon_an->hinh_anh) }}" alt="Hình ảnh món ăn"
-                         class="img-fluid rounded-4 shadow-sm border"
-                         style="max-height: 280px; object-fit: cover;">
+                <img src="{{ asset($mon_an->hinh_anh) }}" alt="Hình ảnh món ăn"
+                    class="img-fluid rounded-4 shadow-sm border"
+                    style="max-height: 280px; object-fit: cover;">
                 @else
-                    <div class="p-4 text-muted fst-italic border rounded-4 bg-white">
-                        Không có hình ảnh
-                    </div>
+                <div class="p-4 text-muted fst-italic border rounded-4 bg-white">
+                    Không có hình ảnh
+                </div>
                 @endif
             </div>
 
@@ -43,13 +43,13 @@
                     <i class='bx bx-category me-1 text-secondary'></i>
                     <strong>Danh mục:</strong>
                     @php
-                        $mauDanhMuc = match($mon_an->danhMuc->ten_danh_muc ?? '') {
-                            'món chính' => 'bg-danger-subtle text-danger',
-                            'món khai vị' => 'bg-info-subtle text-info',
-                            'món tráng miệng' => 'bg-warning-subtle text-warning',
-                            'món chay' => 'bg-success-subtle text-success',
-                            default => 'bg-secondary text-white'
-                        };
+                    $mauDanhMuc = match($mon_an->danhMuc->ten_danh_muc ?? '') {
+                    'món chính' => 'bg-danger-subtle text-danger',
+                    'món khai vị' => 'bg-info-subtle text-info',
+                    'món tráng miệng' => 'bg-warning-subtle text-warning',
+                    'món chay' => 'bg-success-subtle text-success',
+                    default => 'bg-secondary text-white'
+                    };
                     @endphp
                     <span class="badge px-3 py-2 fw-semibold {{ $mauDanhMuc }}">
                         {{ $mon_an->danhMuc->ten_danh_muc ?? 'Không xác định' }}
@@ -65,7 +65,22 @@
                 <p class="mb-2">
                     <i class='bx bx-bowl-hot me-1 text-secondary'></i>
                     <strong>Loại món:</strong>
-                    {{ $mon_an->loai_mon ?? 'Không có' }}
+                    @if($mon_an->loai_mon)
+                    @php
+                    $mauLoaiMon = match($mon_an->loai_mon) {
+                    'Khai vị' => 'bg-info-subtle text-info',
+                    'Món chính' => 'bg-danger-subtle text-danger',
+                    'Tráng miệng' => 'bg-warning-subtle text-warning',
+                    'Đồ uống' => 'bg-success-subtle text-success',
+                    default => 'bg-secondary text-white'
+                    };
+                    @endphp
+                    <span class="badge px-3 py-2 fw-semibold {{ $mauLoaiMon }}">
+                        {{ $mon_an->loai_mon }}
+                    </span>
+                    @else
+                    <span class="text-muted fst-italic">Không phân loại</span>
+                    @endif
                 </p>
 
                 <p class="mb-2">

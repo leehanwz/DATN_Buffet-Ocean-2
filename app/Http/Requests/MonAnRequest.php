@@ -19,9 +19,9 @@ class MonAnRequest extends FormRequest
             'danh_muc_id' => 'required|exists:danh_muc_mon,id',
             'gia' => 'required|numeric',
             'mo_ta' => 'nullable|string',
-            'trang_thai' => 'required|boolean',
+            'trang_thai' => 'required|in:con,het,an',
             'thoi_gian_che_bien' => 'required|integer|min:1|max:240',
-            'loai_mon' => 'nullable|string|max:255',
+            'loai_mon' => 'nullable|in:Khai vị,Món chính,Tráng miệng,Đồ uống',
          'hinh_anh' => $hinhAnhRule,
         ];
     }

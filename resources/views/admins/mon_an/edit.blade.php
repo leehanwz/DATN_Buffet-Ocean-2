@@ -71,11 +71,26 @@
                                    value="{{ old('thoi_gian_che_bien', $mon_an->thoi_gian_che_bien) }}" required>
                         </div>
 
+                        {{-- Thêm dropdown LOẠI MÓN --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Loại món</label>
+                            <select name="loai_mon" class="form-select custom-input">
+                                <option value="">-- Chọn loại món --</option>
+                                @foreach(['Khai vị','Món chính','Tráng miệng','Đồ uống'] as $loai)
+                                    <option value="{{ $loai }}" {{ old('loai_mon', $mon_an->loai_mon) == $loai ? 'selected' : '' }}>
+                                        {{ $loai }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Chỉnh lại dropdown TRẠNG THÁI --}}
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Trạng thái</label>
                             <select name="trang_thai" class="form-select custom-input" required>
-                                <option value="1" {{ old('trang_thai', $mon_an->trang_thai) == 1 ? 'selected' : '' }}>Hiển thị</option>
-                                <option value="0" {{ old('trang_thai', $mon_an->trang_thai) == 0 ? 'selected' : '' }}>Ẩn</option>
+                                <option value="con" {{ old('trang_thai', $mon_an->trang_thai) == 'con' ? 'selected' : '' }}>Còn món</option>
+                                <option value="het" {{ old('trang_thai', $mon_an->trang_thai) == 'het' ? 'selected' : '' }}>Hết món</option>
+                                <option value="an" {{ old('trang_thai', $mon_an->trang_thai) == 'an' ? 'selected' : '' }}>Ẩn khỏi menu</option>
                             </select>
                         </div>
                     </div>
@@ -87,9 +102,11 @@
                         <div class="mt-3 text-center">
                             <div class="border rounded-3 bg-white p-2 shadow-sm d-inline-block">
                                 @if($mon_an->hinh_anh)
-                                    <img id="preview" src="{{ asset($mon_an->hinh_anh) }}" class="img-fluid rounded-3" style="max-height: 200px; object-fit: cover;">
+                                    <img id="preview" src="{{ asset($mon_an->hinh_anh) }}" class="img-fluid rounded-3"
+                                         style="max-height: 200px; object-fit: cover;">
                                 @else
-                                    <img id="preview" src="#" class="img-fluid rounded-3 d-none" style="max-height: 200px; object-fit: cover;">
+                                    <img id="preview" src="#" class="img-fluid rounded-3 d-none"
+                                         style="max-height: 200px; object-fit: cover;">
                                 @endif
                             </div>
                         </div>

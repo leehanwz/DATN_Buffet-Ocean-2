@@ -62,14 +62,27 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Thời gian chế biến (phút) <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control custom-input" min="0" name="thoi_gian_che_bien" value="{{ old('thoi_gian_che_bien') }}" required>
+                            <input type="number" class="form-control custom-input" min="1" name="thoi_gian_che_bien" value="{{ old('thoi_gian_che_bien') }}" required>
+                        </div>
+
+                        {{-- Sửa theo enum --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Trạng thái <span class="text-danger">*</span></label>
+                            <select name="trang_thai" class="form-select custom-input" required>
+                                <option value="con">Còn món</option>
+                                <option value="het">Hết món</option>
+                                <option value="an">Ẩn khỏi menu</option>
+                            </select>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Trạng thái</label>
-                            <select name="trang_thai" class="form-select custom-input" required>
-                                <option value="1">Hiển thị</option>
-                                <option value="0">Ẩn</option>
+                            <label class="form-label fw-semibold">Loại món</label>
+                            <select name="loai_mon" class="form-select custom-input">
+                                <option value="">-- Chọn loại món --</option>
+                                <option value="Khai vị">Khai vị</option>
+                                <option value="Món chính">Món chính</option>
+                                <option value="Tráng miệng">Tráng miệng</option>
+                                <option value="Đồ uống">Đồ uống</option>
                             </select>
                         </div>
                     </div>
