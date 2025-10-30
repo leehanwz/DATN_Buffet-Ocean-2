@@ -13,6 +13,7 @@ use App\Http\Controllers\Client\TeamController;
 use App\Http\Controllers\Client\TestimonialController;
 
 // ======================= ADMIN =========================
+use App\Http\Controllers\Admin\MonAnController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\Admin\NhanVienController;
@@ -49,9 +50,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // ================= SẢN PHẨM =================
-    Route::get('/san-pham', [SanPhamController::class, 'index'])->name('san-pham');
-    Route::get('/form-add-san-pham', [SanPhamController::class, 'create'])->name('form-add-san-pham');
-    Route::post('/san-pham/store', [SanPhamController::class, 'store'])->name('san-pham.store');
+    Route::get('/san-pham', [SanPhamController::class, 'index'])->name('san-pham.index');    
+    Route::post('/san-pham/trangthai/{id}', [SanPhamController::class, 'trangthai'])->name('san-pham.trangthai');
+
+    // Route::get('/san-pham/cap-nhat/{id}', [SanPhamController::class, 'capNhatTrangThai'])
+    // ->name('san-pham.capnhat');
+    // Route::get('/san-pham', [SanPhamController::class, 'index'])->name('san-pham');
+    // Route::get('/form-add-san-pham', [SanPhamController::class, 'create'])->name('form-add-san-pham');
+    // Route::post('/san-pham/store', [SanPhamController::class, 'store'])->name('san-pham.store');
 
     // ================= NHÂN VIÊN =================
     Route::get('/nhan-vien', [NhanVienController::class, 'index'])->name('nhan-vien');

@@ -19,11 +19,11 @@ class MonAn extends Model
         'hinh_anh',
         'trang_thai',
         'thoi_gian_che_bien',
-        'loai_mon',
+        'loai_mon'
     ];
 
-    public function combo()
+    public function danhMuc()
     {
-        return $this->belongsToMany(ComboBuffet::class, 'mon_trong_combo', 'mon_an_id', 'combo_id');
+        return $this->belongsTo(DanhMucMon::class, 'danh_muc_id');
     }
 }
