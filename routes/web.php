@@ -63,20 +63,45 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // ================= MÓN TRONG COMBO =================
     Route::resource('mon-trong-combo', MonTrongComboController::class);
 
-    // ================= KHU VỰC =================
-    Route::resource('khu-vuc', KhuVucController::class);
-    Route::patch('khu-vuc/{id}/trang-thai', [KhuVucController::class, 'capNhatTrangThai'])
-        ->name('khu-vuc.cap-nhat-trang-thai');
+    // // ================= KHU VỰC =================
+    // Route::resource('khu-vuc', KhuVucController::class);
+    // Route::patch('khu-vuc/{id}/trang-thai', [KhuVucController::class, 'capNhatTrangThai'])
+    //     ->name('khu-vuc.cap-nhat-trang-thai');
 
-    // ================= BÀN ĂN =================
-    Route::resource('ban-an', BanAnController::class);
-    Route::patch('ban-an/{id}/trang-thai', [BanAnController::class, 'capNhatTrangThai'])
-        ->name('ban-an.cap-nhat-trang-thai');
-    Route::post('admin/ban-an/{id}/qr', [BanAnController::class, 'regenerateQr'])->name('ban-an.qr');
+    // // ================= BÀN ĂN =================
+    // Route::resource('ban-an', BanAnController::class);
+    // Route::patch('ban-an/{id}/trang-thai', [BanAnController::class, 'capNhatTrangThai'])
+    //     ->name('ban-an.cap-nhat-trang-thai');
+    // Route::post('/ban-an/{id}/qr', [BanAnController::class, 'regenerateQr'])->name('ban-an.qr');
 
 
-    // ================= KHU VỰC & BÀN ĂN =================
-    Route::get('khu-vuc-ban-an', [KhuVucController::class, 'index'])->name('khu-vuc-ban-an');
+    // // ================= KHU VỰC & BÀN ĂN =================
+    // Route::get('khu-vuc-ban-an', [KhuVucController::class, 'index'])->name('khu-vuc-ban-an');
+
+    // --- Quản lý Khu Vực & Bàn Ăn ---
+    Route::get('/khu-vuc-ban-an', [KhuVucController::class, 'showManagementPage'])
+        ->name('khu-vuc-ban-an');
+
+    // --- CRUD Khu Vực ---
+    Route::prefix('khu-vuc')->name('khu-vuc.')->controller(KhuVucController::class)->group(function () {
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::post('/{id}/update', 'update')->name('update');
+        Route::post('/{id}/delete', 'destroy')->name('destroy');
+        Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
+    });
+
+    // --- CRUD Bàn Ăn ---
+    Route::prefix('ban-an')->name('ban-an.')->controller(BanAnController::class)->group(function () {
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::post('/{id}/update', 'update')->name('update');
+        Route::post('/{id}/delete', 'destroy')->name('destroy');
+        Route::post('/{id}/regenerate-qr', 'regenerateQr')->name('qr');
+        Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
+    });
 });
 
 

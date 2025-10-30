@@ -6,23 +6,15 @@
 <main class="app-content">
     <div class="app-title">
         <ul class="app-breadcrumb breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{{ route('admin.khu-vuc-ban-an') }}">Quản lý Khu Vực & Bàn Ăn</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="#"><b>Sửa Khu Vực</b></a>
-            </li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.khu-vuc-ban-an') }}">Quản lý Khu Vực & Bàn Ăn</a></li>
+            <li class="breadcrumb-item"><a href="#"><b>Sửa Khu Vực</b></a></li>
         </ul>
     </div>
-
     <div class="row">
         <div class="col-md-12">
             <div class="tile">
                 <h3 class="tile-title">Sửa Khu Vực: {{ $khuVuc->ten_khu_vuc }}</h3>
-
                 <div class="tile-body">
-
-                    {{-- Hiển thị lỗi validation --}}
                     @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -32,46 +24,31 @@
                         </ul>
                     </div>
                     @endif
-
-                    {{-- Hiển thị thông báo lỗi hệ thống nếu có --}}
                     @if (session('error'))
                     <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                    {{-- Hiển thị thông báo thành công nếu có --}}
-                    @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                    @endif
-
-                    {{-- Form cập nhật khu vực --}}
                     <form class="row" method="POST" action="{{ route('admin.khu-vuc.update', $khuVuc->id) }}">
                         @csrf
-                        @method('PUT') {{-- ✅ Bắt buộc có dòng này để Laravel hiểu là PUT request --}}
-
                         <div class="form-group col-md-6">
                             <label class="control-label">Tên Khu Vực (*)</label>
                             <input class="form-control" type="text" name="ten_khu_vuc"
                                 value="{{ old('ten_khu_vuc', $khuVuc->ten_khu_vuc) }}" required>
                         </div>
-
                         <div class="form-group col-md-6">
                             <label class="control-label">Số Tầng (*)</label>
                             <input class="form-control" type="number" name="tang" min="1"
                                 value="{{ old('tang', $khuVuc->tang) }}" required>
                         </div>
-
                         <div class="form-group col-md-12">
                             <label class="control-label">Mô Tả</label>
-                            <textarea class="form-control" name="mo_ta"
-                                rows="3">{{ old('mo_ta', $khuVuc->mo_ta) }}</textarea>
+                            <textarea class="form-control" name="mo_ta">{{ old('mo_ta', $khuVuc->mo_ta) }}</textarea>
                         </div>
-
-                        <div class="form-group col-md-12 mt-3">
+                        <div class="form-group col-md-12">
                             <button class="btn btn-save" type="submit">Cập nhật</button>
                             <a class="btn btn-cancel" href="{{ route('admin.khu-vuc-ban-an') }}">Hủy bỏ</a>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
@@ -80,5 +57,4 @@
 @endsection
 
 @section('script')
-{{-- Không có script riêng cho trang này --}}
 @endsection

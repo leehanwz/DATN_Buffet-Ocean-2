@@ -13,9 +13,9 @@ use Illuminate\Validation\Rule;
 class KhuVucController extends Controller
 {
     /**
-     * Hiển thị danh sách Khu Vực & Bàn Ăn.
+     * Hiển thị trang quản lý Khu Vực & Bàn Ăn.
      */
-    public function index()
+    public function showManagementPage()
     {
         $khuVucs = collect();
         $errorMessage = null;
@@ -37,7 +37,7 @@ class KhuVucController extends Controller
     }
 
     /**
-     * Hiển thị Form tạo Khu Vực mới.
+     * Hiển thị Form Tạo Khu Vuc Mới.
      */
     public function create()
     {
@@ -45,12 +45,64 @@ class KhuVucController extends Controller
     }
 
     /**
-     * Lưu Khu Vực mới vào database.
+     * Lưu Khu Vuc mới vào database.
      */
     public function store(Request $request)
     {
         $rules = [
             'ten_khu_vuc' => 'required|string|max:100|unique:khu_vuc,ten_khu_vuc',
+            'tang' => 'required|integer|min:1',
+            'mo_ta' => 'required|string|max:255', // SỬA: Bỏ 'nullable', thêm 'required'
+        ];
+
+        $messages = [
+            'ten_khu_vuc.required' => 'Vui lòng nhập Tên Khu vực.',
+            'ten_khu_vuc.unique' => 'Tên Khu vực này đã tồn tại.',
+            'ten_khu_vuc.max' => 'Tên Khu vực không được vượt quá 100 ký tự.',
+            'tang.required' => 'Vui lòng nhập Số tầng.',
+            'tang.integer' => 'Số tầng phải là số nguyên.',
+            'tang.min' => 'Số tầng phải lớn hơn 0.',
+            'mo_ta.required' => 'Vui lòng nhập Mô tả.', // THÊM: Thông báo lỗi cho Mô tả
+            'mo_ta.max' => 'Mô tả không được vượt quá 255 ký tự.',
+        ];
+
+        $request->validate($rules, $messages);
+
+        try {
+            KhuVuc::create($request->all());
+
+            return redirect()->route('admin.khu-vuc-ban-an')
+                ->with('success', 'Tạo khu vực mới thành công!');
+        } catch (QueryException $e) {
+            Log::error("DB CREATE FAILED (KhuVuc): " . $e->getMessage());
+            return back()->with('error', 'Lỗi DB: Khu vực có thể đã tồn tại hoặc dữ liệu không hợp lệ.');
+        }
+    }
+
+    /**
+     * Hiển thị Form Sửa Khu Vuc.
+     */
+    public function edit($id)
+    {
+        try {
+            $khuVuc = KhuVuc::findOrFail($id);
+            return view('admins.khu-vuc.edit-khu-vuc', ['khuVuc' => $khuVuc]);
+        } catch (\Exception $e) {
+            Log::error("EDIT KHUVUC FAILED: " . $e->getMessage());
+            return redirect()->route('admin.khu-vuc-ban-an')
+                ->with('error', 'Không tìm thấy Khu vực để sửa.');
+        }
+    }
+
+    /**
+     * Cập nhật Khu Vuc trong database.
+     */
+    public function update(Request $request, $id)
+    {
+        $khuVuc = KhuVuc::findOrFail($id);
+
+        $rules = [
+            'ten_khu_vuc' => ['required', 'string', 'max:100', Rule::unique('khu_vuc', 'ten_khu_vuc')->ignore($khuVuc->id)],
             'tang' => 'required|integer|min:1',
             'mo_ta' => 'required|string|max:255',
         ];
@@ -69,83 +121,17 @@ class KhuVucController extends Controller
         $request->validate($rules, $messages);
 
         try {
-            KhuVuc::create($request->all());
-            return redirect()->route('admins.khu-vuc.index')
-                ->with('success', 'Tạo khu vực mới thành công!');
-        } catch (QueryException $e) {
-            Log::error("DB CREATE FAILED (KhuVuc): " . $e->getMessage());
-            return back()->with('error', 'Lỗi DB: Khu vực có thể đã tồn tại hoặc dữ liệu không hợp lệ.');
-        }
-    }
-
-    /**
-     * Hiển thị Form sửa Khu Vực.
-     */
-    public function edit($id)
-    {
-        try {
-            $khuVuc = KhuVuc::findOrFail($id);
-            return view('admins.khu-vuc.edit', ['khuVuc' => $khuVuc]);
+            $khuVuc->update($request->all());
+            return redirect()->route('admin.khu-vuc-ban-an')
+                ->with('success', "Cập nhật Khu vực {$khuVuc->ten_khu_vuc} thành công!");
         } catch (\Exception $e) {
-            Log::error("EDIT KHUVUC FAILED: " . $e->getMessage());
-            return redirect()->route('khu-vuc.index')
-                ->with('error', 'Không tìm thấy Khu vực để sửa.');
+            Log::error("DB UPDATE FAILED (KhuVuc): " . $e->getMessage());
+            return back()->with('error', 'Lỗi hệ thống khi cập nhật khu vực.');
         }
     }
 
     /**
-     * Cập nhật Khu Vực trong database.
-     */
-    public function update(Request $request, $id)
-    {
-        // Tìm khu vực theo ID
-        $khuVuc = KhuVuc::findOrFail($id);
-
-        // Quy tắc validate
-        $rules = [
-            'ten_khu_vuc' => [
-                'required',
-                'string',
-                'max:100',
-                Rule::unique('khu_vuc', 'ten_khu_vuc')->ignore($khuVuc->id),
-            ],
-            'tang' => 'required|integer|min:1',
-            'mo_ta' => 'nullable|string|max:255',
-        ];
-
-        // Thông báo lỗi tùy chỉnh
-        $messages = [
-            'ten_khu_vuc.required' => 'Vui lòng nhập Tên Khu vực.',
-            'ten_khu_vuc.unique'   => 'Tên Khu vực này đã tồn tại.',
-            'ten_khu_vuc.max'      => 'Tên Khu vực không được vượt quá 100 ký tự.',
-            'tang.required'        => 'Vui lòng nhập Số tầng.',
-            'tang.integer'         => 'Số tầng phải là số nguyên.',
-            'tang.min'             => 'Số tầng phải lớn hơn 0.',
-            'mo_ta.max'            => 'Mô tả không được vượt quá 255 ký tự.',
-        ];
-
-        // Thực hiện validate
-        $validated = $request->validate($rules, $messages);
-
-        try {
-            // Cập nhật dữ liệu
-            $khuVuc->update($validated);
-
-            // Quay lại trang danh sách với thông báo thành công
-            return redirect()
-                ->route('admin.khu-vuc.index')
-                ->with('success', "Cập nhật khu vực '{$khuVuc->ten_khu_vuc}' thành công!");
-        } catch (\Exception $e) {
-            // Ghi log lỗi hệ thống
-            Log::error("Lỗi khi cập nhật khu vực (ID {$id}): " . $e->getMessage());
-
-            // Quay lại form với thông báo lỗi
-            return back()->with('error', 'Đã xảy ra lỗi hệ thống khi cập nhật khu vực.')->withInput();
-        }
-    }
-
-    /**
-     * Xóa Khu Vực khỏi database.
+     * Xóa Khu Vuc khỏi database.
      */
     public function destroy($id)
     {
@@ -158,7 +144,7 @@ class KhuVucController extends Controller
 
             $khuVuc->delete();
 
-            return redirect()->route('khu-vuc.index')
+            return redirect()->route('admin.khu-vuc-ban-an')
                 ->with('success', "Xóa Khu vực {$khuVuc->ten_khu_vuc} thành công!");
         } catch (\Exception $e) {
             Log::error("DELETE KHUVUC FAILED: " . $e->getMessage());

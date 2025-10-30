@@ -55,7 +55,6 @@
                         <div class="form-group col-md-6">
                             <label class="control-label">Trạng Thái Mặc Định (*)</label>
                             <select class="form-control" name="trang_thai" required>
-                                {{-- SỬA: Gửi giá trị không dấu --}}
                                 <option value="trong" {{ old('trang_thai', 'trong') == 'trong' ? 'selected' : '' }}>
                                     Trống</option>
                                 <option value="khong_su_dung"
@@ -75,5 +74,4 @@
 @endsection
 
 @section('script')
-{{-- Không cần JS cụ thể cho form này --}}
 @endsection
