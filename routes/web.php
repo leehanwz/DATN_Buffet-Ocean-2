@@ -20,6 +20,8 @@ use App\Http\Controllers\Admin\DonHangController;
 use App\Http\Controllers\Admin\MonTrongComboController;
 use App\Http\Controllers\Admin\KhuVucController;
 use App\Http\Controllers\Admin\BanAnController;
+use App\Http\Controllers\Admin\DanhMucController;
+use App\Http\Controllers\Admin\MonAnController;
 
 // ======================= AUTH =========================
 use App\Http\Controllers\Auth\LoginController;
@@ -49,9 +51,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // ================= SẢN PHẨM =================
-    Route::get('/san-pham', [SanPhamController::class, 'index'])->name('san-pham');
-    Route::get('/form-add-san-pham', [SanPhamController::class, 'create'])->name('form-add-san-pham');
-    Route::post('/san-pham/store', [SanPhamController::class, 'store'])->name('san-pham.store');
+    Route::resource('danh-muc', DanhMucController::class);
+    Route::resource('san-pham', SanPhamController::class);
 
     // ================= NHÂN VIÊN =================
     Route::get('/nhan-vien', [NhanVienController::class, 'index'])->name('nhan-vien');

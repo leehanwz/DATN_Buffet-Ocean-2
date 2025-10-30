@@ -22,8 +22,8 @@ class MonAn extends Model
         'loai_mon',
     ];
 
-    public function combo()
+    public function danhMuc()
     {
-        return $this->belongsToMany(ComboBuffet::class, 'mon_trong_combo', 'mon_an_id', 'combo_id');
+        return $this->belongsTo(DanhMuc::class, 'danh_muc_id');
     }
 }

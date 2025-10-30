@@ -54,7 +54,7 @@
         </a>
       </li>
      <li class="treeview">
-      <a class="app-menu__item" href="{{ route('admin.san-pham') }}" data-toggle="treeview">
+      <a class="app-menu__item" href="{{ route('admin.san-pham.index') }}" data-toggle="treeview">
         <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
         <span class="app-menu__label">Quản lý sản phẩm</span>
         <i class="treeview-indicator bx bx-chevron-right"></i>
