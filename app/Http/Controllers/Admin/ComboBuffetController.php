@@ -34,12 +34,28 @@ class ComboBuffetController extends Controller
         //
         $request->validate([
             'ten_combo' => 'required|string|max:255',
-            'gia_co_ban' => 'required|numeric|min:0',
-            'loai_combo' => 'nullable|string|max:255',
-            'thoi_luong_phut' => 'nullable|integer|min:0',
-            'thoi_gian_bat_dau' => 'nullable|date',
-            'thoi_gian_ket_thuc' => 'nullable|date|after_or_equal:thoi_gian_bat_dau',
-            'trang_thai' => 'nullable|string|max:255',
+            'loai_combo' => 'required|in:Tối,Cuối tuần',
+            'gia_co_ban' => 'required|numeric|min:1',
+            'thoi_luong_phut' => 'required|integer|min:15',
+            'thoi_gian_bat_dau' => 'required|date',
+            'thoi_gian_ket_thuc' => 'required|date|after:thoi_gian_bat_dau',
+            'trang_thai' => 'required|in:Hoạt động,Tạm ngưng',
+        ],
+        [
+            'ten_combo.required' => 'Vui lòng nhập tên combo.',
+            'loai_combo.required' => 'Vui lòng chọn loại combo.',
+            'loai_combo.in' => 'Loại combo không hợp lệ.',
+            'gia_co_ban.required' => 'Vui lòng nhập giá cơ bản.',
+            'gia_co_ban.numeric' => 'Giá cơ bản phải là số.',
+            'gia_co_ban.min' => 'Giá cơ bản phải lớn hơn 0đ.',
+            'thoi_luong_phut.required' => 'Vui lòng nhập thời lượng.',
+            'thoi_luong_phut.integer' => 'Thời lượng phải là số nguyên.',
+            'thoi_luong_phut.min' => 'Thời lượng ít nhất là 15 phút.',
+            'thoi_gian_bat_dau.required' => 'Vui lòng chọn thời gian bắt đầu.',
+            'thoi_gian_ket_thuc.required' => 'Vui lòng chọn thời gian kết thúc.',
+            'thoi_gian_ket_thuc.after' => 'Thời gian kết thúc phải sau thời gian bắt đầu.',
+            'trang_thai.required' => 'Vui lòng chọn trạng thái combo.',
+            'trang_thai.in' => 'Trạng thái không hợp lệ.',
         ]);
 
         ComboBuffet::create($request->all());
@@ -75,12 +91,28 @@ class ComboBuffetController extends Controller
 
         $request->validate([
             'ten_combo' => 'required|string|max:255',
-            'loai_combo' => 'nullable|string|max:255',
-            'gia_co_ban' => 'required|numeric|min:0',
-            'thoi_luong_phut' => 'nullable|integer|min:0',
-            'thoi_gian_bat_dau' => 'nullable|date',
-            'thoi_gian_ket_thuc' => 'nullable|date|after_or_equal:thoi_gian_bat_dau',
-            'trang_thai' => 'nullable|string|max:255',
+            'loai_combo' => 'required|in:Tối,Cuối tuần',
+            'gia_co_ban' => 'required|numeric|min:1',
+            'thoi_luong_phut' => 'required|integer|min:15',
+            'thoi_gian_bat_dau' => 'required|date',
+            'thoi_gian_ket_thuc' => 'required|date|after:thoi_gian_bat_dau',
+            'trang_thai' => 'required|in:Hoạt động,Tạm ngưng',
+        ],
+        [
+            'ten_combo.required' => 'Vui lòng nhập tên combo.',
+            'loai_combo.required' => 'Vui lòng chọn loại combo.',
+            'loai_combo.in' => 'Loại combo không hợp lệ.',
+            'gia_co_ban.required' => 'Vui lòng nhập giá cơ bản.',
+            'gia_co_ban.numeric' => 'Giá cơ bản phải là số.',
+            'gia_co_ban.min' => 'Giá cơ bản phải lớn hơn 0đ.',
+            'thoi_luong_phut.required' => 'Vui lòng nhập thời lượng.',
+            'thoi_luong_phut.integer' => 'Thời lượng phải là số nguyên.',
+            'thoi_luong_phut.min' => 'Thời lượng ít nhất là 15 phút.',
+            'thoi_gian_bat_dau.required' => 'Vui lòng chọn thời gian bắt đầu.',
+            'thoi_gian_ket_thuc.required' => 'Vui lòng chọn thời gian kết thúc.',
+            'thoi_gian_ket_thuc.after' => 'Thời gian kết thúc phải sau thời gian bắt đầu.',
+            'trang_thai.required' => 'Vui lòng chọn trạng thái combo.',
+            'trang_thai.in' => 'Trạng thái không hợp lệ.',
         ]);
 
         $combo->update([

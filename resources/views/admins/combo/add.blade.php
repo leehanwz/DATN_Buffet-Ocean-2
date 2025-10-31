@@ -106,39 +106,60 @@
               @csrf
               <div class="form-group col-md-3">
                 <label class="control-label">Tên combo </label>
-                <input class="form-control" type="text" placeholder="" name="ten_combo">
+                <input class="form-control" type="text" placeholder="" name="ten_combo" value="{{ old('ten_combo') }}">
+                @error('ten_combo')
+                  <small class="text-danger">{{ $message }}</small>
+                @enderror
               </div>
               <div class="form-group col-md-3 ">
                 <label for="exampleSelect1" class="control-label">Trạng thái</label>
-                <select class="form-control" id="exampleSelect1" name="loai_combo">
+                <select class="form-control" id="exampleSelect1" name="loai_combo" value="{{ old('loai_combo') }}">
                   <option>-- Chọn --</option>
                   <option value="Tối">Tối</option>
                   <option value="Cuối tuần">Cuối tuần</option>
                 </select>
+                @error('loai_combo')
+                  <small class="text-danger">{{ $message }}</small>
+                @enderror                
               </div>
               <div class="form-group col-md-3">
                 <label class="control-label">Giá cơ bản</label>
-                <input class="form-control" type="number" name="gia_co_ban">
+                <input class="form-control" type="number" name="gia_co_ban" value="{{ old('gia_co_ban') }}">
+                @error('gia_co_ban')
+                  <small class="text-danger">{{ $message }}</small>
+                @enderror
               </div>
               <div class="form-group col-md-3">
                 <label class="control-label">Thời lượng(phút)</label>
-                <input class="form-control" type="text" name="thoi_luong_phut">
+                <input class="form-control" type="text" name="thoi_luong_phut" value="{{ old('thoi_luong_phut') }}">
+                @error('thoi_luong_phut')
+                  <small class="text-danger">{{ $message }}</small>
+                @enderror                
               </div>
               <div class="form-group col-md-3">
                 <label class="control-label">Thời gian bắt đầu</label>
-                <input class="form-control" type="datetime-local" name="thoi_gian_bat_dau">
+                <input class="form-control" type="datetime-local" name="thoi_gian_bat_dau" value="{{ old('thoi_gian_bat_dau') }}">
+                @error('thoi_gian_bat_dau')
+                  <small class="text-danger">{{ $message }}</small>
+                @enderror                
               </div>
               <div class="form-group col-md-3">
                 <label class="control-label">Thời gian kết thúc</label>
-                <input class="form-control" type="datetime-local" name="thoi_gian_ket_thuc">
+                <input class="form-control" type="datetime-local" name="thoi_gian_ket_thuc" value="{{ old('thoi_gian_ket_thuc') }}">
+                @error('thoi_gian_ket_thuc')
+                  <small class="text-danger">{{ $message }}</small>
+                @enderror                
               </div>
               <div class="form-group col-md-3">
                 <label for="exampleSelect1" class="control-label">Trạng thái</label>
-                <select class="form-control" id="exampleSelect1" name="trang_thai">
+                <select class="form-control" id="exampleSelect1" name="trang_thai" value="{{ old('trang_thai') }}">
                   <option>-- Chọn --</option>
                   <option value="Hoạt động">Hoạt động</option>
                   <option value="Tạm ngưng">Tạm ngưng</option>
                 </select>
+                @error('trang_thai')
+                  <small class="text-danger">{{ $message }}</small>
+                @enderror                
               </div>
               <div class="form-group col-md-12">
                 <button class="btn btn-save" type="submit">Lưu lại</button>
