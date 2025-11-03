@@ -13,9 +13,9 @@
 
     {{-- Thông báo --}}
     @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
     @elseif (session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+    <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
     <div class="row">
@@ -79,28 +79,41 @@
                                 <td>
                                     <strong>{{ $monAn->ten_mon }}</strong><br>
                                     @if($monAn->mo_ta)
-                                        <small class="text-muted fst-italic">{{ Str::limit($monAn->mo_ta, 50) }}</small>
+                                    <small class="text-muted fst-italic">{{ Str::limit($monAn->mo_ta, 50) }}</small>
                                     @endif
                                 </td>
-                                <td>{{ $monAn->danhMuc->ten_danh_muc ?? '-' }}</td>
-                                <td>{{ $monAn->loai_mon ?? 'Không phân loại' }}</td>
+                                <td>
+                                    @if($monAn->danhMuc)
+                                    <span class="badge bg-success">{{ $monAn->danhMuc->ten_danh_muc }}</span>
+                                    @else
+                                    <span class="badge bg-secondary">Không có</span>
+                                    @endif
+                                </td>
+
+                                <td>
+                                    @if($monAn->loai_mon)
+                                    <span class="badge bg-info text-dark">{{ $monAn->loai_mon }}</span>
+                                    @else
+                                    <span class="badge bg-secondary">Không phân loại</span>
+                                    @endif
+                                </td>
                                 <td class="text-danger fw-semibold">{{ number_format($monAn->gia, 0, ',', '.') }}₫</td>
                                 <td>
                                     @if($monAn->hinh_anh)
-                                        <img src="{{ asset($monAn->hinh_anh) }}" alt="Ảnh món" width="60" height="60" class="rounded-circle border">
+                                    <img src="{{ asset($monAn->hinh_anh) }}" alt="Ảnh món" width="60" height="60" class="rounded-circle border">
                                     @else
-                                        <span class="text-muted fst-italic">Không có ảnh</span>
+                                    <span class="text-muted fst-italic">Không có ảnh</span>
                                     @endif
                                 </td>
                                 <td>{{ $monAn->thoi_gian_che_bien }} phút</td>
                                 <td>
                                     @php
-                                        $trangThai = [
-                                            'con' => ['Còn món', 'badge bg-success'],
-                                            'het' => ['Hết món', 'badge bg-warning text-dark'],
-                                            'an' => ['Ẩn', 'badge bg-secondary'],
-                                        ];
-                                        $status = $trangThai[$monAn->trang_thai] ?? ['Không rõ', 'badge bg-light'];
+                                    $trangThai = [
+                                    'con' => ['Còn món', 'badge bg-warning text-dark'],
+                                    'het' => ['Hết món', 'badge bg-danger'],
+                                    'an' => ['Ẩn', 'badge bg-secondary'],
+                                    ];
+                                    $status = $trangThai[$monAn->trang_thai] ?? ['Không rõ', 'badge bg-light'];
                                     @endphp
                                     <span class="{{ $status[1] }}">{{ $status[0] }}</span>
                                 </td>

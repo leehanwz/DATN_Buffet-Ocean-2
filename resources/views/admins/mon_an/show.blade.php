@@ -29,12 +29,12 @@
                         <div class="col-md-5 text-center">
                             <h6 class="fw-bold mb-3">Hình ảnh món ăn</h6>
                             @if($mon_an->hinh_anh)
-                                <img src="{{ asset($mon_an->hinh_anh) }}" alt="Hình ảnh món ăn"
-                                    class="img-thumbnail rounded shadow-sm" style="max-height: 280px; object-fit: cover;">
+                            <img src="{{ asset($mon_an->hinh_anh) }}" alt="Hình ảnh món ăn"
+                                class="img-thumbnail rounded shadow-sm" style="max-height: 280px; object-fit: cover;">
                             @else
-                                <div class="p-4 text-muted fst-italic border rounded bg-white">
-                                    Không có hình ảnh
-                                </div>
+                            <div class="p-4 text-muted fst-italic border rounded bg-white">
+                                Không có hình ảnh
+                            </div>
                             @endif
                         </div>
 
@@ -49,32 +49,40 @@
                             <p class="mb-2">
                                 <i class='bx bx-category me-1 text-secondary'></i>
                                 <strong>Danh mục:</strong>
-                                <span class="text-dark">{{ $mon_an->danhMuc->ten_danh_muc ?? 'Không xác định' }}</span>
+                                @if($mon_an->danhMuc)
+                                <span class="badge bg-success">{{ $mon_an->danhMuc->ten_danh_muc }}</span>
+                                @else
+                                <span class="badge bg-secondary">Không xác định</span>
+                                @endif
                             </p>
-
                             <p class="mb-2">
                                 <i class='bx bx-time me-1 text-secondary'></i>
                                 <strong>Thời gian chế biến:</strong> {{ $mon_an->thoi_gian_che_bien }} phút
                             </p>
 
+
                             <p class="mb-2">
                                 <i class='bx bx-bowl-hot me-1 text-secondary'></i>
                                 <strong>Loại món:</strong>
-                                <span class="text-dark">{{ $mon_an->loai_mon ?? 'Không phân loại' }}</span>
+                                @if($mon_an->loai_mon)
+                                <span class="badge bg-info text-dark">{{ $mon_an->loai_mon }}</span>
+                                @else
+                                <span class="badge bg-secondary">Không phân loại</span>
+                                @endif
                             </p>
 
                             <p class="mb-2">
                                 <i class='bx bx-show-alt me-1 text-secondary'></i>
                                 <strong>Trạng thái:</strong>
-                                <span class="text-dark">
-                                    @if($mon_an->trang_thai == 'con')
-                                        Còn món
-                                    @elseif($mon_an->trang_thai == 'het')
-                                        Hết món
-                                    @else
-                                        Ẩn
-                                    @endif
-                                </span>
+                                @php
+                                $trangThai = [
+                                'con' => ['Còn món', 'badge bg-warning text-dark'],
+                                'het' => ['Hết món', 'badge bg-danger'],
+                                'an' => ['Ẩn', 'badge bg-secondary'],
+                                ];
+                                $status = $trangThai[$mon_an->trang_thai] ?? ['Không rõ', 'badge bg-light'];
+                                @endphp
+                                <span class="{{ $status[1] }}">{{ $status[0] }}</span>
                             </p>
 
                             <hr>
@@ -97,18 +105,4 @@
     </div>
 </div>
 
-<style>
-    .tile-body {
-        background-color: #f8fafc;
-        border-radius: 8px;
-    }
-
-    .btn {
-        border-radius: 6px;
-    }
-
-    h2.text-primary {
-        color: #275583 !important;
-    }
-</style>
 @endsection

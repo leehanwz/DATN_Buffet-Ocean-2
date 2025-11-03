@@ -134,34 +134,4 @@ function previewImage(event) {
     }
 }
 </script>
-
-<style>
-    .tile {
-        background: #fff;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    }
-    .form-control, .form-select {
-        border-radius: 6px;
-        border: 1px solid #275583;
-        box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
-        transition: all 0.2s ease;
-    }
-    .form-control:focus, .form-select:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.15rem rgba(13,110,253,0.15);
-    }
-    .btn-primary {
-        background-color: #275583;
-        border: none;
-    }
-    .btn-primary:hover {
-        background-color: #1f446b;
-    }
-    .btn-secondary {
-        background-color: #6c757d;
-        border: none;
-    }
-</style>
 @endsection
