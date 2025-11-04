@@ -12,12 +12,24 @@ return new class extends Migration
         Schema::create('combo_buffet', function (Blueprint $table) {
             $table->id();
             $table->string('ten_combo');
-            $table->string('loai_combo')->nullable();
+
+            $table->enum('loai_combo', [
+                'nguoi_lon',
+                'tre_em',
+                'vip',
+                'khuyen_mai'
+            ])->nullable()->comment('Loại combo theo đối tượng khách');
+
             $table->decimal('gia_co_ban', 12, 2);
             $table->integer('thoi_luong_phut')->nullable();
             $table->dateTime('thoi_gian_bat_dau')->nullable();
             $table->dateTime('thoi_gian_ket_thuc')->nullable();
-            $table->string('trang_thai')->nullable();
+
+            $table->enum('trang_thai', [
+                'dang_ban',
+                'ngung_ban'
+            ])->default('dang_ban')->comment('Trạng thái kinh doanh (Đang bán / Ngừng bán)');
+
             $table->timestamps();
         });
     }

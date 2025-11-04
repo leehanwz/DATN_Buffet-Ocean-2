@@ -3,253 +3,187 @@
 @section('title', 'Danh sách món ăn')
 
 @section('content')
-
-
-
-
-<div class="container-fluid px-4 mt-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm"
-        style="background-color: #002b5b; color: #fff;">
-        <div>
-            <h3 class="mb-0 fw-bold"><i class='bx bx-food-menu'></i> Danh sách món ăn</h3>
-            <small class="opacity-75">Quản lý tất cả các món ăn hiện có trong hệ thống</small>
-        </div>
-        <a href="{{ route('admin.mon-an.create') }}" class="btn btn-light fw-semibold shadow-sm">
-            <i class='bx bx-plus me-1'></i> Thêm món ăn
-        </a>
-    </div>
+<main class="app-content">
 
     @if(session('success'))
     <div class="alert alert-success text-center fw-semibold rounded-3 shadow-sm" id="flashMsg">
         {{ session('success') }}
     </div>
-    <script>
-        setTimeout(() => {
-            const msg = document.getElementById('flashMsg');
-            if (msg) msg.remove();
-        }, 3000);
-    </script>
     @endif
 
-    <div class="card border-0 shadow-sm rounded-4">
-        <div class="card-body">
-            <table class="table table-hover align-middle text-center table-navy mb-0">
-                <thead>
-                    <tr>
-                        <th style="width: 5%">#</th>
-                        <th style="width: 15%">Tên món</th>
-                        <th style="width: 15%">Danh mục</th>
-                        <th style="width: 10%">Giá</th>
-                        <th style="width: 15%">Ảnh</th>
-                        <th style="width: 15%">Thời gian</th>
-                        <th style="width: 10%">Trạng thái</th>
-                        <th style="width: 15%">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($dsMonAn as $index => $monAn)
-                    <tr>
-                        <td class="fw-semibold">{{ $index + 1 }}</td>
-                        <td class="fw-medium text-start">{{ $monAn->ten_mon }}</td>
+    <div class="app-title">
+        <ul class="app-breadcrumb breadcrumb side">
+            <li class="breadcrumb-item active"><a href="{{ route('admin.san-pham.index') }}"><b>Danh sách món ăn</b></a></li>
+        </ul>
+        <div id="clock"></div>
+    </div>
 
-                        <td>
-                            @php
-                            $maudanhmucmon = match($monAn->danhmucmon->ten_danh_muc ?? '') {
-                            'món chính' => 'bg-danger-subtle text-danger',
-                            'món khai vị' => 'bg-info-subtle text-info',
-                            'món tráng miệng' => 'bg-warning-subtle text-warning',
-                            'món chay' => 'bg-success-subtle text-success',
-                            default => 'bg-secondary text-white'
-                            };
-                            @endphp
-                            <span class="badge px-3 py-2 fw-semibold {{ $maudanhmucmon }}">
-                                {{ $monAn->danhmucmon->ten_danh_muc ?? '-' }}
-                            </span>
-                        </td>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tile">
+                <div class="tile-title-w-btn">
+                    <h3 class="tile-title">Danh sách món ăn</h3>
+                    <a href="{{ route('admin.san-pham.create') }}" class="btn btn-add btn-sm">
+                        <i class="fas fa-plus me-1"></i> Thêm món ăn
+                    </a>
+                </div>
 
-                        <td class="text-danger fw-semibold">
-                            {{ number_format($monAn->gia,0,',','.') }}₫
-                        </td>
+                <div class="tile-body">
 
-                        <td>
-                            @if($monAn->hinh_anh)
-                            <div class="d-flex justify-content-center align-items-center">
-                                <img src="{{ asset($monAn->hinh_anh) }}" width="65" height="65"
-                                    class="rounded-circle border shadow-sm object-fit-cover">
+                    <!-- KHU VỰC LỌC VÀ TÌM KIẾM  -->
+                    <div class="mb-4 p-3 border rounded shadow-sm bg-light">
+                        <form action="{{ route('admin.san-pham.index') }}" method="GET" class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label for="search_keyword" class="form-label fw-semibold mb-1">Tìm kiếm</label>
+                                <input type="text" name="keyword" id="search_keyword" class="form-control"
+                                       placeholder="Nhập tên món, mô tả..." value="{{ request('keyword') }}">
                             </div>
-                            @else
-                            <span class="text-muted fst-italic">Không có ảnh</span>
-                            @endif
-                        </td>
 
-                        <td>{{ $monAn->thoi_gian_che_bien }} phút</td>
-
-                        <td>
-                            <span class="badge {{ $monAn->trang_thai ? 'bg-success' : 'bg-secondary' }}">
-                                {{ $monAn->trang_thai ? 'Hiển thị' : 'Ẩn' }}
-                            </span>
-                        </td>
-
-                        <td>
-                            <div class="btn-group d-flex justify-content-center" role="group">
-                                <a href="{{ route('admin.mon-an.show', $monAn->id) }}"
-                                    class="btn btn-sm btn-outline-info me-1" data-bs-toggle="tooltip"
-                                    title="Xem chi tiết">
-                                    <i class='bx bx-show'></i>
-                                </a>
-                                <a href="{{ route('admin.mon-an.edit', $monAn->id) }}"
-                                    class="btn btn-sm btn-outline-warning me-1" data-bs-toggle="tooltip"
-                                    title="Sửa món ăn">
-                                    <i class='bx bx-edit'></i>
-                                </a>
-                                <form action="{{ route('admin.mon-an.destroy', $monAn->id) }}" method="POST"
-                                    onsubmit="return confirm('Xác nhận xóa món ăn này?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip"
-                                        title="Xóa món ăn">
-                                        <i class='bx bx-trash'></i>
-                                    </button>
-                                </form>
+                            <div class="col-md-3">
+                                <label for="filter_danh_muc" class="form-label fw-semibold mb-1">Danh mục</label>
+                                <select name="danh_muc_id" id="filter_danh_muc" class="form-control">
+                                    <option value="">— Tất cả Danh mục —</option>
+                                    @foreach($danhMucs as $dm)
+                                        <option value="{{ $dm->id }}" {{ request('danh_muc_id') == $dm->id ? 'selected' : '' }}>
+                                            {{ $dm->ten_danh_muc }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="8" class="text-center text-muted py-4">Chưa có món ăn nào</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            <div class="d-flex justify-content-center mt-3">
-                {{ $dsMonAn->links('pagination::bootstrap-5') }}
+
+                            <!-- ĐÃ THÊM: Lọc theo Loại Món -->
+                            <div class="col-md-3">
+                                <label for="filter_loai_mon" class="form-label fw-semibold mb-1">Loại món</label>
+                                <select name="loai_mon" id="filter_loai_mon" class="form-control">
+                                    <option value="">— Tất cả Loại món —</option>
+                                    @foreach(['Khai vị', 'Món chính', 'Tráng miệng', 'Đồ uống'] as $loai)
+                                        <option value="{{ $loai }}" {{ request('loai_mon') == $loai ? 'selected' : '' }}>
+                                            {{ $loai }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="filter_trang_thai" class="form-label fw-semibold mb-1">Trạng thái</label>
+                                <select name="trang_thai" id="filter_trang_thai" class="form-control">
+                                    <option value="">— Tất cả Trạng thái —</option>
+                                    @foreach(['con' => 'Còn món', 'het' => 'Hết món', 'an' => 'Ẩn'] as $key => $value)
+                                        <option value="{{ $key }}" {{ request('trang_thai') == $key ? 'selected' : '' }}>
+                                            {{ $value }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-1 d-flex align-self-end">
+                                <button type="submit" class="btn btn-primary w-100" title="Tìm kiếm và Lọc">
+                                    <i class="fas fa-search me-1"></i> Lọc
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- KẾT THÚC KHU VỰC LỌC -->
+
+                    <div class="rounded overflow-hidden">
+                        <table class="table table-bordered table-hover align-middle text-center mb-0" id="monAnTable">
+                            <thead style="background-color: #002b5b; color: white;">
+                                <tr>
+                                    <th>#</th>
+                                    <th class="text-start">Tên món</th>
+                                    <th>Danh mục</th>
+                                    <th>Loại món</th>
+                                    <th>Giá</th>
+                                    <th>Ảnh</th>
+                                    <th>Thời gian</th>
+                                    <th>Trạng thái</th>
+                                    <th style="width: 120px;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($dsMonAn as $index => $monAn)
+                                <tr>
+                                    <td>{{ $dsMonAn->firstItem() + $index }}</td>
+                                    <td class="text-start">
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-bold">{{ $monAn->ten_mon }}</span>
+                                            @if($monAn->mo_ta)
+                                            <small class="text-muted fst-italic">{{ Str::limit($monAn->mo_ta, 60) }}</small>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge {{ $monAn->danh_muc_badge }}">
+                                            {{ $monAn->danhMuc->ten_danh_muc ?? '-' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $monAn->loai_mon ?? '—' }}</td>
+                                    <td class="text-danger fw-semibold">
+                                        {{ number_format($monAn->gia,0,',','.') }} đ
+                                    </td>
+                                    <td>
+                                        @if($monAn->hinh_anh)
+                                        <img src="{{ asset($monAn->hinh_anh) }}" width="60" height="60"
+                                            class="rounded border shadow-sm object-fit-cover" alt="Ảnh món"
+                                            onerror="this.src='https://placehold.co/60x60/eee/ccc?text=No+Img'">
+                                        @else
+                                        <span class="text-muted fst-italic">N/A</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $monAn->thoi_gian_che_bien }} phút</td>
+                                    <td>
+                                        <span class="badge {{ $monAn->trang_thai_badge }}">
+                                            {{ $monAn->trang_thai_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ route('admin.san-pham.show', $monAn->id) }}"
+                                                class="btn btn-sm btn-info" title="Xem">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('admin.san-pham.edit', $monAn->id) }}"
+                                                class="btn btn-sm btn-warning" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('admin.san-pham.destroy', $monAn->id) }}" method="POST"
+                                                onsubmit="return confirm('Xác nhận xóa món ăn này?')" class="d-inline-block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-sm btn-danger" title="Xóa">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">Chưa có món ăn nào</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $dsMonAn->links() }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<style>
-    .table-navy thead {
-        background-color: #002b5b;
-        color: #fff;
-    }
-
-    .table td,
-    .table th {
-        vertical-align: middle !important;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: #f0f6ff !important;
-        transition: all 0.2s ease;
-    }
-
-    img.object-fit-cover {
-        object-fit: cover;
-    }
-
-    .badge.bg-success,
-    .badge.bg-secondary {
-        color: #fff !important;
-        font-weight: 600;
-        padding: 6px 12px;
-        font-size: 0.85rem;
-        border-radius: 0.5rem;
-    }
-
-    .btn {
-        border-radius: 0.5rem;
-    }
-
-    .card {
-        border-radius: 1rem;
-    }
-
-    .fw-medium {
-        font-weight: 500;
-    }
-
-    .badge.bg-success {
-        background-color: #28a745 !important;
-        /* xanh đậm hơn */
-        color: #fff !important;
-        box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
-        font-weight: 600;
-    }
-
-    .badge.bg-secondary {
-        background-color: #6c757d !important;
-        /* xám đậm */
-        color: #fff !important;
-        box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
-        font-weight: 600;
-    }
-
-    body {
-        background-color: #f8f9fa;
-    }
-
-    .app-sidebar {
-        width: 250px;
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        background-color: #002b5b;
-        color: white;
-        overflow-y: auto;
-    }
-
-    main {
-        margin-left: 250px;
-        /* chừa chỗ cho sidebar */
-        min-height: 100vh;
-        padding: 20px;
-        background-color: #f8f9fa;
-    }
-
-    .app-header {
-        margin-left: 250px;
-        background-color: #002b5b;
-        color: white;
-        padding: 10px 20px;
-    }
-
-    .app-sidebar__user-avatar {
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    .app-menu__item {
-        color: white;
-        transition: background 0.3s ease;
-    }
-
-    .app-menu__item:hover {
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .app-menu__label {
-        font-weight: 500;
-    }
-
-    .app-sidebar__user {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 15px;
-    }
-
-    .app-sidebar__user-name {
-        margin: 0;
-        font-size: 1rem;
-    }
-
-    .app-sidebar__user-designation {
-        margin: 0;
-        font-size: 0.8rem;
-        opacity: 0.8;
-    }
-</style>
+</main>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        // Script tự động ẩn thông báo
+        setTimeout(() => {
+            const msg = document.getElementById('flashMsg');
+            if (msg) $(msg).fadeOut(500, () => msg.remove());
+        }, 3000);
+    });
+</script>
+@endpush

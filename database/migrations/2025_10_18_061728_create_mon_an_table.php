@@ -11,17 +11,34 @@ return new class extends Migration
     {
         Schema::create('mon_an', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('danh_muc_id');
+
+            // <-- SỬA ĐỔI: Dùng cú pháp foreignId() hiện đại và ngắn gọn
+            $table->foreignId('danh_muc_id')
+                  ->constrained('danh_muc_mon')
+                  ->cascadeOnDelete();
+
             $table->string('ten_mon');
             $table->decimal('gia', 12, 2);
             $table->text('mo_ta')->nullable();
             $table->string('hinh_anh')->nullable();
-            $table->string('trang_thai');
+
+            $table->enum('trang_thai', [
+                'con',  // Còn món
+                'het',  // Hết món
+                'an'    // Ẩn khỏi menu
+            ])->default('con')->comment('Trạng thái kinh doanh của món ăn');
+
             $table->integer('thoi_gian_che_bien')->nullable();
-            $table->string('loai_mon')->nullable();
+
+            $table->enum('loai_mon', [
+                'Khai vị',
+                'Món chính',
+                'Tráng miệng',
+                'Đồ uống'
+            ])->nullable()->comment('Phân loại món theo lượt ăn (course)');
+
             $table->timestamps();
 
-            $table->foreign('danh_muc_id')->references('id')->on('danh_muc_mon')->onDelete('cascade');
         });
     }
 
