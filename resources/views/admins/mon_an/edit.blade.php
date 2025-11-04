@@ -152,7 +152,7 @@
     </div>
 </main>
 
-{{-- ĐÃ XÓA TOÀN BỘ THẺ <style>...</style> KHÔNG LIÊN QUAN --}}
+
 @endsection
 
 @push('scripts')
