@@ -42,11 +42,6 @@ Route::prefix('/')->group(function () {
 
 // ==================== ADMIN SITE ====================
 Route::prefix('admin')->name('admin.')->group(function () {
-<<<<<<< HEAD
-
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-=======
->>>>>>> origin/canh
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('dat-ban/{id}/info', [DatBanController::class, 'getComboInfo'])->name('dat-ban.info');
@@ -63,6 +58,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Xóa 6 dòng thủ công, thay bằng 1 dòng Route::resource
     // ==========================================================
     Route::resource('combo-buffet', ComboBuffetController::class);
+
+    // CHI TIẾT ORDER
+    Route::resource('chi-tiet-order', ChiTietOrderController::class)
+        ->only(['index', 'show', 'update', 'destroy', 'edit'])
+        ->names('chi-tiet-order');
 
 
     // NHÂN VIÊN & ĐƠN HÀNG
@@ -91,12 +91,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/regenerate-qr', 'regenerateQr')->name('qr');
         Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
     });
-<<<<<<< HEAD
-
-    // CHI TIẾT ORDER
-    Route::get('chi-tiet-order', [ChiTietOrderController::class, 'index'])->name('chi-tiet-order.index');
-    Route::post('chi-tiet-order/{id}/update', [ChiTietOrderController::class, 'update'])->name('chi-tiet-order.update');
-    Route::delete('chi-tiet-order/{id}', [ChiTietOrderController::class, 'destroy'])->name('chi-tiet-order.destroy');
-=======
->>>>>>> origin/canh
 });

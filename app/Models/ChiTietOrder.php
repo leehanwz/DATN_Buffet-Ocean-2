@@ -19,13 +19,22 @@ class ChiTietOrder extends Model
         'ghi_chu',
     ];
 
-    public function order()
+    public function getThanhTienAttribute()
     {
-        return $this->belongsTo(OrderMon::class, 'order_id');
+        // Đảm bảo số lượng và đơn giá là số trước khi nhân
+        $soLuong = (int) $this->so_luong;
+        $donGia = (float) $this->don_gia;
+
+        return $soLuong * $donGia;
     }
 
-    public function mon()
+    public function orderMon()
     {
-        return $this->belongsTo(MonAn::class, 'mon_an_id');
+        return $this->belongsTo(OrderMon::class, 'order_id', 'id');
+    }
+
+    public function monAn()
+    {
+        return $this->belongsTo(MonAn::class, 'mon_an_id', 'id');
     }
 }

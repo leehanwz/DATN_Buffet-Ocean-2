@@ -38,7 +38,7 @@ class OrderMonController extends Controller
         ]);
 
         // Lấy thông tin đặt bàn (có combo + món trong combo)
-        $datBan = DatBan::with('comboBuffet.monTrongCombo')->findOrFail($request->dat_ban_id);
+        $datBan = DatBan::with('comboBuffet.monTrongCombo.monAn')->findOrFail($request->dat_ban_id);
 
         // Tính tổng món (số món trong combo)
         $tongMon = $datBan->comboBuffet?->monTrongCombo?->count() ?? 0;
@@ -68,6 +68,35 @@ class OrderMonController extends Controller
             'trang_thai' => 'cho_bep',
         ]);
 
+        // --- THÊM CÁC MÓN VÀO CHI TIẾT ORDER ---
+        if ($datBan->comboBuffet && $datBan->comboBuffet->monTrongCombo->isNotEmpty()) {
+
+            $chitietData = [];
+            $now = now();
+
+            foreach ($datBan->comboBuffet->monTrongCombo as $ItemTrongCombo) {
+                $monAnModel = $ItemTrongCombo->monAn;
+
+                if (!$monAnModel) {
+                    continue; // Bỏ qua nếu món ăn không tồn tại
+                }
+
+                $chitietData[] = [
+                    'order_id' => $order->id,
+                    'mon_an_id' => $monAnModel->id,
+                    'so_luong' => 1, // Mặc định 1 món trong combo
+                    'don_gia' => $monAnModel->gia,
+                    'trang_thai' => 'cho_bep',
+                    'ghi_chu' => null,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+            if (!empty($chitietData)) {
+                \App\Models\ChiTietOrder::insert($chitietData);
+            }
+        }
+
         return redirect()->route('admin.order-mon.index')->with('success', 'Tạo Order món thành công!');
     }
 
@@ -83,7 +112,7 @@ class OrderMonController extends Controller
             'huy_mon' => ['huy_mon' => 'Hủy món'], // không đổi nữa
             default => ['cho_bep' => 'Chờ bếp'],
         };
-        return view('admins.order-mon.edit', compact('orderMon', 'datBans', 'banAns','allowedStatus'));
+        return view('admins.order-mon.edit', compact('orderMon', 'datBans', 'banAns', 'allowedStatus'));
     }
 
     // Update: tương tự store

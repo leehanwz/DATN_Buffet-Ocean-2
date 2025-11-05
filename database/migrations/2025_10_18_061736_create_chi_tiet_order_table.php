@@ -23,6 +23,7 @@ return new class extends Migration
 
             $table->integer('so_luong')->nullable();
 
+
             // <-- SỬA ĐỔI: Đổi string sang enum để khớp với thiết kế DBML
             $table->enum('loai_mon', [
                 'combo',    // Món thuộc combo

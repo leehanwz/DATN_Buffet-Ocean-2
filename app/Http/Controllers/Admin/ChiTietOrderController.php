@@ -4,22 +4,42 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ChiTietOrder;
+use App\Models\OrderMon;
 use Illuminate\Http\Request;
 
 class ChiTietOrderController extends Controller
 {
-    // Hiển thị danh sách chi tiết order
-    public function index()
+    // Hiển thị danh sách món trong 1 đơn hàng
+    public function index(Request $request)
     {
-        // Lấy danh sách chi tiết order cùng thông tin món ăn & order
-        $chiTietOrders = ChiTietOrder::with(['mon', 'order'])
-            ->orderByDesc('created_at')
-            ->paginate(10);
+        $orderId = $request->query('order_id');
 
-        return view('admins.chi-tiet-order.index', compact('chiTietOrders'));
+        // Nếu có order_id → xem chi tiết đơn cụ thể
+        if ($orderId) {
+            $order = OrderMon::with(['chiTietOrders.monAn'])->find($orderId);
+
+            if (!$order) {
+                return redirect()->route('admin.chi-tiet-order.index')
+                    ->with('error', 'Đơn hàng không tồn tại.');
+            }
+
+            return view('admins.chi-tiet-order.show', compact('order'));
+        }
+
+        // Nếu KHÔNG có order_id → hiển thị danh sách tất cả đơn
+        $orders = OrderMon::latest()->paginate(10);
+        return view('admins.chi-tiet-order.index', compact('orders'));
     }
 
-    // Cập nhật ghi chú hoặc số lượng
+    public function edit($id)
+    {
+        // Load cả OrderMon cha để hiển thị thông tin context
+        $chiTiet = ChiTietOrder::with('orderMon')->findOrFail($id);
+
+        return view('admins.chi-tiet-order.edit', compact('chiTiet'));
+    }
+
+    // Cập nhật số lượng hoặc ghi chú món ăn
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -27,21 +47,34 @@ class ChiTietOrderController extends Controller
             'ghi_chu' => 'nullable|string|max:255',
         ]);
 
-        $chiTiet = ChiTietOrder::findOrFail($id);
-        $chiTiet->update([
+        $ct = ChiTietOrder::findOrFail($id);
+        $ct->update([
             'so_luong' => $request->so_luong,
             'ghi_chu' => $request->ghi_chu,
         ]);
 
-        return redirect()->route('admin.chi-tiet-order.index')->with('success', 'Cập nhật chi tiết order thành công!');
+        $ct->orderMon->recalculateTotal(); // Cập nhật lại tổng tiền đơn hàng
+
+        return redirect()->route('admin.chi-tiet-order.index', ['order_id' => $ct->orderMon->id])
+            ->with('success', 'Cập nhật chi tiết món ăn thành công.');
     }
 
-    // Xóa món khỏi đơn
+    // Xóa món khỏi đơn hàng
     public function destroy($id)
     {
-        $chiTiet = ChiTietOrder::findOrFail($id);
-        $chiTiet->delete();
+        $ct = ChiTietOrder::findOrFail($id);
+        $orderMon = $ct->orderMon; // Lấy OrderMon trước khi xóa
 
-        return redirect()->route('admin.chi-tiet-order.index')->with('success', 'Đã xóa món khỏi đơn!');
+        // Xóa ChiTietOrder
+        $ct->delete();
+
+        // Tái tính toán tổng tiền của đơn hàng cha
+        if ($orderMon) {
+            $orderMon->recalculateTotal();
+        }
+
+        // Chuyển hướng về trang chi tiết đơn hàng
+        return redirect()->route('admin.chi-tiet-order.index', ['order_id' => $orderMon->id])
+            ->with('success', 'Đã xóa món khỏi đơn hàng và cập nhật tổng tiền.');
     }
 }
