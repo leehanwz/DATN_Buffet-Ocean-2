@@ -2,26 +2,29 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class OrderMon extends Model
 {
-    protected $table = 'order_mon';
+    use HasFactory;
 
+    protected $table = 'order_mon';
     protected $fillable = [
-        'hoa_don_id',
-        'mon_id',
-        'so_luong',
-        'gia'
+        'dat_ban_id',
+        'ban_id',
+        'tong_mon',
+        'tong_tien',
+        'trang_thai'
     ];
 
-    public function hoaDon()
+    public function datBan()
     {
-        return $this->belongsTo(HoaDon::class, 'hoa_don_id');
+        return $this->belongsTo(DatBan::class, 'dat_ban_id');
     }
 
-    public function mon()
+    public function banAn()
     {
-        return $this->belongsTo(MonAn::class, 'mon_id');
+        return $this->belongsTo(BanAn::class, 'ban_id');
     }
 }

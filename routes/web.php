@@ -13,13 +13,14 @@ use App\Http\Controllers\Admin\MonTrongComboController;
 use App\Http\Controllers\Admin\KhuVucController;
 use App\Http\Controllers\Admin\BanAnController;
 use App\Http\Controllers\Admin\DanhMucController;
+use App\Http\Controllers\Admin\DatBanController;
 use App\Http\Controllers\Admin\MonAnController;
 use App\Http\Controllers\Admin\ComboBuffetController;
 use App\Http\Controllers\Admin\ChiTietOrderController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
-
+use App\Http\Controllers\Admin\OrderMonController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -41,14 +42,22 @@ Route::prefix('/')->group(function () {
 
 // ==================== ADMIN SITE ====================
 Route::prefix('admin')->name('admin.')->group(function () {
+<<<<<<< HEAD
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+=======
+>>>>>>> origin/canh
 
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dat-ban/{id}/info', [DatBanController::class, 'getComboInfo'])->name('dat-ban.info');
     // SẢN PHẨM & MÓN ĂN
     Route::resource('danh-muc', DanhMucController::class);
     Route::resource('san-pham', SanPhamController::class);
     Route::resource('mon-trong-combo', MonTrongComboController::class);
+    // ĐẶT BÀN & ORDER
+    Route::resource('dat-ban', DatBanController::class);
 
+    Route::resource('order-mon', OrderMonController::class);
     // ==========================================================
     // SỬA LỖI & ĐỒNG BỘ:
     // Xóa 6 dòng thủ công, thay bằng 1 dòng Route::resource
@@ -82,9 +91,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/regenerate-qr', 'regenerateQr')->name('qr');
         Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
     });
+<<<<<<< HEAD
 
     // CHI TIẾT ORDER
     Route::get('chi-tiet-order', [ChiTietOrderController::class, 'index'])->name('chi-tiet-order.index');
     Route::post('chi-tiet-order/{id}/update', [ChiTietOrderController::class, 'update'])->name('chi-tiet-order.update');
     Route::delete('chi-tiet-order/{id}', [ChiTietOrderController::class, 'destroy'])->name('chi-tiet-order.destroy');
+=======
+>>>>>>> origin/canh
 });

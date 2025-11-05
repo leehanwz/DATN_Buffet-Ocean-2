@@ -17,12 +17,12 @@
         <div class="col-md-12">
             <div class="tile">
                 <h3 class="tile-title">Sửa danh mục: {{ $danh_muc->ten_danh_muc }}</h3>
-                
+
                 <form action="{{ route('admin.danh-muc.update', $danh_muc->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="tile-body">
-                        
+
                         @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul class="mb-0">
@@ -44,9 +44,9 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Hiển thị <span class="text-danger">*</span></label>
-                                    <div class="d-block mt-2"> 
+                                    <div class="d-block mt-2">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="hien_thi" id="hien_thi_1" value="1" 
+                                            <input class="form-check-input" type="radio" name="hien_thi" id="hien_thi_1" value="1"
                                                 {{ old('hien_thi', $danh_muc->hien_thi) == 1 ? 'checked' : '' }}>
                                             <label class="form-check-label" for="hien_thi_1">Hiển thị</label>
                                         </div>
@@ -66,7 +66,7 @@
                         </div>
 
                     </div>
-                    
+
                     <div class="tile-footer">
                         <a href="{{ route('admin.danh-muc.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left me-2"></i> Hủy
@@ -82,8 +82,5 @@
     </div>
 </main>
 
-{{-- 
-  QUAN TRỌNG NHẤT:
-  Đã xóa toàn bộ thẻ <style>...</style> thừa ở đây.
---}}
+
 @endsection

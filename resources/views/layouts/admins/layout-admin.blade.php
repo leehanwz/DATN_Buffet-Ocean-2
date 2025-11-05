@@ -79,6 +79,18 @@
                 </a>
             </li>
             <li>
+                <a class="app-menu__item" href="{{route('admin.order-mon.index')}}">
+                    <i class='app-menu__icon bx bx-task'></i>
+                    <span class="app-menu__label">Quản lý order</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item" href="{{route('admin.dat-ban.index')}}">
+                    <i class='app-menu__icon bx bx-task'></i>
+                    <span class="app-menu__label">Quản lý đat ban</span>
+                </a>
+            </li>
+            <li>
                 <a class="app-menu__item " href="{{route('admin.chi-tiet-order.index')}}">
                     <i class='app-menu__icon bx bx-building'></i>
                     <span class="app-menu__label">Chi tiết order</span>
