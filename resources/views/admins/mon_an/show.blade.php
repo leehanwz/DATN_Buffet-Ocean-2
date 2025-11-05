@@ -3,9 +3,11 @@
 @section('title', 'Chi tiết món ăn')
 
 @section('content')
-<div class="app-content">
+<main class="app-content">
+
     <div class="app-title">
         <ul class="app-breadcrumb breadcrumb side">
+            <li class="breadcrumb-item"><a href="{{ route('admin.san-pham.index') }}">Danh sách món ăn</a></li>
             <li class="breadcrumb-item active"><a href="#"><b>Chi tiết món ăn</b></a></li>
         </ul>
         <div id="clock"></div>
@@ -14,95 +16,85 @@
     <div class="row">
         <div class="col-md-12">
             <div class="tile">
+                <div class="tile-title-w-btn">
+                    <h3 class="tile-title">Chi tiết: {{ $mon_an->ten_mon }}</h3>
+                    <a href="{{ route('admin.san-pham.index') }}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Quay lại
+                    </a>
+                </div>
+
                 <div class="tile-body">
-
-                    {{-- Tiêu đề căn giữa --}}
-                    <div class="text-center mb-4">
-                        <h2 class="fw-bold text-primary mb-1">
-                            <i class='bx bx-restaurant me-2'></i>{{ $mon_an->ten_mon }}
-                        </h2>
-                        <div class="text-muted fst-italic">Chi tiết thông tin món ăn</div>
-                    </div>
-
                     <div class="row">
-                        {{-- Cột trái: hình ảnh --}}
-                        <div class="col-md-5 text-center">
-                            <h6 class="fw-bold mb-3">Hình ảnh món ăn</h6>
+                        <div class="col-md-4">
                             @if($mon_an->hinh_anh)
                             <img src="{{ asset($mon_an->hinh_anh) }}" alt="Hình ảnh món ăn"
-                                class="img-thumbnail rounded shadow-sm" style="max-height: 280px; object-fit: cover;">
+                                class="img-fluid rounded border shadow-sm" style="object-fit: cover; height: 300px; width: 100%;">
                             @else
-                            <div class="p-4 text-muted fst-italic border rounded bg-white">
-                                Không có hình ảnh
+                            <div class="d-flex align-items-center justify-content-center border rounded bg-light" style="height: 300px; width: 100%;">
+                                <span class="text-muted fst-italic">Không có hình ảnh</span>
                             </div>
                             @endif
                         </div>
 
-                        {{-- Cột phải: thông tin món --}}
-                        <div class="col-md-7">
-                            <p class="mb-2">
-                                <i class='bx bx-purchase-tag me-1 text-secondary'></i>
-                                <strong>Giá:</strong>
-                                <span class="text-danger fw-semibold">{{ number_format($mon_an->gia, 0, ',', '.') }}₫</span>
-                            </p>
-
-                            <p class="mb-2">
-                                <i class='bx bx-category me-1 text-secondary'></i>
-                                <strong>Danh mục:</strong>
-                                @if($mon_an->danhMuc)
-                                <span class="badge bg-success">{{ $mon_an->danhMuc->ten_danh_muc }}</span>
-                                @else
-                                <span class="badge bg-secondary">Không xác định</span>
-                                @endif
-                            </p>
-                            <p class="mb-2">
-                                <i class='bx bx-time me-1 text-secondary'></i>
-                                <strong>Thời gian chế biến:</strong> {{ $mon_an->thoi_gian_che_bien }} phút
-                            </p>
-
-
-                            <p class="mb-2">
-                                <i class='bx bx-bowl-hot me-1 text-secondary'></i>
-                                <strong>Loại món:</strong>
-                                @if($mon_an->loai_mon)
-                                <span class="badge bg-info text-dark">{{ $mon_an->loai_mon }}</span>
-                                @else
-                                <span class="badge bg-secondary">Không phân loại</span>
-                                @endif
-                            </p>
-
-                            <p class="mb-2">
-                                <i class='bx bx-show-alt me-1 text-secondary'></i>
-                                <strong>Trạng thái:</strong>
-                                @php
-                                $trangThai = [
-                                'con' => ['Còn món', 'badge bg-warning text-dark'],
-                                'het' => ['Hết món', 'badge bg-danger'],
-                                'an' => ['Ẩn', 'badge bg-secondary'],
-                                ];
-                                $status = $trangThai[$mon_an->trang_thai] ?? ['Không rõ', 'badge bg-light'];
-                                @endphp
-                                <span class="{{ $status[1] }}">{{ $status[0] }}</span>
-                            </p>
-
-                            <hr>
-
-                            <h5 class="fw-bold mb-2"><i class='bx bx-detail me-1 text-secondary'></i>Mô tả món ăn</h5>
-                            <div class="bg-light border rounded p-3" style="min-height: 100px;">
-                                {!! nl2br(e($mon_an->mo_ta ?? 'Không có mô tả')) !!}
-                            </div>
+                        <div class="col-md-8">
+                            <table class="table table-bordered table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 200px;">Giá bán</th>
+                                        <td class="text-danger fw-bold fs-5">{{ number_format($mon_an->gia, 0, ',', '.') }} đ</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Danh mục</th>
+                                        <td>
+                                            <span class="badge {{ $mon_an->danh_muc_badge }}">
+                                                {{ $mon_an->danhMuc->ten_danh_muc ?? 'Không xác định' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Loại món</th>
+                                        <td>{{ $mon_an->loai_mon ?? '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Thời gian chế biến</th>
+                                        <td>{{ $mon_an->thoi_gian_che_bien }} phút</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Trạng thái</th>
+                                        <td>
+                                            <span class="badge {{ $mon_an->trang_thai_badge }}">
+                                                {{ $mon_an->trang_thai_display }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Ngày tạo</th>
+                                        <td>{{ $mon_an->created_at ? $mon_an->created_at->format('d/m/Y H:i') : '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Cập nhật lần cuối</th>
+                                        <td>{{ $mon_an->updated_at ? $mon_an->updated_at->format('d/m/Y H:i') : '—' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                </div> {{-- tile-body --}}
-                <div class="mt-4 text-center">
-                    <a href="{{ route('admin.mon-an.index') }}" class="btn btn-secondary btn-sm px-4">
-                        <i class='bx bx-arrow-back'></i> Quay lại
-                    </a>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5 class="fw-bold">
+                                <i class="fas fa-info-circle me-2"></i>Mô tả món ăn
+                            </h5>
+                            <div class="border rounded bg-light p-3" style="min-height: 100px;">
+                                {!! nl2br(e($mon_an->mo_ta ?? 'Không có mô tả.')) !!}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div> {{-- tile --}}
+            </div>
         </div>
     </div>
-</div>
+</main>
 
+{{-- ĐÃ XÓA TOÀN BỘ THẺ <style>...</style> KHÔNG LIÊN QUAN --}}
 @endsection

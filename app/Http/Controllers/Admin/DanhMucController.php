@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DanhMuc;
@@ -10,12 +11,12 @@ class DanhMucController extends Controller
     public function index()
     {
         $danhMucs = DanhMuc::latest()->paginate(10);
-        return view('admins.danh_muc.index', compact('danhMucs'));
+        return view('admins.danh-muc.index', compact('danhMucs'));
     }
 
     public function create()
     {
-        return view('admins.danh_muc.create');
+        return view('admins.danh-muc.create');
     }
 
     public function store(Request $request)
@@ -33,7 +34,7 @@ class DanhMucController extends Controller
 
     public function edit(DanhMuc $danh_muc)
     {
-        return view('admins.danh_muc.edit', compact('danh_muc'));
+        return view('admins.danh-muc.edit', compact('danh_muc'));
     }
 
     public function update(Request $request, DanhMuc $danh_muc)
@@ -54,7 +55,7 @@ class DanhMucController extends Controller
         // Nếu có món ăn liên quan, bạn có thể xử lý trước khi xóa
         if ($danh_muc->monAn()->count() > 0) {
             return redirect()->route('admin.danh-muc.index')
-                             ->with('error', 'Không thể xóa danh mục đang có món ăn.');
+                ->with('error', 'Không thể xóa danh mục đang có món ăn.');
         }
 
         $danh_muc->delete();

@@ -11,15 +11,28 @@ return new class extends Migration
     {
         Schema::create('order_mon', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('dat_ban_id');
-            $table->unsignedBigInteger('ban_id');
+
+            // <-- SỬA ĐỔI: Dùng cú pháp foreignId() ngắn gọn
+            $table->foreignId('dat_ban_id')
+                  ->constrained('dat_ban')
+                  ->cascadeOnDelete();
+
+            $table->foreignId('ban_id')
+                  ->constrained('ban_an')
+                  ->cascadeOnDelete();
+
             $table->integer('tong_mon')->nullable();
             $table->decimal('tong_tien', 12, 2)->nullable();
-            $table->string('trang_thai')->nullable();
-            $table->timestamps();
 
-            $table->foreign('dat_ban_id')->references('id')->on('dat_ban')->onDelete('cascade');
-            $table->foreign('ban_id')->references('id')->on('ban_an')->onDelete('cascade');
+            // <-- SỬA ĐỔI: Đổi string sang enum để khớp với thiết kế DBML
+            $table->enum('trang_thai', [
+                'cho_bep',        // Chờ bếp nhận
+                'dang_che_bien',  // Đang chế biến
+                'da_len_mon',     // Đã lên món
+                'huy_mon'         // Hủy món
+            ])->default('cho_bep')->comment('Trạng thái tổng của phiếu order');
+
+            $table->timestamps();
         });
     }
 

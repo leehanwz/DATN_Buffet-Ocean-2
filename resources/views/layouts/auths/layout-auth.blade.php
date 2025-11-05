@@ -29,4 +29,8 @@
 
     @yield('script')
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> origin/trung

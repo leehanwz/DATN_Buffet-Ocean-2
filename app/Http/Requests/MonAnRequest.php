@@ -6,11 +6,14 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class MonAnRequest extends FormRequest
 {
-    public function authorize() { return true; }
-
-    public function rules()
+    public function authorize(): bool
     {
-         $hinhAnhRule = $this->isMethod('post')
+        return true; // cho phép tất cả user gửi request
+    }
+
+    public function rules(): array
+    {
+        $hinhAnhRule = $this->isMethod('post')
             ? 'required|image|mimes:jpg,jpeg,png,gif|max:2048'
             : 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048';
 
@@ -22,7 +25,7 @@ class MonAnRequest extends FormRequest
             'trang_thai' => 'required|in:con,het,an',
             'thoi_gian_che_bien' => 'required|integer|min:1|max:240',
             'loai_mon' => 'nullable|in:Khai vị,Món chính,Tráng miệng,Đồ uống',
-         'hinh_anh' => $hinhAnhRule,
+            'hinh_anh' => $hinhAnhRule,
         ];
     }
 }
