@@ -21,7 +21,7 @@ class OrderMonController extends Controller
     public function create()
     {
         // Lấy datBans kèm relation banAn để có thể show thông tin bàn khi chọn đặt bàn
-          $datBans = DatBan::with(['banAn', 'comboBuffet.monTrongCombo.monAn'])->get();
+        $datBans = DatBan::with(['banAn', 'comboBuffet.monTrongCombo.monAn'])->get();
 
         // Nếu view vẫn cần 1 danh sách bàn độc lập (ví dụ để filter), trả luôn:
         $banAns = BanAn::all();
@@ -30,53 +30,60 @@ class OrderMonController extends Controller
     }
 
     // Store: hợp lý hoá — ưu tiên lấy ban_id từ DatBan đã chọn (tránh người dùng nhập sai)
-   public function store(Request $request)
-{
-    $request->validate([
-        'dat_ban_id' => 'required|exists:dat_ban,id',
-        'trang_thai' => 'required|in:cho_bep,dang_che_bien,da_len_mon,huy_mon',
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'dat_ban_id' => 'required|exists:dat_ban,id',
+            'trang_thai' => 'required|in:cho_bep,dang_che_bien,da_len_mon,huy_mon',
+        ]);
 
-    // Lấy thông tin đặt bàn (có combo + món trong combo)
-    $datBan = DatBan::with('comboBuffet.monTrongCombo')->findOrFail($request->dat_ban_id);
+        // Lấy thông tin đặt bàn (có combo + món trong combo)
+        $datBan = DatBan::with('comboBuffet.monTrongCombo')->findOrFail($request->dat_ban_id);
 
-    // Tính tổng món (số món trong combo)
-    $tongMon = $datBan->comboBuffet?->monTrongCombo?->count() ?? 0;
+        // Tính tổng món (số món trong combo)
+        $tongMon = $datBan->comboBuffet?->monTrongCombo?->count() ?? 0;
 
-    // Tính tổng phụ phí các món trong combo
-    $tongPhuPhi = $datBan->comboBuffet?->monTrongCombo?->sum('phu_phi_goi_them') ?? 0;
+        // Tính tổng phụ phí các món trong combo
+        $tongPhuPhi = $datBan->comboBuffet?->monTrongCombo?->sum('phu_phi_goi_them') ?? 0;
 
-    // Giá combo cơ bản
-    $giaCombo = $datBan->comboBuffet?->gia_co_ban ?? 0;
+        // Giá combo cơ bản
+        $giaCombo = $datBan->comboBuffet?->gia_co_ban ?? 0;
 
-    // Số khách
-    $soKhach = $datBan->so_khach ?? 0;
+        // Số khách
+        $soKhach = $datBan->so_khach ?? 0;
 
-    // 👉 CÔNG THỨC TÍNH TỔNG TIỀN:
-    // Nếu phụ phí tính riêng theo bàn
-    $tongTien = ($giaCombo * $soKhach) + $tongPhuPhi;
+        // 👉 CÔNG THỨC TÍNH TỔNG TIỀN:
+        // Nếu phụ phí tính riêng theo bàn
+        $tongTien = ($giaCombo * $soKhach) + $tongPhuPhi;
 
-    // Nếu phụ phí tính theo đầu người (ít gặp hơn), đổi thành:
-    // $tongTien = ($giaCombo + $tongPhuPhi) * $soKhach;
+        // Nếu phụ phí tính theo đầu người (ít gặp hơn), đổi thành:
+        // $tongTien = ($giaCombo + $tongPhuPhi) * $soKhach;
 
-    // Tạo mới order món
-    $order = OrderMon::create([
-        'dat_ban_id' => $datBan->id,
-        'ban_id' => $datBan->ban_id,
-        'tong_mon' => $tongMon,
-        'tong_tien' => $tongTien,
-        'trang_thai' => $request->trang_thai,
-    ]);
+        // Tạo mới order món
+        $order = OrderMon::create([
+            'dat_ban_id' => $datBan->id,
+            'ban_id' => $datBan->ban_id,
+            'tong_mon' => $tongMon,
+            'tong_tien' => $tongTien,
+            'trang_thai' => 'cho_bep',
+        ]);
 
-    return redirect()->route('admin.order-mon.index')->with('success', 'Tạo Order món thành công!');
-}
+        return redirect()->route('admin.order-mon.index')->with('success', 'Tạo Order món thành công!');
+    }
 
     // Edit: truyền cả datBans và banAns để view có thể show dropdown hoặc auto-fill
     public function edit(OrderMon $orderMon)
     {
         $datBans = DatBan::with('banAn')->get();
         $banAns = BanAn::all();
-        return view('admins.order-mon.edit', compact('orderMon', 'datBans', 'banAns'));
+        $allowedStatus = match ($orderMon->trang_thai) {
+            'cho_bep' => ['dang_che_bien' => 'Đang chế biến'],
+            'dang_che_bien' => ['da_len_mon' => 'Đã lên món', 'huy_mon' => 'Hủy món'],
+            'da_len_mon' => ['da_len_mon' => 'Đã lên món'], // đã xong thì không đổi nữa
+            'huy_mon' => ['huy_mon' => 'Hủy món'], // không đổi nữa
+            default => ['cho_bep' => 'Chờ bếp'],
+        };
+        return view('admins.order-mon.edit', compact('orderMon', 'datBans', 'banAns','allowedStatus'));
     }
 
     // Update: tương tự store

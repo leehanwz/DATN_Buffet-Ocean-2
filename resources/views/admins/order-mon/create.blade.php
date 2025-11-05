@@ -44,9 +44,6 @@
                 <label for="trang_thai">Trạng thái:</label>
                 <select name="trang_thai" id="trang_thai" class="form-control">
                     <option value="cho_bep">Chờ bếp</option>
-                    <option value="dang_che_bien">Đang chế biến</option>
-                    <option value="da_len_mon">Đã lên món</option>
-                    <option value="huy_mon">Hủy món</option>
                 </select>
             </div>
         </div>
