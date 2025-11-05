@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 // Controllers
 use App\Http\Controllers\Shop\HomeController;
+
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\Admin\NhanVienController;
@@ -14,6 +15,8 @@ use App\Http\Controllers\Admin\BanAnController;
 use App\Http\Controllers\Admin\DanhMucController;
 use App\Http\Controllers\Admin\MonAnController;
 use App\Http\Controllers\Admin\ComboBuffetController;
+use App\Http\Controllers\Admin\ChiTietOrderController;
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 
@@ -79,5 +82,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/regenerate-qr', 'regenerateQr')->name('qr');
         Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
     });
-});
 
+    // CHI TIẾT ORDER
+    Route::get('chi-tiet-order', [ChiTietOrderController::class, 'index'])->name('chi-tiet-order.index');
+    Route::post('chi-tiet-order/{id}/update', [ChiTietOrderController::class, 'update'])->name('chi-tiet-order.update');
+    Route::delete('chi-tiet-order/{id}', [ChiTietOrderController::class, 'destroy'])->name('chi-tiet-order.destroy');
+});
