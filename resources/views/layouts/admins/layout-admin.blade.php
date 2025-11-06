@@ -78,6 +78,15 @@
             <span class="app-menu__label">Quản lý khu vực</span>
           </a>
         </li>
+
+        {{-- 💡 ĐÃ THÊM ROUTE ĐẶT BÀN MỚI VÀO ĐÂY --}}
+        <li>
+          <a class="app-menu__item" href="{{ route('admin.dat-ban.index') }}">
+            <i class='app-menu__icon bx bx-calendar-check'></i>
+            <span class="app-menu__label">Quản lý Đặt Bàn</span>
+          </a>
+        </li>
+
         {{-- <li>
           <a class="app-menu__item " href="{{route('admin.nhan-vien')}}">
             <i class='app-menu__icon bx bx-id-card'></i>
@@ -108,9 +117,9 @@
   <script type="text/javascript" src="{{ asset('admin/doc/js/plugins/chart.js') }}"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script src="src/jquery.table2excel.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-  <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css"></script>
+  <script type="text/javascript" src="{{ asset('admin/doc/js/plugins/jquery.dataTables.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('admin/doc/js/plugins/dataTables.bootstrap.min.js') }}"></script>
   <script type="text/javascript">$('#sampleTable').DataTable();</script>
 
   {{-- thời gian thực --}}

@@ -26,14 +26,29 @@
                 <div class="tile-body">
                     <div class="row">
                         <div class="col-md-4">
+                            {{-- HIỂN THỊ ẢNH CHÍNH --}}
+                            <h5 class="fw-bold text-center mb-3">Ảnh Đại Diện</h5>
                             @if($mon_an->hinh_anh)
                             <img src="{{ asset($mon_an->hinh_anh) }}" alt="Hình ảnh món ăn"
-                                class="img-fluid rounded border shadow-sm" style="object-fit: cover; height: 300px; width: 100%;">
+                                class="img-fluid rounded border shadow-sm mb-4" style="object-fit: cover; height: 300px; width: 100%;">
                             @else
-                            <div class="d-flex align-items-center justify-content-center border rounded bg-light" style="height: 300px; width: 100%;">
+                            <div class="d-flex align-items-center justify-content-center border rounded bg-light mb-4" style="height: 300px; width: 100%;">
                                 <span class="text-muted fst-italic">Không có hình ảnh</span>
                             </div>
                             @endif
+
+                            {{-- HIỂN THỊ THƯ VIỆN ẢNH --}}
+                            <h5 class="fw-bold mt-2">Thư viện ảnh</h5>
+                            <div class="d-flex flex-wrap gap-2 border p-2 rounded" style="min-height: 80px;">
+                                {{-- $mon_an->thuVienAnh đã được load trong Controller --}}
+                                @forelse ($mon_an->thuVienAnh as $anh)
+                                    <img src="{{ asset($anh->duong_dan_anh) }}" 
+                                         style="width: 80px; height: 80px; object-fit: cover;" 
+                                         class="img-thumbnail">
+                                @empty
+                                    <span class="text-muted small">Món ăn này chưa có ảnh phụ.</span>
+                                @endforelse
+                            </div>
                         </div>
 
                         <div class="col-md-8">
@@ -95,6 +110,4 @@
         </div>
     </div>
 </main>
-
-{{-- ĐÃ XÓA TOÀN BỘ THẺ <style>...</style> KHÔNG LIÊN QUAN --}}
 @endsection

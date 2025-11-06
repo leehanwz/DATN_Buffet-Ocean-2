@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             MonAnSeeder::class,
             ComboBuffetSeeder::class,
             MonTrongComboSeeder::class,
+            DatBanSeeder::class,
+            NhanVienSeeder::class
         ]);
     }
 }

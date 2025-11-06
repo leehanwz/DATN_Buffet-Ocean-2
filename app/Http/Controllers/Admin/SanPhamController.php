@@ -8,11 +8,14 @@ use App\Models\DanhMuc;
 use App\Http\Requests\MonAnRequest;
 use Illuminate\Http\Request;
 
+// THÊM CÁC USE NÀY
+use App\Models\ThuVienAnhMonAn; 
+use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\File; 
+
 class SanPhamController extends Controller
 {
-    /**
-     * Hiển thị danh sách món ăn (sản phẩm) với chức năng lọc và tìm kiếm.
-     */
+    // ... (Giữ nguyên phương thức index) ...
     public function index(Request $request)
     {
         $query = MonAn::query();
@@ -52,96 +55,186 @@ class SanPhamController extends Controller
         return view('admins.mon_an.index', compact('dsMonAn', 'danhMucs'));
     }
 
-    /**
-     * Hiển thị form tạo món ăn mới
-     */
+    // ... (Giữ nguyên phương thức create) ...
     public function create()
     {
         $danhMucs = DanhMuc::where('hien_thi', 1)->get();
         return view('admins.mon_an.create', compact('danhMucs'));
     }
 
-    /**
-     * Lưu món ăn mới
-     * *LƯU Ý: Nếu MonAnRequest đã xử lý Validation, bạn có thể bỏ phần thông báo lỗi chi tiết này.*
-     */
+    // ----------------------------------------------------------------------
+    // PHƯƠNG THỨC STORE (THÊM MỚI)
+    // ----------------------------------------------------------------------
     public function store(MonAnRequest $request)
     {
-        // Sử dụng $request->validated() để đảm bảo Validation từ MonAnRequest đã chạy
-        $data = $request->validated(); 
+        DB::beginTransaction(); // Bắt đầu Transaction
         
-        if ($request->hasFile('hinh_anh')) {
-            $file = $request->file('hinh_anh');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/monan'), $fileName);
-            $data['hinh_anh'] = 'uploads/monan/' . $fileName;
+        try {
+            $data = $request->validated(); 
+            $data['hinh_anh'] = null; // Đảm bảo cột ảnh chính được xử lý
+
+            // 1. Xử lý Ảnh chính
+            if ($request->hasFile('hinh_anh')) {
+                $file = $request->file('hinh_anh');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/monan'), $fileName);
+                $data['hinh_anh'] = 'uploads/monan/' . $fileName;
+            }
+
+            // 2. Tạo món ăn chính và lấy ID
+            $monAn = MonAn::create($data); 
+
+            // 3. Xử lý Thư viện ảnh (anh_thu_vien[])
+            if ($request->hasFile('anh_thu_vien')) {
+                $imagePaths = [];
+                foreach ($request->file('anh_thu_vien') as $file) {
+                    $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalExtension();
+                    $file->move(public_path('uploads/gallery/monan'), $fileName); 
+                    
+                    $imagePaths[] = [
+                        'mon_an_id' => $monAn->id,
+                        'duong_dan_anh' => 'uploads/gallery/monan/' . $fileName,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                ThuVienAnhMonAn::insert($imagePaths);
+            }
+
+            DB::commit(); // Hoàn tất transaction
+            
+            return redirect()->route('admin.san-pham.index')
+                ->with('success', 'Thêm món ăn thành công!');
+
+        } catch (\Exception $e) {
+            DB::rollBack(); 
+            return back()->withInput()->with('error', 'Lỗi hệ thống: Không thể thêm món ăn.');
         }
-
-        MonAn::create($data);
-
-        return redirect()->route('admin.san-pham.index')
-            ->with('success', 'Thêm món ăn thành công!');
     }
 
-    /**
-     * Hiển thị chi tiết món ăn
-     */
+    // ----------------------------------------------------------------------
+    // PHƯƠNG THỨC SHOW (XEM CHI TIẾT)
+    // ----------------------------------------------------------------------
     public function show(MonAn $san_pham)
     {
+        $san_pham->load('thuVienAnh'); // Eager load thư viện ảnh khi xem chi tiết
         return view('admins.mon_an.show', ['mon_an' => $san_pham]);
     }
 
-    /**
-     * Hiển thị form chỉnh sửa món ăn
-     */
+    // ----------------------------------------------------------------------
+    // PHƯƠNG THỨC EDIT (FORM SỬA)
+    // ----------------------------------------------------------------------
     public function edit(MonAn $san_pham)
     {
+        $san_pham->load('thuVienAnh'); // Eager load thư viện ảnh để hiển thị ảnh cũ
         $danhMucs = DanhMuc::where('hien_thi', 1)->get();
         return view('admins.mon_an.edit', compact('san_pham', 'danhMucs'));
     }
 
-    /**
-     * Cập nhật món ăn
-     * *LƯU Ý: Nếu MonAnRequest đã xử lý Validation, bạn có thể bỏ phần thông báo lỗi chi tiết này.*
-     */
+    // ----------------------------------------------------------------------
+    // PHƯƠNG THỨC UPDATE (CẬP NHẬT)
+    // ----------------------------------------------------------------------
     public function update(MonAnRequest $request, MonAn $san_pham)
     {
-        // Sử dụng $request->validated() để đảm bảo Validation từ MonAnRequest đã chạy
-        $data = $request->validated(); 
+        DB::beginTransaction();
+        
+        try {
+            $data = $request->validated(); 
+            
+            // 1. Cập nhật Ảnh chính (hinh_anh)
+            if ($request->hasFile('hinh_anh')) {
+                if ($san_pham->hinh_anh && File::exists(public_path($san_pham->hinh_anh))) {
+                    File::delete(public_path($san_pham->hinh_anh)); // Xóa file cũ
+                }
 
-        if ($request->hasFile('hinh_anh')) {
-            // Xóa file cũ nếu có
-            if ($san_pham->hinh_anh && file_exists(public_path($san_pham->hinh_anh))) {
-                unlink(public_path($san_pham->hinh_anh));
+                $file = $request->file('hinh_anh');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/monan'), $fileName);
+                $data['hinh_anh'] = 'uploads/monan/' . $fileName;
+            } else {
+                $data['hinh_anh'] = $san_pham->hinh_anh; // Giữ lại ảnh cũ
             }
 
-            $file = $request->file('hinh_anh');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/monan'), $fileName);
-            $data['hinh_anh'] = 'uploads/monan/' . $fileName;
-        } else {
-            // Giữ lại ảnh cũ nếu không upload ảnh mới
-            $data['hinh_anh'] = $san_pham->hinh_anh;
+            // 2. Xóa ảnh phụ CŨ (Dựa trên input ẩn 'anh_xoa')
+            if ($request->anh_xoa) {
+                $idsToDelete = explode(',', $request->anh_xoa);
+                
+                $photosToDelete = ThuVienAnhMonAn::whereIn('id', $idsToDelete)
+                                                ->pluck('duong_dan_anh');
+
+                foreach ($photosToDelete as $path) {
+                    if (File::exists(public_path($path))) {
+                        File::delete(public_path($path)); // Xóa file vật lý
+                    }
+                }
+
+                ThuVienAnhMonAn::whereIn('id', $idsToDelete)->delete(); // Xóa bản ghi DB
+            }
+
+            // 3. Thêm ảnh phụ MỚI (anh_thu_vien[])
+            if ($request->hasFile('anh_thu_vien')) {
+                $imagePaths = [];
+                foreach ($request->file('anh_thu_vien') as $file) {
+                    $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalExtension();
+                    $file->move(public_path('uploads/gallery/monan'), $fileName);
+                    
+                    $imagePaths[] = [
+                        'mon_an_id' => $san_pham->id,
+                        'duong_dan_anh' => 'uploads/gallery/monan/' . $fileName,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                ThuVienAnhMonAn::insert($imagePaths);
+            }
+            
+            // 4. Cập nhật thông tin món ăn chính
+            $san_pham->update($data);
+
+            DB::commit();
+
+            return redirect()->route('admin.san-pham.index')
+                ->with('success', 'Cập nhật món ăn thành công!');
+                
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Lỗi hệ thống: Không thể cập nhật món ăn.');
         }
-
-        $san_pham->update($data);
-
-        return redirect()->route('admin.san-pham.index')
-            ->with('success', 'Cập nhật món ăn thành công!');
     }
 
-    /**
-     * Xóa món ăn
-     */
+    // ----------------------------------------------------------------------
+    // PHƯƠNG THỨC DESTROY (XÓA)
+    // ----------------------------------------------------------------------
     public function destroy(MonAn $san_pham)
     {
-        if ($san_pham->hinh_anh && file_exists(public_path($san_pham->hinh_anh))) {
-            unlink(public_path($san_pham->hinh_anh));
+        DB::beginTransaction();
+
+        try {
+            // 1. Xóa Ảnh chính
+            if ($san_pham->hinh_anh && File::exists(public_path($san_pham->hinh_anh))) {
+                File::delete(public_path($san_pham->hinh_anh));
+            }
+            
+            // 2. Xóa tất cả Ảnh phụ (File vật lý)
+            // Lấy tất cả đường dẫn ảnh phụ
+            $photosToDelete = $san_pham->thuVienAnh->pluck('duong_dan_anh');
+
+            foreach ($photosToDelete as $path) {
+                if (File::exists(public_path($path))) {
+                    File::delete(public_path($path));
+                }
+            }
+            
+            // 3. Xóa bản ghi MonAn (ON DELETE CASCADE sẽ tự động xóa bản ghi ThuVienAnhMonAn)
+            $san_pham->delete();
+
+            DB::commit();
+            return redirect()->route('admin.san-pham.index')
+                ->with('success', 'Xóa món ăn thành công!');
+                
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Lỗi hệ thống: Không thể xóa món ăn.');
         }
-
-        $san_pham->delete();
-
-        return redirect()->route('admin.san-pham.index')
-            ->with('success', 'Xóa món ăn thành công!');
     }
 }

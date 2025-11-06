@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany; // <-- PHẢI THÊM: cho mối quan hệ HasMany
 
 class MonAn extends Model
 {
@@ -26,6 +27,17 @@ class MonAn extends Model
     {
         return $this->belongsTo(DanhMuc::class, 'danh_muc_id');
     }
+
+    /**
+     * Mối quan hệ với thư viện ảnh (HasMany)
+     * Đây là phần bổ sung để sửa lỗi RelationNotFoundException
+     */
+    public function thuVienAnh(): HasMany
+    {
+        // Liên kết với Model ThuVienAnhMonAn thông qua khóa ngoại 'mon_an_id'
+        return $this->hasMany(ThuVienAnhMonAn::class, 'mon_an_id');
+    }
+    // -------------------------------------------------------------------
 
     public function getTrangThaiDisplayAttribute()
     {

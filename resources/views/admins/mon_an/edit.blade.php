@@ -34,7 +34,9 @@
                         @endif
 
                         <div class="row">
+                            {{-- Cột trái (Thông tin chính) --}}
                             <div class="col-md-8">
+                                {{-- ... (Giữ nguyên các trường thông tin chính) ... --}}
                                 <div class="mb-3">
                                     <label class="form-label">Tên món <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="ten_mon"
@@ -117,23 +119,61 @@
                                     </div>
                                 </div>
                             </div>
-
+                            
+                            {{-- Cột phải (Ảnh chính và Thư viện ảnh) --}}
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label class="form-label">Ảnh món ăn</label>
+                                    <label class="form-label">Ảnh đại diện (Chính)</label>
                                     <input type="file" name="hinh_anh" class="form-control" accept="image/*"
-                                        onchange="previewImage(event)">
+                                        onchange="previewImage(event, 'preview_chinh')">
+                                    <div class="text-center mt-2">
+                                        @if($san_pham->hinh_anh)
+                                        <img id="preview_chinh" src="{{ asset($san_pham->hinh_anh) }}" class="img-fluid rounded border shadow-sm"
+                                            style="max-height: 200px; object-fit: cover;">
+                                        @else
+                                        <img id="preview_chinh" src="https://placehold.co/200x200/eee/ccc?text=Preview" class="img-fluid rounded border shadow-sm"
+                                            style="max-height: 200px; object-fit: cover;">
+                                        @endif
+                                    </div>
                                 </div>
                                 
-                                <div class="text-center">
-                                    @if($san_pham->hinh_anh)
-                                    <img id="preview" src="{{ asset($san_pham->hinh_anh) }}" class="img-fluid rounded border shadow-sm"
-                                        style="max-height: 200px; object-fit: cover;">
-                                    @else
-                                    <img id="preview" src="https://placehold.co/200x200/eee/ccc?text=Preview" class="img-fluid rounded border shadow-sm"
-                                        style="max-height: 200px; object-fit: cover;">
-                                    @endif
+                                {{-- START: Thêm trường Thư viện ảnh --}}
+                                <hr>
+                                <h4>Thư viện ảnh</h4>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Thêm ảnh mới</label>
+                                    <input type="file" name="anh_thu_vien[]" class="form-control" accept="image/*" multiple
+                                        onchange="previewGallery(event)">
+                                    <small class="form-text text-muted">Thêm ảnh mới vào thư viện.</small>
                                 </div>
+
+                                <h5 class="mt-4">Ảnh hiện có:</h5>
+                                <div class="d-flex flex-wrap gap-2 mt-2 border p-2 rounded" id="gallery_current">
+                                    
+                                    {{-- Vòng lặp hiển thị ảnh cũ --}}
+                                    @forelse ($san_pham->thuVienAnh as $anh)
+                                        <div class="position-relative border p-1" id="anh_cu_{{ $anh->id }}">
+                                            <img src="{{ asset($anh->duong_dan_anh) }}" style="width: 80px; height: 80px; object-fit: cover;" class="img-thumbnail">
+                                            
+                                            {{-- Nút xóa ảnh cũ --}}
+                                            <button type="button" 
+                                                    class="btn-close position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger p-2" 
+                                                    aria-label="Close" 
+                                                    onclick="removeCurrentImage({{ $anh->id }})">
+                                            </button>
+                                        </div>
+                                    @empty
+                                        <span class="text-muted small">Chưa có ảnh phụ nào.</span>
+                                    @endforelse
+                                </div>
+
+
+
+                                {{-- Input ẩn để lưu ID của các ảnh cũ bị xóa --}}
+                                <input type="hidden" name="anh_xoa" id="anh_xoa" value="">
+                                
+                                {{-- END: Thêm trường Thư viện ảnh --}}
                             </div>
                         </div>
                     </div>
@@ -151,16 +191,80 @@
         </div>
     </div>
 </main>
-
-{{-- ĐÃ XÓA TOÀN BỘ THẺ <style>...</style> KHÔNG LIÊN QUAN --}}
 @endsection
 
 @push('scripts')
 <script>
-    function previewImage(event) {
-        const preview = document.getElementById('preview');
-        preview.src = URL.createObjectURL(event.target.files[0]);
-        // Không cần thêm d-none vì ảnh cũ đã hiển thị
+    // Mảng lưu ID của các ảnh bị đánh dấu xóa
+    let anhXoaIds = [];
+
+    // Hàm preview cho ảnh chính
+    function previewImage(event, previewId) {
+        const preview = document.getElementById(previewId);
+        if (event.target.files.length > 0) {
+            preview.src = URL.createObjectURL(event.target.files[0]);
+            preview.onload = () => URL.revokeObjectURL(preview.src);
+        }
     }
+
+    // Hàm preview cho Thư viện ảnh mới
+    function previewGallery(event) {
+        const previewContainer = document.getElementById('gallery_preview');
+        // Xóa nội dung cũ
+        previewContainer.innerHTML = ''; 
+
+        const files = event.target.files;
+
+        if (files.length === 0) {
+            previewContainer.innerHTML = '<span class="text-muted small">Ảnh mới sẽ hiển thị ở đây.</span>';
+            return;
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.classList.add('img-thumbnail');
+            img.style.width = '80px';
+            img.style.height = '80px';
+            img.style.objectFit = 'cover';
+
+            previewContainer.appendChild(img);
+            img.onload = () => URL.revokeObjectURL(img.src);
+        }
+    }
+    
+    // Hàm đánh dấu xóa ảnh cũ
+    function removeCurrentImage(anhId) {
+        // 1. Ẩn ảnh cũ khỏi giao diện
+        const elementToRemove = document.getElementById(`anh_cu_${anhId}`);
+        if (elementToRemove) {
+            elementToRemove.remove();
+        }
+        
+        // 2. Thêm ID vào mảng xóa
+        anhXoaIds.push(anhId);
+        
+        // 3. Cập nhật input ẩn để gửi dữ liệu về Controller
+        document.getElementById('anh_xoa').value = anhXoaIds.join(',');
+
+        alert('Ảnh sẽ được xóa khi bạn bấm "Cập nhật"');
+    }
+    
+    // Khởi tạo preview cho ảnh chính với ID mới
+    document.addEventListener('DOMContentLoaded', () => {
+        // Do trong file cũ, bạn dùng ID là 'preview', ta đổi thành 'preview_chinh' cho rõ ràng.
+        const inputAnhChinh = document.querySelector('input[name="hinh_anh"]');
+        if (inputAnhChinh) {
+            inputAnhChinh.setAttribute('onchange', "previewImage(event, 'preview_chinh')");
+        }
+        
+        // Fix: Nếu không có ảnh cũ, gán lại text mặc định cho vùng preview
+        const galleryCurrent = document.getElementById('gallery_current');
+        if (galleryCurrent && galleryCurrent.children.length === 0) {
+            galleryCurrent.innerHTML = '<span class="text-muted small">Chưa có ảnh phụ nào.</span>';
+        }
+    });
 </script>
 @endpush
