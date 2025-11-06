@@ -75,6 +75,23 @@ class DashboardController extends Controller
             ->with('mon')
             ->get();
 
+        // show combo buffet bán chạy
+        $comboBanChay = DB::table('dat_ban')
+            ->join('hoa_don', 'hoa_don.dat_ban_id', '=', 'dat_ban.id')
+            ->join('combo_buffet', 'combo_buffet.id', '=', 'dat_ban.combo_id')
+            ->select(
+                'combo_buffet.id',
+                'combo_buffet.ten_combo',
+                DB::raw('COUNT(hoa_don.id) as so_luot_ban'),
+                DB::raw('SUM(hoa_don.tong_tien) as tong_doanh_thu')
+            )
+            ->whereNotNull('dat_ban.combo_id')
+            ->groupBy('combo_buffet.id', 'combo_buffet.ten_combo')
+            ->orderByDesc('so_luot_ban')
+            ->take(4)
+            ->get();
+
+
         return view('admins.dashboard', compact(
             'doanhThuHomNay',
             'luotDatBan',
@@ -87,6 +104,68 @@ class DashboardController extends Controller
             'doanhThuTheoThang',
             'luotDatBanTheoThang',
             'nhanVienMoi',
+            'comboBanChay'
         ));
+    }
+    public function getChartData(Request $request)
+    {
+        $filter = $request->filter ?? 'month';
+
+        //doanh thu
+        if ($filter == 'day') {
+            $labels = [];
+            $dataTotal = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $date = now()->subDays($i)->format('Y-m-d');
+                $labels[] = $date;
+                $dataTotal[] = HoaDon::whereDate('created_at', $date)->sum('tong_tien');
+            }
+        } elseif ($filter == 'month') {
+            $labels = [];
+            $dataTotal = [];
+            for ($i = 1; $i <= 12; $i++) {
+                $labels[] = "Tháng $i";
+                $dataTotal[] = HoaDon::whereYear('created_at', now()->year)
+                                    ->whereMonth('created_at', $i)
+                                    ->sum('tong_tien');
+            }
+        } else {
+            $labels = [];
+            $dataTotal = [];
+            $startYear = now()->year - 5;
+            for ($y = $startYear; $y <= now()->year; $y++) {
+                $labels[] = $y;
+                $dataTotal[] = HoaDon::whereYear('created_at', $y)->sum('tong_tien');
+            }
+        }
+
+        //doanh thu theo combo
+        $comboTypes = ['nguoi_lon', 'tre_em', 'vip', 'khuyen_mai'];
+        $comboLabels = ['Người lớn','Trẻ em','VIP','Khuyến mãi'];
+        $comboData = [];
+
+        foreach ($comboTypes as $type) {
+            $query = DB::table('hoa_don as hd')
+                ->join('dat_ban as db', 'hd.dat_ban_id', '=', 'db.id')
+                ->join('combo_buffet as cb', 'db.combo_id', '=', 'cb.id')
+                ->where('cb.loai_combo', $type);
+
+            if ($filter == 'day') {
+                $query->whereBetween('hd.created_at', [now()->subDays(6)->startOfDay(), now()->endOfDay()]);
+            } elseif ($filter == 'month') {
+                $query->whereYear('hd.created_at', now()->year);
+            } else {
+                $query->whereYear('hd.created_at', '>=', now()->year - 5);
+            }
+
+            $comboData[] = $query->sum('hd.tong_tien');
+        }
+
+        return response()->json([
+            'totalLabels' => $labels,
+            'totalData' => $dataTotal,
+            'comboLabels' => $comboLabels,
+            'comboData' => $comboData,
+        ]);
     }
 }
