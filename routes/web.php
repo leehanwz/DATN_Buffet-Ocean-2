@@ -54,8 +54,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('combo-buffet', ComboBuffetController::class);
 
 
-    // NHÂN VIÊN & ĐƠN HÀNG
-    Route::get('/nhan-vien', [NhanVienController::class, 'index'])->name('nhan-vien');
+    // NHÂN VIÊN 
+    Route::prefix('nhan-vien')->name('nhan-vien.')->controller(NhanVienController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::post('/{id}/update', 'update')->name('update');
+        Route::post('/{id}/delete', 'destroy')->name('destroy');
+        Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
+        Route::post('/{id}/reset-mat-khau', 'resetMatKhau')->name('reset-mat-khau');
+        Route::patch('/{id}/cap-nhat-trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
+
+    });
+    // ĐƠN HÀNG
     Route::get('/don-hang', [DonHangController::class, 'index'])->name('don-hang');
 
     // KHU VỰC & BÀN ĂN
@@ -99,6 +111,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/delete', 'destroy')->name('destroy');
         Route::post('/{id}/update-status', 'updateStatus')->name('updateStatus');
     });
+    
     
 });
 

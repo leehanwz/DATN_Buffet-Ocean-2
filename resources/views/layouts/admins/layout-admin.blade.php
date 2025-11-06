@@ -87,6 +87,13 @@
           </a>
         </li>
 
+        <li>
+          <a class="app-menu__item" href="{{ route('admin.nhan-vien.index') }}">
+            <i class='app-menu__icon bx bx-calendar-check'></i>
+            <span class="app-menu__label">Quản lý Nhân Viên</span>
+          </a>
+        </li>
+
         {{-- <li>
           <a class="app-menu__item " href="{{route('admin.nhan-vien')}}">
             <i class='app-menu__icon bx bx-id-card'></i>
