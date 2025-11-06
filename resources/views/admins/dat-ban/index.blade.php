@@ -143,8 +143,8 @@
 
         {{-- Bảng danh sách --}}
         <div class="tile-body">
-            <table class="table table-hover table-bordered align-middle">
-                <thead class="table-light">
+                        <table class="table table-bordered table-hover align-middle text-center mb-3" id="monAnTable">
+                            <thead style="background-color: #002b5b; color: white;">
                     <tr>
                         <th>Mã</th>
                         <th>Khách hàng</th>

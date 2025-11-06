@@ -124,7 +124,7 @@
                                     <h5><i class="fas fa-file-alt mr-2"></i> Thông Tin Khác</h5>
                                     <p><strong>Nhân viên xử lý:</strong> {{ $datBan->nhanVien->ho_ten ?? 'N/A' }}</p>
                                     <p><strong>Loại Đặt:</strong> {{ $datBan->la_dat_online ? 'Online' : 'Tại quầy' }}</p>
-                                    <p><strong>Ghi Chú:</strong> {{ $datBan->ghi_chu ?? '<em>Không có ghi chú</em>' }}</p>
+                                    <p><strong>Ghi Chú:</strong> {{ $datBan->ghi_chu ?? 'Không có ghi chú' }}</p>
                                 </div>
                             </div>
                         </div>
