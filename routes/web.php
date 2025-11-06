@@ -41,7 +41,8 @@ Route::prefix('/')->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
+    Route::get('/dashboard/data', [DashboardController::class, 'getChartData']);
+    
     // SẢN PHẨM & MÓN ĂN
     Route::resource('danh-muc', DanhMucController::class);
     Route::resource('san-pham', SanPhamController::class);

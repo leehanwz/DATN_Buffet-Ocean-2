@@ -164,24 +164,32 @@
       <!--Right-->
       <div class="col-md-12 col-lg-6">
         <div class="row">
+          <!-- Line Chart: tổng doanh thu -->
           <div class="col-md-12">
             <div class="tile">
-              <h3 class="tile-title">Dữ liệu 6 tháng đầu vào</h3>
-              <div class="embed-responsive embed-responsive-16by9">
-                <canvas class="embed-responsive-item" id="lineChartDemo"></canvas>
-              </div>
+              <h3 class="tile-title">Doanh thu tổng của nhà hàng</h3>
+              <select id="filterTotal" class="form-select form-select-sm mb-2">
+                <option value="day">7 ngày gần nhất</option>
+                <option value="month" selected>12 tháng gần nhất</option>
+                <option value="year">5 năm gần nhất</option>
+              </select>
+              <canvas id="lineChart"></canvas>
             </div>
           </div>
-          <div class="col-md-12">
+
+          <!-- Bar Chart: doanh thu theo loại combo -->
+          <div class="col-md-12 mt-3">
             <div class="tile">
-              <h3 class="tile-title">Thống kê 6 tháng doanh thu</h3>
-              <div class="embed-responsive embed-responsive-16by9">
-                <canvas class="embed-responsive-item" id="barChartDemo"></canvas>
-              </div>
+              <h3 class="tile-title">Doanh thu theo loại combo</h3>
+              <select id="filterCombo" class="form-select form-select-sm mb-2">
+                <option value="day">7 ngày gần nhất</option>
+                <option value="month" selected>12 tháng gần nhất</option>
+                <option value="year">5 năm gần nhất</option>
+              </select>
+              <canvas id="barChart"></canvas>
             </div>
           </div>
         </div>
-
       </div>
       <!--END right-->
     </div>
@@ -198,37 +206,72 @@
 @endsection
 
 @section('script')
-  {{-- biểu đồ --}}
-  <script type="text/javascript">
-    var data = {
-      labels: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6"],
-      datasets: [{
-        label: "Dữ liệu đầu tiên",
-        fillColor: "rgba(255, 213, 59, 0.767), 212, 59)",
-        strokeColor: "rgb(255, 212, 59)",
-        pointColor: "rgb(255, 212, 59)",
-        pointStrokeColor: "rgb(255, 212, 59)",
-        pointHighlightFill: "rgb(255, 212, 59)",
-        pointHighlightStroke: "rgb(255, 212, 59)",
-        data: [20, 59, 90, 51, 56, 100]
-      },
-      {
-        label: "Dữ liệu kế tiếp",
-        fillColor: "rgba(9, 109, 239, 0.651)  ",
-        pointColor: "rgb(9, 109, 239)",
-        strokeColor: "rgb(9, 109, 239)",
-        pointStrokeColor: "rgb(9, 109, 239)",
-        pointHighlightFill: "rgb(9, 109, 239)",
-        pointHighlightStroke: "rgb(9, 109, 239)",
-        data: [48, 48, 49, 39, 86, 10]
-      }
-      ]
-    };
-    
-    var ctxl = $("#lineChartDemo").get(0).getContext("2d");
-    var lineChart = new Chart(ctxl).Line(data);
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let lineChart, barChart;
 
-    var ctxb = $("#barChartDemo").get(0).getContext("2d");
-    var barChart = new Chart(ctxb).Bar(data);
-  </script>
+// Hàm fetch dữ liệu từ backend
+function fetchData(filterTotal, filterCombo) {
+    fetch(`/admin/dashboard/data?filter=${filterTotal}`)
+    .then(res => res.json())
+    .then(res => {
+        // Line Chart
+        if(lineChart) lineChart.destroy();
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        lineChart = new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: res.totalLabels,
+                datasets: [{
+                    label: 'Doanh thu tổng',
+                    data: res.totalData,
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: value => value.toLocaleString() + '₫' } }
+                }
+            }
+        });
+
+        // Bar Chart
+        if(barChart) barChart.destroy();
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        barChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: res.comboLabels,
+                datasets: [{
+                    label: 'Doanh thu theo loại combo',
+                    data: res.comboData,
+                    backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: value => value.toLocaleString() + '₫' } }
+                }
+            }
+        });
+    });
+}
+
+// Init chart lần đầu
+fetchData('month', 'month');
+
+// Thay đổi filter
+document.getElementById('filterTotal').addEventListener('change', e => {
+    fetchData(e.target.value, document.getElementById('filterCombo').value);
+});
+document.getElementById('filterCombo').addEventListener('change', e => {
+    fetchData(document.getElementById('filterTotal').value, e.target.value);
+});
+</script>
 @endsection
