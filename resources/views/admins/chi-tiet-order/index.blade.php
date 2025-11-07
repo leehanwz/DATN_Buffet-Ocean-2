@@ -53,7 +53,11 @@
                                 @foreach ($orders as $order)
                                 <tr>
                                     <td>{{ $order->id }}</td>
-                                    <td>{{ $order->datBan->ma_order }}</td>
+
+                                    {{-- ✅ Mã order: dùng ID order_mon --}}
+                                    <td>ORDER-{{ str_pad($order->id, 0, '0', STR_PAD_LEFT) }}</td>
+
+
                                     <td>{{ $order->datBan->ten_khach ?? 'N/A' }}</td>
                                     <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                                     <td>

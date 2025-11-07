@@ -85,7 +85,7 @@ class OrderMonController extends Controller
                     'order_id' => $order->id,
                     'mon_an_id' => $monAnModel->id,
                     'so_luong' => 1, // Mặc định 1 món trong combo
-                    'don_gia' => $monAnModel->gia,
+                    'loai_mon' => 'combo', 'gọi thêm',
                     'trang_thai' => 'cho_bep',
                     'ghi_chu' => null,
                     'created_at' => $now,

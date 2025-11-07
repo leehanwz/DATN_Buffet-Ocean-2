@@ -250,7 +250,7 @@ CREATE TABLE `order_mon` (
   `ban_id` bigint UNSIGNED NOT NULL,
   `tong_mon` int DEFAULT NULL,
   `tong_tien` decimal(12,2) DEFAULT NULL,
-  `trang_thai` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `trang_thai` enum('dang_xu_li','hoan_thanh') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'dang_xu_li' COMMENT 'Trạng thái tổng của phiếu order',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
