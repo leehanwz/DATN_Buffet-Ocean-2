@@ -23,6 +23,7 @@ class DashboardController extends Controller
 
         // Tổng doanh thu hôm nay
         $doanhThuHomNay = HoaDon::whereDate('created_at', $today)->sum('tong_tien');
+        $tongDoanhThu = DB::table('hoa_don')->sum('tong_tien');
 
         // Lượt đặt bàn hôm nay
         $luotDatBan = BanAn::whereDate('created_at', $today)->count();
@@ -37,7 +38,7 @@ class DashboardController extends Controller
         $monHetHang = MonAn::where('trang_thai', 'Hết hàng')->count();
 
         // Tổng số nhân viên (nếu có)
-        $tongNhanVien = \App\Models\NhanVien::count(); // nếu bạn có model NhanVien
+        $tongNhanVien = \App\Models\NhanVien::count(); // nếu có model NhanVien
 
         // Đơn hàng mới nhất
         $donHangMoi = HoaDon::with('datBan')->latest('created_at')->take(5)->get();
@@ -76,6 +77,8 @@ class DashboardController extends Controller
             ->get();
 
         // show combo buffet bán chạy
+        $totalDatBan = DB::table('dat_ban')->count();
+
         $comboBanChay = DB::table('dat_ban')
             ->join('hoa_don', 'hoa_don.dat_ban_id', '=', 'dat_ban.id')
             ->join('combo_buffet', 'combo_buffet.id', '=', 'dat_ban.combo_id')
@@ -83,14 +86,50 @@ class DashboardController extends Controller
                 'combo_buffet.id',
                 'combo_buffet.ten_combo',
                 DB::raw('COUNT(hoa_don.id) as so_luot_ban'),
-                DB::raw('SUM(hoa_don.tong_tien) as tong_doanh_thu')
+                DB::raw('SUM(hoa_don.tong_tien) as tong_doanh_thu'),
+                DB::raw('COUNT(dat_ban.id) as tong_luot_dat'),
+                DB::raw('SUM(CASE WHEN dat_ban.trang_thai = "huy" THEN 1 ELSE 0 END) as so_luot_huy')
             )
             ->whereNotNull('dat_ban.combo_id')
             ->groupBy('combo_buffet.id', 'combo_buffet.ten_combo')
             ->orderByDesc('so_luot_ban')
             ->take(4)
+            ->get()
+            ->map(function ($combo) use ($totalDatBan) {
+                $combo->ti_le_dat = $totalDatBan > 0 ? round(($combo->so_luot_ban / $totalDatBan) * 100, 1) : 0;
+                $combo->ti_le_huy = $combo->tong_luot_dat > 0 ? round(($combo->so_luot_huy / $combo->tong_luot_dat) * 100, 1) : 0;
+                return $combo;
+            });
+
+        // Thống kê khách hàng tiềm năng + tỉ lệ quay lại
+        $topKhachHang = DB::table('dat_ban')
+            ->join('hoa_don', 'hoa_don.dat_ban_id', '=', 'dat_ban.id')
+            ->select(
+                'ten_khach',
+                'sdt_khach',
+                DB::raw('COUNT(dat_ban.id) as so_lan_dat'),
+                DB::raw('SUM(hoa_don.tong_tien) as tong_chi_tieu')
+            )
+            ->groupBy('ten_khach', 'sdt_khach')
+            ->orderByDesc('tong_chi_tieu')
+            ->take(5)
             ->get();
 
+        // Tổng số khách
+        $tongKhach = DB::table('dat_ban')
+            ->select('sdt_khach')
+            ->distinct()
+            ->count();
+
+        // Số khách quay lại
+        $khachQuayLai = DB::table('dat_ban')
+            ->select('sdt_khach', DB::raw('COUNT(*) as so_lan'))
+            ->groupBy('sdt_khach')
+            ->having('so_lan', '>', 1)
+            ->count();
+
+        // Tỉ lệ quay lại
+        $tiLeQuayLai = $tongKhach > 0 ? round(($khachQuayLai / $tongKhach) * 100, 2) : 0;
 
         return view('admins.dashboard', compact(
             'doanhThuHomNay',
@@ -104,7 +143,13 @@ class DashboardController extends Controller
             'doanhThuTheoThang',
             'luotDatBanTheoThang',
             'nhanVienMoi',
-            'comboBanChay'
+            'comboBanChay',
+            'totalDatBan',
+            'topKhachHang',
+            'tiLeQuayLai',
+            'tongKhach',
+            'tongDoanhThu',
+
         ));
     }
     public function getChartData(Request $request)
@@ -161,11 +206,44 @@ class DashboardController extends Controller
             $comboData[] = $query->sum('hd.tong_tien');
         }
 
+        // ==== BIỂU ĐỒ KHUNG GIỜ ====
+        $hourlyData = DB::table('dat_ban')
+            ->selectRaw('HOUR(gio_den) as hour, COUNT(*) as count')
+            ->whereBetween(DB::raw('HOUR(gio_den)'), [10, 22])
+            ->groupBy('hour')
+            ->orderBy('hour')
+            ->pluck('count', 'hour');
+
+        // ==== BIỂU ĐỒ NGÀY TRONG TUẦN ====
+        $weekdayData = DB::table('dat_ban')
+            ->selectRaw('DAYOFWEEK(gio_den) as weekday, COUNT(*) as count')
+            ->groupBy('weekday')
+            ->pluck('count', 'weekday');
+
+        // Đổi key thành tên thứ
+        $weekdayLabels = [
+            2 => 'Thứ 2',
+            3 => 'Thứ 3',
+            4 => 'Thứ 4',
+            5 => 'Thứ 5',
+            6 => 'Thứ 6',
+            7 => 'Thứ 7',
+            1 => 'Chủ nhật',
+        ];
+
+
+        $weekdayDataFormatted = [];
+        foreach ($weekdayLabels as $key => $label) {
+            $weekdayDataFormatted[$label] = $weekdayData[$key] ?? 0;
+        }
+
         return response()->json([
             'totalLabels' => $labels,
             'totalData' => $dataTotal,
             'comboLabels' => $comboLabels,
             'comboData' => $comboData,
+            'hourlyData' => $hourlyData,
+            'weekdayData' => $weekdayDataFormatted,
         ]);
     }
 }
