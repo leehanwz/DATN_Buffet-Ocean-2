@@ -61,7 +61,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // CHI TIẾT ORDER
     Route::resource('chi-tiet-order', ChiTietOrderController::class)
-        ->only(['index', 'show', 'update', 'destroy', 'edit'])
+        ->only(['index', 'show', 'create', 'store', 'update', 'destroy', 'edit'])
         ->names('chi-tiet-order');
 
 

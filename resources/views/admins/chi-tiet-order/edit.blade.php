@@ -3,7 +3,6 @@
 @section('title', 'Chỉnh sửa món ăn trong đơn')
 
 @section('content')
-
 <main class="app-content">
     <div class="app-title">
         <ul class="app-breadcrumb breadcrumb">
@@ -17,46 +16,83 @@
     </div>
 
     <div class="tile">
-        <h3 class="tile-title">Chỉnh sửa món: {{ $chiTiet->monAn->ten_mon ?? 'N/A' }}</h3>
-        <p>Đơn hàng: **#{{ $chiTiet->orderMon->id }}** | Đơn giá hiện tại: **{{ number_format($chiTiet->don_gia, 0, ',', '.') }} đ**</p>
-        <p class="text-danger">Chỉ được phép thay đổi Số lượng và Ghi chú.</p>
+        <h3 class="tile-title">Món: {{ $chiTiet->monAn->ten_mon ?? 'N/A' }}</h3>
+        <p>Đơn hàng: <strong>#{{ $chiTiet->orderMon->id }}</strong></p>
+        <p><strong>Trạng thái hiện tại:</strong> {{ ucfirst(str_replace('_', ' ', $chiTiet->trang_thai)) }}</p>
+
+        @php
+        $trangThai = $chiTiet->trang_thai;
+        $dsTrangThai = [
+        'cho_bep' => 'Chờ bếp',
+        'dang_che_bien' => 'Đang chế biến',
+        'da_len_mon' => 'Đã lên món',
+        'huy_mon' => 'Hủy món',
+        ];
+
+        @endphp
 
         <div class="tile-body">
-            <form class="row" method="POST" action="{{ route('admin.chi-tiet-order.update', $chiTiet->id) }}">
+            <form method="POST" action="{{ route('admin.chi-tiet-order.update', $chiTiet->id) }}" class="row">
                 @csrf
-                {{-- Laravel yêu cầu phương thức PUT/PATCH cho Resource Update --}}
                 @method('PUT')
 
                 <div class="col-md-12">
+                    {{-- Nếu đã hủy hoặc hoàn thành thì không cho chỉnh --}}
+                    @if (in_array($trangThai, ['huy_mon', 'hoan_thanh']))
                     <div class="form-group">
-                        <label class="control-label">Số lượng</label>
-                        <input class="form-control" type="number" name="so_luong" value="{{ old('so_luong', $chiTiet->so_luong) }}" min="1" required>
-                        @error('so_luong')
+                        <label class="control-label">Trạng thái</label>
+                        <input type="text" class="form-control"
+                            value="{{ $dsTrangThai[$trangThai] }}" readonly>
+                    </div>
+                    @else
+                    <div class="form-group">
+                        <label class="control-label">Thay đổi trạng thái</label>
+                        <select name="trang_thai" class="form-control" required>
+                            @php
+                            $allowedTransitions = [
+                            'cho_bep' => ['cho_bep', 'dang_che_bien', 'huy_mon'],
+                            'dang_che_bien' => ['dang_che_bien', 'da_len_mon', 'huy_mon'],
+                            'da_len_mon' => ['da_len_mon'], // đã lên món thì không quay lại
+                            'huy_mon' => ['huy_mon'], // hủy món thì không quay lại
+                            ];
+                            @endphp
+
+                            @foreach ($dsTrangThai as $key => $label)
+                            @if (in_array($key, $allowedTransitions[$trangThai] ?? []))
+                            <option value="{{ $key }}" {{ $chiTiet->trang_thai == $key ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
+                            @endif
+                            @endforeach
+                        </select>
+                        @error('trang_thai')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    <div class="form-group">
+                    @endif
+
+                    <div class="form-group mt-3">
                         <label class="control-label">Ghi chú (Tùy chọn)</label>
-                        <textarea class="form-control" name="ghi_chu" rows="3">{{ old('ghi_chu', $chiTiet->ghi_chu) }}</textarea>
+                        <textarea class="form-control" name="ghi_chu" rows="3" style="resize: none;">{{ trim(old('ghi_chu', $chiTiet->ghi_chu)) }}</textarea>
                         @error('ghi_chu')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                 </div>
 
-                <div class="col-md-12 text-right">
+                <div class="col-md-12 text-right mt-4">
+                    @if (!in_array($trangThai, ['huy_mon', 'hoan_thanh']))
                     <button class="btn btn-primary" type="submit">
                         <i class="fa fa-fw fa-lg fa-check-circle"></i> Lưu thay đổi
                     </button>
+                    @endif
                     <a href="{{ route('admin.chi-tiet-order.index', ['order_id' => $chiTiet->orderMon->id]) }}" class="btn btn-secondary">
-                        <i class="fa fa-fw fa-lg fa-times-circle"></i> Hủy bỏ
+                        <i class="fa fa-fw fa-lg fa-times-circle"></i> Quay lại
                     </a>
                 </div>
             </form>
         </div>
     </div>
-
-
 </main>
 @endsection

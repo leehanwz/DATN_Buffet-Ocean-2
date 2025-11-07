@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ChiTietOrder;
 use App\Models\OrderMon;
+use App\Models\MonTrongCombo;
+use App\Models\MonAn;
 use Illuminate\Http\Request;
 
 class ChiTietOrderController extends Controller
@@ -16,21 +18,74 @@ class ChiTietOrderController extends Controller
 
         // Nếu có order_id → xem chi tiết đơn cụ thể
         if ($orderId) {
-            $order = OrderMon::with(['chiTietOrders.monAn'])->find($orderId);
+            $order = OrderMon::with(['chiTietOrders.monAn', 'datBan'])->find($orderId);
 
             if (!$order) {
                 return redirect()->route('admin.chi-tiet-order.index')
                     ->with('error', 'Đơn hàng không tồn tại.');
             }
 
-            return view('admins.chi-tiet-order.show', compact('order'));
+            $monAns = MonAn::where('trang_thai', 'dang_ban')->get();
+
+            // ✅ Lấy combo_id từ dat_ban
+            $comboId = $order->datBan->combo_id ?? null;
+            $soLuongMonTrongCombo = [];
+
+            if ($comboId) {
+                $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
+                $soLuongMonTrongCombo = $monTrongCombo->pluck('gioi_han_so_luong', 'mon_an_id')->toArray();
+            }
+
+            // ✅ Xác định loại món (combo / gọi thêm)
+            foreach ($order->chiTietOrders as $ct) {
+                if (array_key_exists($ct->mon_an_id, $soLuongMonTrongCombo)) {
+                    $ct->loai_mon = 'Combo';
+                } else {
+                    $ct->loai_mon = 'Gọi thêm';
+                }
+            }
+
+            return view('admins.chi-tiet-order.show', compact('order', 'monAns', 'soLuongMonTrongCombo'));
         }
 
         // Nếu KHÔNG có order_id → hiển thị danh sách tất cả đơn
         $orders = OrderMon::latest()->paginate(10);
-        return view('admins.chi-tiet-order.index', compact('orders'));
+
+        // ✅ Nếu bạn muốn hiển thị combo chọn món ngay tại trang index, giữ dòng dưới
+        $monAns = MonAn::where('trang_thai', 'dang_ban')->get();
+
+        return view('admins.chi-tiet-order.index', compact('orders', 'monAns'));
     }
 
+    public function show($id)
+    {
+        // Lấy order + chi tiết món + bàn
+        $order = OrderMon::with(['datBan', 'chiTietOrders.monAn'])->findOrFail($id);
+
+        // Lấy combo_id từ dat_ban
+        $comboId = $order->datBan->combo_id ?? null;
+        $soLuongMonTrongCombo = [];
+
+        if ($comboId) {
+            $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
+            // Mỗi món trong combo lấy số lượng mặc định
+            $soLuongMonTrongCombo = $monTrongCombo->pluck('gioi_han_so_luong', 'mon_an_id')->toArray();
+        }
+
+        // ✅ Gắn loại món
+        foreach ($order->chiTietOrders as $ct) {
+            if (array_key_exists($ct->mon_an_id, $soLuongMonTrongCombo)) {
+                $ct->loai_mon = 'Combo';
+            } else {
+                $ct->loai_mon = 'Gọi thêm';
+            }
+        }
+
+        return view('admins.chi-tiet-order.show', [
+            'order' => $order,
+            'soLuongMonTrongCombo' => $soLuongMonTrongCombo,
+        ]);
+    }
     public function edit($id)
     {
         // Load cả OrderMon cha để hiển thị thông tin context
@@ -39,26 +94,90 @@ class ChiTietOrderController extends Controller
         return view('admins.chi-tiet-order.edit', compact('chiTiet'));
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|exists:order_mon,id',
+            'mon_an_id' => 'required|exists:mon_an,id',
+            'so_luong' => 'required|integer|min:1',
+        ]);
+
+        ChiTietOrder::create([
+            'order_id' => $request->order_id,
+            'mon_an_id' => $request->mon_an_id,
+            'so_luong' => $request->so_luong,
+            'ghi_chu' => $request->ghi_chu,
+            'loai_mon' => 'goi_them', // mặc định khi thêm thủ công
+            'trang_thai' => 'cho_bep',
+        ]);
+
+        return redirect()->route('admin.chi-tiet-order.index', ['order_id' => $request->order_id])
+            ->with('success', 'Đã thêm món vào đơn hàng thành công!');
+    }
+
+    public function create(Request $request)
+    {
+        $orderId = $request->query('order_id');
+
+        // Kiểm tra đơn hàng có tồn tại không
+        $order = \App\Models\OrderMon::with(['chiTietOrders.monAn'])->find($orderId);
+        if (!$order) {
+            return redirect()->route('admin.chi-tiet-order.index')
+                ->with('error', 'Không tìm thấy đơn hàng.');
+        }
+
+        // ✅ Lấy danh sách món ăn đang bán
+        $monAns = \App\Models\MonAn::where('trang_thai', 'an')->get();
+
+        return view('admins.chi-tiet-order.create', compact('order', 'monAns'));
+    }
+
     // Cập nhật số lượng hoặc ghi chú món ăn
     public function update(Request $request, $id)
     {
+        $ct = ChiTietOrder::findOrFail($id);
+
         $request->validate([
-            'so_luong' => 'required|integer|min:1',
+            'trang_thai' => 'required|string|in:cho_bep,dang_che_bien,da_len_mon,huy_mon',
             'ghi_chu' => 'nullable|string|max:255',
         ]);
 
-        $ct = ChiTietOrder::findOrFail($id);
+        $trangThaiCu = $ct->trang_thai;
+        $trangThaiMoi = $request->input('trang_thai');
+
+        // Nếu giữ nguyên trạng thái thì cho phép
+        if ($trangThaiMoi === $trangThaiCu) {
+            $ct->update([
+                'ghi_chu' => trim($request->input('ghi_chu')),
+            ]);
+
+            return redirect()->route('admin.chi-tiet-order.index', ['order_id' => $ct->order_id])
+                ->with('success', 'Đã cập nhật ghi chú thành công.');
+        }
+
+        // Quy tắc chuyển trạng thái
+        $quyTac = [
+            'cho_bep' => ['dang_che_bien', 'huy_mon'],
+            'dang_che_bien' => ['da_len_mon', 'huy_mon'],
+            'da_len_mon' => [],
+            'huy_mon' => [],
+        ];
+
+        // Kiểm tra hợp lệ
+        if (!in_array($trangThaiMoi, $quyTac[$trangThaiCu] ?? [])) {
+            return redirect()->back()
+                ->with('error', 'Không thể chuyển từ trạng thái "' . $trangThaiCu . '" sang "' . $trangThaiMoi . '".');
+        }
+
+        // Cập nhật trạng thái + ghi chú
         $ct->update([
-            'so_luong' => $request->so_luong,
-            'ghi_chu' => $request->ghi_chu,
+            'trang_thai' => $trangThaiMoi,
+            'ghi_chu' => trim($request->input('ghi_chu')),
         ]);
 
-        $ct->orderMon->recalculateTotal(); // Cập nhật lại tổng tiền đơn hàng
-
-        return redirect()->route('admin.chi-tiet-order.index', ['order_id' => $ct->orderMon->id])
-            ->with('success', 'Cập nhật chi tiết món ăn thành công.');
+        return redirect()->route('admin.chi-tiet-order.index', ['order_id' => $ct->order_id])
+            ->with('success', 'Cập nhật trạng thái thành công.');
     }
-
     // Xóa món khỏi đơn hàng
     public function destroy($id)
     {
@@ -76,5 +195,24 @@ class ChiTietOrderController extends Controller
         // Chuyển hướng về trang chi tiết đơn hàng
         return redirect()->route('admin.chi-tiet-order.index', ['order_id' => $orderMon->id])
             ->with('success', 'Đã xóa món khỏi đơn hàng và cập nhật tổng tiền.');
+    }
+
+    public function themMon(Request $request, $id)
+    {
+        $request->validate([
+            'mon_an_id' => 'required|exists:mon_an,id',
+            'so_luong' => 'required|integer|min:1',
+        ]);
+
+        ChiTietOrder::create([
+            'order_id' => $id,
+            'mon_an_id' => $request->mon_an_id,
+            'so_luong' => $request->so_luong,
+            'ghi_chu' => $request->ghi_chu ?? null,
+            'loai_mon' => 'goi_them',
+            'trang_thai' => 'cho_bep',
+        ]);
+
+        return redirect()->back()->with('success', 'Đã thêm món mới vào order.');
     }
 }
