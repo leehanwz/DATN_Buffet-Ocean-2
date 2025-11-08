@@ -15,7 +15,7 @@ class MonAnSeeder extends Seeder
         $trang_thais = ['con', 'het', 'an'];
         $loai_mons = ['Món chính', 'Khai vị', 'Tráng miệng', 'Đồ uống'];
 
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             DB::table('mon_an')->insert([
                 'danh_muc_id' => $faker->numberBetween(1, 5),
                 'ten_mon' => ucfirst($faker->word()) . ' ' . $faker->word(),

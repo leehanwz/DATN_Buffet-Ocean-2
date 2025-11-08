@@ -15,8 +15,8 @@ class DatBanSeeder extends Seeder
         $faker = Faker::create();
         $year = now()->year;
 
-        for ($i = 1; $i <= 6; $i++) {
-            for ($j = 0; $j < rand(3, 8); $j++) {
+        for ($i = 1; $i <= 12; $i++) {
+            for ($j = 0; $j < rand(300, 900); $j++) {
                 DB::table('dat_ban')->insert([
                     'ten_khach' => $faker->name(),
                     'sdt_khach' => $faker->phoneNumber(),

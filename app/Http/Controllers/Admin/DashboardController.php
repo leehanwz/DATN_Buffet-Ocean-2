@@ -11,15 +11,20 @@ use App\Models\MonAn;
 use Carbon\Carbon;
 use App\Models\ChiTietOrder;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\NhanVien;
+use App\Models\DatBan;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $nhanVienMoi = \App\Models\NhanVien::latest('created_at')->take(5)->get();
-
+        $thangHienTai = now()->month;
         $today = Carbon::today();
+
+        // Nhân viên
+        $nhanVien = NhanVien::orderBy('id')->take(10)->get(); // paginate(5);
+        $tongNhanVien = NhanVien::count();
+        $nhanVienNghiHomNay = NhanVien::where('trang_thai', 0)->count();
 
         // Tổng doanh thu hôm nay
         $doanhThuHomNay = HoaDon::whereDate('created_at', $today)->sum('tong_tien');
@@ -36,34 +41,37 @@ class DashboardController extends Controller
         // Sản phẩm hết hàng
         $monHetHang = MonAn::where('trang_thai', 'Hết hàng')->count();
 
-        // Tổng số nhân viên (nếu có)
-        $tongNhanVien = \App\Models\NhanVien::count(); // nếu bạn có model NhanVien
-
         // Đơn hàng mới nhất
         $donHangMoi = HoaDon::with('datBan')->latest('created_at')->take(5)->get();
 
+        // Thống kê doanh thu
         $rawDoanhThu = HoaDon::selectRaw('MONTH(created_at) as thang, SUM(tong_tien) as tong')
+            ->whereYear('created_at', now()->year)
+            ->whereMonth('created_at', '<=', $thangHienTai)
             ->groupBy('thang')
             ->pluck('tong', 'thang')
             ->toArray();
 
-        $labels = array_map(fn($m) => "Tháng $m", array_keys($rawDoanhThu));
-        $doanhThuTheoThang = array_values($rawDoanhThu);
-
         $doanhThuTheoThang = [];
-        for ($i = 1; $i <= 6; $i++) {
+        for ($i = 1; $i <= $thangHienTai; $i++) {
             $doanhThuTheoThang[] = isset($rawDoanhThu[$i]) ? (int)$rawDoanhThu[$i] : 0;
         }
 
-        $rawDatBan = \App\Models\DatBan::selectRaw('MONTH(created_at) as thang, COUNT(*) as tong')
+        // Thống kê lượt đặt bàn
+        $rawDatBan = DatBan::selectRaw('MONTH(created_at) as thang, COUNT(*) as tong')
             ->whereYear('created_at', now()->year)
             ->groupBy('thang')
             ->pluck('tong', 'thang')
             ->toArray();
 
         $luotDatBanTheoThang = [];
-        for ($i = 1; $i <= 6; $i++) {
+        for ($i = 1; $i <= $thangHienTai; $i++) {
             $luotDatBanTheoThang[] = isset($rawDatBan[$i]) ? (int)$rawDatBan[$i] : 0;
+        }
+
+        $labels = [];
+        for ($i = 1; $i <= $thangHienTai; $i++) {
+            $labels[] = "Tháng $i";
         }
 
         // Món bán chạy nhất hôm nay
@@ -86,7 +94,9 @@ class DashboardController extends Controller
             'donHangMoi',
             'doanhThuTheoThang',
             'luotDatBanTheoThang',
-            'nhanVienMoi',
+            'nhanVienNghiHomNay',
+            'labels',
+            'nhanVien',
         ));
     }
 }

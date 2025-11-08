@@ -22,9 +22,9 @@
                     <div class="col-md-6">
                         <div class="widget-small primary coloured-icon"><i class='icon bx bxs-user-account fa-3x'></i>
                             <div class="info">
-                                <h4>Tổng khách hàng</h4>
+                                <h4>Tổng nhân viên</h4>
                                 <p><b>{{ $tongNhanVien }} nhân viên</b></p>
-                                <p class="info-tong">Tổng số khách hàng được quản lý.</p>
+                                <p class="info-tong">Tổng số nhân viên nghỉ hôm nay: <b>{{ $nhanVienNghiHomNay }}</b></p>
                             </div>
                         </div>
                     </div>
@@ -52,16 +52,16 @@
                     <div class="col-md-6">
                         <div class="widget-small danger coloured-icon"><i class='icon bx bxs-error-alt fa-3x'></i>
                             <div class="info">
-                                <h4>Sắp hết hàng</h4>
+                                <h4>Sản phẩm hết hàng</h4>
                                 <p><b>{{ $monHetHang }} sản phẩm</b></p>
-                                <p class="info-tong">Số sản phẩm cảnh báo hết cần nhập thêm.</p>
+                                <p class="info-tong">Cần nhập thêm.</p>
                             </div>
                         </div>
                     </div>
                     <!-- col-12 -->
                     <div class="col-md-12">
                         <div class="tile">
-                            <h3 class="tile-title">Tình trạng đơn hàng</h3>
+                            <h3 class="tile-title">Trạng thái thanh toán</h3>
                             <div style="overflow-x: auto;">
                                 <table class="table table-bordered table-responsive">
                                     <thead>
@@ -71,7 +71,6 @@
                                             <th>Tổng tiền</th>
                                             <th>Trạng thái</th>
                                             <th>Phương thức TT</th>
-                                            <th>Đã thanh toán</th>
                                             <th>Ngày tạo</th>
                                         </tr>
                                     </thead>
@@ -79,18 +78,19 @@
                                         @foreach ($donHangMoi as $don)
                                             <tr>
                                                 <td>{{ $don->id }}</td>
-                                                <td>{{ $don->datBan->ten_khach ?? 'Ẩn' }}</td>
+                                                @php
+                                                    $tenKhach =
+                                                        \App\Models\DatBan::find($don->dat_ban_id)?->ten_khach ?? 'Ẩn';
+                                                @endphp
+                                                <td>{{ $tenKhach }}</td>
                                                 <td>{{ number_format($don->tong_tien) }} đ</td>
                                                 <td>
-                                                    <span class="badge bg-info">{{ $don->trang_thai ?? 'Chưa rõ' }}</span>
-                                                </td>
-                                                <td>{{ $don->phuong_thuc_tt ?? '---' }}</td>
-                                                <td>
                                                     <span
-                                                        class="badge {{ $don->da_thanh_toan ? 'bg-success' : 'bg-warning' }}">
-                                                        {{ $don->da_thanh_toan ? 'Đã thanh toán' : 'Chưa thanh toán' }}
+                                                        class="badge {{ $don->da_thanh_toan > 0 ? 'bg-success' : 'bg-warning' }}">
+                                                        {{ $don->da_thanh_toan > 0 ? 'Đã thanh toán' : 'Chưa thanh toán' }}
                                                     </span>
                                                 </td>
+                                                <td>{{ $don->phuong_thuc_tt ?? '---' }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($don->created_at)->format('d/m/Y') }}</td>
                                             </tr>
                                         @endforeach
@@ -104,36 +104,42 @@
                     <!-- col-12 -->
                     <div class="col-md-12">
                         <div class="tile">
-                            <h3 class="tile-title">Nhân viên mới</h3>
+                            <h3 class="tile-title">Nhân viên</h3>
                             <div style="overflow-x: auto">
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>Tên khách hàng</th>
+                                            <th>Tên nhân viên</th>
                                             <th>Số điện thoại</th>
+                                            <th>Email</th>
                                             <th>Vai trò</th>
                                             <th>Trạng thái</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($nhanVienMoi as $nv)
+                                        @foreach ($nhanVien as $nv)
                                             <tr>
                                                 <td>#{{ $nv->id }}</td>
                                                 <td>{{ $nv->ho_ten ?? 'Ẩn' }}</td>
-                                                </td>
                                                 <td><span class="tag tag-success">{{ $nv->sdt ?? '---' }}</span></td>
+                                                <td>{{ $nv->email ?? '---' }}</td>
                                                 <td>{{ ucfirst($nv->vai_tro) }}</td>
                                                 <td>
                                                     <span
-                                                        class="badge {{ $nv->trang_thai === 'active' ? 'bg-success' : 'bg-secondary' }}">
-                                                        {{ $nv->trang_thai === 'active' ? 'Hoạt động' : 'Ngưng hoạt động' }}
+                                                        class="badge {{ $nv->trang_thai == 1 ? 'bg-success' : 'bg-secondary' }}">
+                                                        {{ $nv->trang_thai == 1 ? 'Đi làm' : 'Nghỉ' }}
                                                     </span>
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
+
+                                {{-- Hiển thị phân trang --}}
+                                {{-- <div class="d-flex justify-content-center mt-3">
+                                    {{ $nhanVien->onEachSide(1)->links('pagination::bootstrap-4') }}
+                                </div> --}}
                             </div>
 
                         </div>
@@ -147,7 +153,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="tile">
-                            <h3 class="tile-title">Dữ liệu 6 tháng đầu vào</h3>
+                            <h3 class="tile-title">Thống kê lượt đặt bàn</h3>
                             <div class="embed-responsive embed-responsive-16by9">
                                 <canvas class="embed-responsive-item" id="lineChartDemo"></canvas>
                             </div>
@@ -155,7 +161,7 @@
                     </div>
                     <div class="col-md-12">
                         <div class="tile">
-                            <h3 class="tile-title">Thống kê 6 tháng doanh thu</h3>
+                            <h3 class="tile-title">Thống kê doanh thu</h3>
                             <div class="embed-responsive embed-responsive-16by9">
                                 <canvas class="embed-responsive-item" id="barChartDemo"></canvas>
                             </div>
@@ -186,7 +192,7 @@
     <script>
         const doanhThuData = @json(array_values($doanhThuTheoThang));
         const datBanData = @json(array_values($luotDatBanTheoThang));
-        const labels = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6"];
+        const labels = @json($labels);
 
         new Chart(document.getElementById("lineChartDemo"), {
             type: 'line',
@@ -203,8 +209,9 @@
             },
             options: {
                 scales: {
-                    y: { beginAtZero: true },
-                    x: { title: { display: false } }
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
         });
@@ -223,10 +230,12 @@
             },
             options: {
                 scales: {
-                    y: { beginAtZero: true },
-                    x: { title: { display: false } }
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
         });
     </script>
+
 @endsection

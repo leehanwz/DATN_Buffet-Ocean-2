@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class NhanVienSeeder extends Seeder
 {
@@ -14,16 +15,21 @@ class NhanVienSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
+        Schema::disableForeignKeyConstraints();
+        DB::table('nhan_vien')->truncate();
+        Schema::enableForeignKeyConstraints();
 
-        for ($i = 0; $i < 5; $i++) {
+        $faker = Faker::create('vi_VN');
+        $vaiTros = ['Quản lý', 'Phục vụ', 'Lễ tân', 'Thu ngân'];
+
+        for ($i = 0; $i < 40; $i++) {
             DB::table('nhan_vien')->insert([
                 'ho_ten' => $faker->name(),
-                'sdt' => $faker->phoneNumber(),
+                'sdt' => '0' . $faker->numerify('9########'),
                 'email' => $faker->unique()->safeEmail(),
-                'mat_khau' => bcrypt('123456'),
-                'vai_tro' => $faker->randomElement(['admin', 'nhan_vien']),
-                'trang_thai' => $faker->randomElement(['active', 'inactive']),
+                'mat_khau' => Hash::make('123456'),
+                'vai_tro' => $faker->randomElement($vaiTros),
+                'trang_thai' => rand(1, 100) <= 95 ? 1 : 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
