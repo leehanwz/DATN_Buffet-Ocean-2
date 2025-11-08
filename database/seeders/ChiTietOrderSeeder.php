@@ -4,38 +4,41 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Faker\Factory as Faker;
 
 class ChiTietOrderSeeder extends Seeder
 {
     public function run(): void
     {
-        // Lấy danh sách ID sẵn có
+        $faker = Faker::create('vi_VN');
+
+        // Lấy danh sách id từ các bảng liên quan
         $orderIds = DB::table('order_mon')->pluck('id')->toArray();
         $monAnIds = DB::table('mon_an')->pluck('id')->toArray();
 
+        // Nếu chưa có dữ liệu thì cảnh báo
         if (empty($orderIds) || empty($monAnIds)) {
-            $this->command->warn('⚠️ Chưa có dữ liệu trong bảng order_mon hoặc mon_an. Bỏ qua seeder chi_tiet_order.');
+            $this->command->warn('⚠️ Vui lòng seed dữ liệu cho bảng order_mon và mon_an trước!');
             return;
         }
 
-        $records = [];
-
-        for ($i = 0; $i < 30; $i++) {
-            $records[] = [
-                'order_id'   => $orderIds[array_rand($orderIds)],
-                'mon_an_id'  => $monAnIds[array_rand($monAnIds)],
-                'so_luong'   => rand(1, 5),
-                'loai_mon'   => collect(['combo', 'goi_them'])->random(),
-                'trang_thai' => collect(['cho_bep', 'dang_che_bien', 'da_len_mon', 'huy_mon'])->random(),
-                'ghi_chu'    => rand(0, 1) ? fake()->sentence() : null,
+        // Fake dữ liệu chi tiết order
+        for ($i = 0; $i < 50; $i++) {
+            DB::table('chi_tiet_order')->insert([
+                'order_id'   => $faker->randomElement($orderIds),
+                'mon_an_id'  => $faker->randomElement($monAnIds),
+                'so_luong'   => $faker->numberBetween(1, 5),
+                'loai_mon'   => $faker->randomElement(['combo', 'goi_them']), // ✅ chỉ 2 giá trị này thôi
+                'trang_thai' => $faker->randomElement([
+                    'cho_bep',
+                    'dang_che_bien',
+                    'da_len_mon',
+                    'huy_mon'
+                ]),
+                'ghi_chu'    => $faker->optional(0.3)->sentence(),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ];
+            ]);
         }
-
-        DB::table('chi_tiet_order')->insert($records);
-
-        $this->command->info('✅ Đã tạo giả 30 chi tiết order thành công!');
     }
 }

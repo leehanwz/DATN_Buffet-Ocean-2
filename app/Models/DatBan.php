@@ -39,7 +39,9 @@ class DatBan extends Model
 
     public function comboBuffet()
     {
-        return $this->belongsTo(ComboBuffet::class, 'combo_id');
+         return $this->belongsTo(ComboBuffet::class, 'combo_id')->withDefault([
+        'gia_co_ban' => 0
+    ]);
     }
 
 

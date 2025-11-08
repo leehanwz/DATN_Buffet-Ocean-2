@@ -95,4 +95,10 @@ class MonAn extends Model
 
         return 'badge ' . $colors[$colorIndex];
     }
+
+
+    public function chiTietOrders()
+    {
+        return $this->hasMany(ChiTietOrder::class, 'mon_an_id');
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MonAn;
+use App\Models\Danhmucmon;
 use App\Models\DanhMuc;
 use Illuminate\Http\Request;
 use App\Http\Requests\MonAnRequest; // nếu bạn dùng FormRequest để validate
@@ -18,7 +19,7 @@ class MonAnController extends Controller
 
     public function create()
     {
-        $danhMucs = DanhMuc::where('hien_thi', 1)->get();
+        $danhMucs = Danhmucmon::where('hien_thi', 1)->get();
         return view('admins.mon_an.create', compact('danhMucs'));
     }
 
@@ -54,7 +55,7 @@ class MonAnController extends Controller
 
     public function edit(MonAn $mon_an)
     {
-        $danhMucs = DanhMuc::where('hien_thi', 1)->get();
+        $danhMucs = Danhmucmon::where('hien_thi', 1)->get();
         return view('admins.mon_an.edit', compact('mon_an', 'danhMucs'));
     }
     public function update(MonAnRequest $request, MonAn $mon_an)

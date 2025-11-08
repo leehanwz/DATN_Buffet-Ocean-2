@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 // Controllers
 use App\Http\Controllers\Shop\HomeController;
+
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\Admin\NhanVienController;
@@ -15,6 +16,8 @@ use App\Http\Controllers\Admin\DanhMucController;
 use App\Http\Controllers\Admin\DatBanController;
 use App\Http\Controllers\Admin\MonAnController;
 use App\Http\Controllers\Admin\ComboBuffetController;
+use App\Http\Controllers\Admin\ChiTietOrderController;
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Admin\OrderMonController;
@@ -56,6 +59,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Xóa 6 dòng thủ công, thay bằng 1 dòng Route::resource
     // ==========================================================
     Route::resource('combo-buffet', ComboBuffetController::class);
+
+    // CHI TIẾT ORDER
+    Route::resource('chi-tiet-order', ChiTietOrderController::class)
+        ->only(['index', 'show', 'create', 'store', 'update', 'destroy', 'edit'])
+        ->names('chi-tiet-order');
 
 
     // NHÂN VIÊN & ĐƠN HÀNG

@@ -15,12 +15,14 @@ class OrderMonController extends Controller
     public function index()
     {
         $orders = OrderMon::with(['datBan', 'banAn'])->latest()->paginate(10);
-        return view('admins.order-mon.index', compact('orders'));
+        return view('admins.order-mon.index', compact('orders',));
     }
 
     public function create()
     {
-        $datBans = DatBan::with(['banAn', 'comboBuffet.monTrongCombo.monAn'])->get();
+        $datBans = DatBan::with(['banAn', 'comboBuffet.monTrongCombo.monAn'])
+            ->orderByDesc('id') // hoặc orderByDesc('created_at')
+            ->get();
         $banAns = BanAn::all();
         return view('admins.order-mon.create', compact('datBans', 'banAns'));
     }
@@ -29,46 +31,45 @@ class OrderMonController extends Controller
     {
         $request->validate([
             'dat_ban_id' => 'required|exists:dat_ban,id',
-            'trang_thai' => 'required|in:dang_xu_li,hoan_thanh,huy_mon',
         ]);
 
         $datBan = DatBan::with('comboBuffet.monTrongCombo.monAn')->findOrFail($request->dat_ban_id);
-
-        // --- Lấy thông tin từ đặt bàn ---
         $giaCombo = $datBan->comboBuffet?->gia_co_ban ?? 0;
         $soKhach  = $datBan->so_khach ?? 0;
         $giamGia  = $datBan->giam_gia ?? 0;
 
         $order = OrderMon::create([
             'dat_ban_id' => $datBan->id,
-            'ban_id' => $datBan->ban_id,
-            'tong_mon' => $datBan->so_khach ?? 0, // 🔥 Lấy tự động từ đặt bàn
-            'tong_tien' => ($datBan->comboBuffet?->gia_co_ban ?? 0) * ($datBan->so_khach ?? 0), // Tính sẵn tiền combo
+            'ban_id'     => $datBan->ban_id,
+            'tong_mon'   => 0,
+            'tong_tien'  => 0,
             'trang_thai' => 'dang_xu_li',
         ]);
-        // Khởi tạo các biến tính toán
-        $tongMon = 0; // giữ mặc định từ đặt bàn
+
+        $tongMon = 0;
         $tongTienGoiThem = 0;
         $tongPhuPhiVuot = 0;
 
-        // Nếu có danh sách món từ form
-        // ✅ 1. Cộng trước số món trong combo
-        if ($datBan->comboBuffet && $datBan->comboBuffet->monTrongCombo) {
+        // Thêm món trong combo
+        if ($datBan->comboBuffet && $datBan->comboBuffet->monTrongCombo->isNotEmpty()) {
             foreach ($datBan->comboBuffet->monTrongCombo as $monCombo) {
+                $monAnModel = $monCombo->monAn;
+                if (!$monAnModel) continue;
+
                 $soLuongCombo = $monCombo->so_luong ?? 1;
                 $tongMon += $soLuongCombo;
 
                 ChiTietOrder::create([
-                    'order_id' => $order->id,
-                    'mon_an_id' => $monCombo->monAn->id,
-                    'so_luong' => $soLuongCombo,
-                    'loai_mon' => 'combo',
+                    'order_id'   => $order->id,
+                    'mon_an_id'  => $monAnModel->id,
+                    'so_luong'   => $soLuongCombo,
+                    'loai_mon'   => 'combo',
                     'trang_thai' => 'cho_bep',
                 ]);
             }
         }
 
-        // ✅ 2. Sau đó cộng thêm món khách gọi ngoài combo
+        // Thêm món gọi thêm
         if ($request->filled('mon') && is_array($request->mon)) {
             foreach ($request->mon as $mon) {
                 $monAn = MonAn::find($mon['mon_an_id']);
@@ -79,35 +80,24 @@ class OrderMonController extends Controller
                 $tongMon += $soLuong;
 
                 ChiTietOrder::create([
-                    'order_id' => $order->id,
-                    'mon_an_id' => $monAn->id,
-                    'so_luong' => $soLuong,
-                    'loai_mon' => $loaiMon,
+                    'order_id'   => $order->id,
+                    'mon_an_id'  => $monAn->id,
+                    'so_luong'   => $soLuong,
+                    'loai_mon'   => $loaiMon,
                     'trang_thai' => 'cho_bep',
                 ]);
 
-
-                // Tính tiền gọi thêm
-                if ($loaiMon === 'goi_them') {
-                    $tongTienGoiThem += $monAn->gia * $soLuong;
-                }
-
-                // Tính phụ phí món vượt (nếu combo vượt giới hạn)
+                if ($loaiMon === 'goi_them') $tongTienGoiThem += $monAn->gia * $soLuong;
                 if ($loaiMon === 'combo') {
                     $gioiHan = $monAn->gioi_han ?? 0;
                     $phuPhi  = $monAn->phu_phi ?? 0;
-
-                    if ($soLuong > $gioiHan) {
-                        $tongPhuPhiVuot += ($soLuong - $gioiHan) * $phuPhi;
-                    }
+                    if ($soLuong > $gioiHan) $tongPhuPhiVuot += ($soLuong - $gioiHan) * $phuPhi;
                 }
             }
         }
 
-        // 👉 Tính tổng tiền cuối cùng
         $tongTien = ($giaCombo * $soKhach) + $tongTienGoiThem + $tongPhuPhiVuot - $giamGia;
 
-        // 👉 Cập nhật lại order
         $order->update([
             'tong_mon'  => $tongMon,
             'tong_tien' => $tongTien,
@@ -118,23 +108,15 @@ class OrderMonController extends Controller
 
     public function edit(OrderMon $orderMon)
     {
+        $orderMon->load('chiTietOrders');
         $datBans = DatBan::with('banAn')->get();
         $banAns = BanAn::all();
 
-        $allowedStatus = match ($orderMon->trang_thai) {
-            'dang_xu_ly' => [
-                'dang_xu_li' => 'Đang xử lý',
-                'huy_mon'    => 'Hủy món',
-                'hoan_thanh' => 'Hoàn thành',
-            ],
-            'hoan_thanh' => ['hoan_thanh' => 'Hoàn thành'],
-            'huy_mon'    => ['huy_mon' => 'Hủy món'],
-            default => [
-                'dang_xu_li' => 'Đang xử lý',
-                'hoan_thanh' => 'Hoàn thành',
-                'huy_mon'    => 'Hủy món',
-            ],
-        };
+        // Luôn cho phép chọn "Hoàn thành" nhưng sẽ kiểm tra khi update
+        $allowedStatus = [
+            'dang_xu_li' => 'Đang xử lý',
+            'hoan_thanh' => 'Hoàn thành',
+        ];
 
         return view('admins.order-mon.edit', compact('orderMon', 'datBans', 'banAns', 'allowedStatus'));
     }
@@ -143,24 +125,33 @@ class OrderMonController extends Controller
     {
         $request->validate([
             'dat_ban_id' => 'required|exists:dat_ban,id',
-            'trang_thai' => 'required|in:dang_xu_li,hoan_thanh,huy_mon',
-            'tong_mon' => 'nullable|integer|min:0',
-            'tong_tien' => 'nullable|numeric|min:0',
+            'trang_thai' => 'required|in:dang_xu_li,hoan_thanh',
         ]);
+
+        $orderMon->load('chiTietOrders');
+        $newStatus = $request->trang_thai;
+
+        // Nếu chọn Hoàn thành, kiểm tra chi tiết món
+        if ($newStatus === 'hoan_thanh') {
+            $tatCaMonDaLenMon = $orderMon->chiTietOrders->every(fn($ct) => $ct->trang_thai === 'da_len_mon');
+
+            if (!$tatCaMonDaLenMon) {
+                return back()
+                    ->withInput()
+                    ->with('error', 'Không thể hoàn thành order vì còn món chưa chế biến xong.');
+            }
+        }
 
         $datBan = DatBan::findOrFail($request->dat_ban_id);
 
         $orderMon->update([
             'dat_ban_id' => $datBan->id,
             'ban_id' => $datBan->ban_id,
-            'tong_mon' => $request->input('tong_mon', $orderMon->tong_mon),
-            'tong_tien' => $request->input('tong_tien', $orderMon->tong_tien),
-            'trang_thai' => $request->trang_thai,
+            'trang_thai' => $newStatus,
         ]);
 
         return redirect()->route('admin.order-mon.index')->with('success', 'Cập nhật Order món thành công!');
     }
-
     public function destroy(OrderMon $orderMon)
     {
         $orderMon->delete();
