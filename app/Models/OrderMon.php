@@ -27,4 +27,8 @@ class OrderMon extends Model
     {
         return $this->belongsTo(BanAn::class, 'ban_id');
     }
+    public function chiTietOrder()
+    {
+        return $this->hasMany(ChiTietOrder::class, 'order_id');
+    }
 }

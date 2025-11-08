@@ -9,9 +9,9 @@
                 <li class="breadcrumb-item">Quản lý combo</li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.mon-trong-combo.index') }}">Danh sách món
                         trong combo</a></li>
-                </ul>
+            </ul>
             <div id="clock"></div>
-            </div>
+        </div>
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -23,8 +23,8 @@
                 <h3 class="tile-title">Danh sách món trong combo</h3>
                 <a href="{{ route('admin.mon-trong-combo.create') }}" class="btn btn-add btn-sm">
                     <i class="fas fa-plus me-2"></i> Thêm món vào combo
-                    </a>
-                </div>
+                </a>
+            </div>
 
             <div class="tile-body">
                 <div class="mb-4 p-3 border rounded shadow-sm bg-light">
@@ -65,8 +65,7 @@
                     </form>
                 </div>
                 <div class="rounded overflow-hidden">
-                    <table class="table table-bordered table-hover align-middle text-center mb-0"
-                        id="monTrongComboTable">
+                    <table class="table table-bordered table-hover align-middle text-center mb-0" id="monTrongComboTable">
                         <thead style="background-color: #002b5b; color: white;">
                             <tr>
                                 <th>ID</th>
@@ -78,8 +77,8 @@
                                 <th style="width: 130px;">Ngày tạo</th>
                                 <th style="width: 130px;">Ngày cập nhật</th>
                                 <th style="width: 100px;">Hành động</th>
-                                </tr>
-                            </thead>
+                            </tr>
+                        </thead>
                         <tbody class="text-center">
                             @forelse($monTrongCombos as $item)
                                 <tr>
@@ -97,45 +96,42 @@
                                     <td>
                                         {{ number_format($item->phu_phi_goi_them ?? 0, 0, ',', '.') }} đ</td>
 
-                                    <td>
-                                        <span class="badge bg-success">Hoạt động</span>
-                                    </td>
+                                    <td>{!! $item->trang_thai_combo_badge !!}</td>
+
 
                                     <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
                                     <td>{{ $item->updated_at->format('d/m/Y H:i') }}</td>
 
                                     <td>
-                                        <a
-                                            href="{{ route('admin.mon-trong-combo.edit', $item->id) }}"
+                                        <a href="{{ route('admin.mon-trong-combo.edit', $item->id) }}"
                                             class="btn btn-warning btn-sm">
                                             <i class="fas fa-edit"></i>
-                                            </a>
+                                        </a>
 
-                                        <form
-                                            action="{{ route('admin.mon-trong-combo.destroy', $item->id) }}" method="POST"
-                                            class="d-inline-block"
+                                        <form action="{{ route('admin.mon-trong-combo.destroy', $item->id) }}"
+                                            method="POST" class="d-inline-block"
                                             onsubmit="return confirm('Bạn có chắc muốn xóa?');">
                                             @csrf
                                             @method('DELETE')
                                             <button class="btn btn-danger btn-sm">
                                                 <i class="fas fa-trash-alt"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    
+                                            </button>
+                                        </form>
+                                    </td>
+
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="9" class="text-center">Chưa có món trong
                                         combo nào</td>
-                                    </tr>
+                                </tr>
                             @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
-            </div>
+        </div>
     </main>
 @endsection
 

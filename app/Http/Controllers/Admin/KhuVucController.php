@@ -86,7 +86,7 @@ class KhuVucController extends Controller
     {
         try {
             $khuVuc = KhuVuc::findOrFail($id);
-            return view('admins.khu-vuc.edit-khu-vuc', ['khuVuc' => $khuVuc]);
+            return view('admins.khu-vuc.edit', ['khuVuc' => $khuVuc]);
         } catch (\Exception $e) {
             Log::error("EDIT KHUVUC FAILED: " . $e->getMessage());
             return redirect()->route('admin.khu-vuc-ban-an')

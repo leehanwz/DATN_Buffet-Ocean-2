@@ -19,6 +19,7 @@ class ComboBuffet extends Model
         'thoi_luong_phut',
         'thoi_gian_bat_dau',
         'thoi_gian_ket_thuc',
+        'anh', // ✅ THÊM DÒNG NÀY
         'trang_thai',
     ];
 
@@ -49,7 +50,7 @@ class ComboBuffet extends Model
             default: return 'bg-secondary';
         }
     }
-    
+
     public function getLoaiComboDisplayAttribute()
     {
         switch ($this->loai_combo) {
@@ -61,33 +62,28 @@ class ComboBuffet extends Model
         }
     }
 
-    /**
-     * Tự động gán màu cho loại combo (ví dụ, dùng giá trị enum để gán màu cố định)
-     */
     public function getLoaiComboBadgeAttribute()
     {
         switch ($this->loai_combo) {
-            case 'nguoi_lon': return 'badge-primary'; // Xanh
-            case 'tre_em': return 'badge-info'; // Xanh nhạt
-            case 'vip': return 'badge-warning text-dark'; // Vàng
-            case 'khuyen_mai': return 'badge-danger'; // Đỏ
+            case 'nguoi_lon': return 'badge-primary';
+            case 'tre_em': return 'badge-info';
+            case 'vip': return 'badge-warning text-dark';
+            case 'khuyen_mai': return 'badge-danger';
             default: return 'badge-secondary';
         }
     }
 
     public function getStartTimeDisplayAttribute()
     {
-        if ($this->thoi_gian_bat_dau) {
-            return $this->thoi_gian_bat_dau->format('d/m/Y H:i');
-        }
-        return '—';
+        return $this->thoi_gian_bat_dau
+            ? $this->thoi_gian_bat_dau->format('d/m/Y H:i')
+            : '—';
     }
 
     public function getEndTimeDisplayAttribute()
     {
-        if ($this->thoi_gian_ket_thuc) {
-            return $this->thoi_gian_ket_thuc->format('d/m/Y H:i');
-        }
-        return '—';
+        return $this->thoi_gian_ket_thuc
+            ? $this->thoi_gian_ket_thuc->format('d/m/Y H:i')
+            : '—';
     }
 }

@@ -33,19 +33,18 @@
                 <td>{{ number_format($order->tong_tien, 0, ',', '.') }} đ</td>
                 <td>
                     @switch($order->trang_thai)
-                        @case('cho_bep') <span class="badge bg-warning">Chờ bếp</span> @break
-                        @case('dang_che_bien') <span class="badge bg-info">Đang chế biến</span> @break
-                        @case('da_len_mon') <span class="badge bg-success">Đã lên món</span> @break
+                        @case('dang_xu_li') <span class="badge bg-info">Đang xử lí</span> @break
+                        @case('hoan_thanh') <span class="badge bg-success">Hoàn Thành</span> @break
                         @case('huy_mon') <span class="badge bg-danger">Hủy món</span> @break
                     @endswitch
                 </td>
                 <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                 <td>
                     <a href="{{ route('admin.order-mon.edit', $order->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                    <form action="{{ route('admin.order-mon.destroy', $order->id) }}" method="POST" style="display:inline-block;">
+                    <!-- <form action="{{ route('admin.order-mon.destroy', $order->id) }}" method="POST" style="display:inline-block;">
                         @csrf @method('DELETE')
                         <button class="btn btn-danger btn-sm" onclick="return confirm('Xóa order này?')"><i class="fas fa-trash"></i></button>
-                    </form>
+                    </form> -->
                 </td>
             </tr>
             @endforeach

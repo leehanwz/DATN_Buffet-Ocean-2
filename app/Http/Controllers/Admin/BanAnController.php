@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BanAn;
 use App\Models\KhuVuc;
+use App\Models\DatBan; // 💡 THÊM MODEL DATBAN
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon; // 💡 THÊM CARBON
 
 class BanAnController extends Controller
 {
@@ -174,5 +176,38 @@ class BanAnController extends Controller
             Log::error("REGENERATE QR FAILED: " . $e->getMessage());
             return back()->with('error', 'Lỗi hệ thống khi tạo lại QR.');
         }
+    }
+
+    /**
+     * 💡 HÀM MỚI: Xử lý AJAX request để tìm bàn trống theo giờ
+     */
+    public function ajaxGetAvailableTables(Request $request)
+    {
+        // 1. Lấy giờ người dùng chọn
+        $selectedTime = $request->input('time');
+        if (!$selectedTime) {
+            return response()->json(['error' => 'Vui lòng chọn giờ.'], 400);
+        }
+
+        $duration = 120; // Thời lượng 120 phút
+        $newStart = Carbon::parse($selectedTime);
+
+        // 2. Tìm ID của các bàn BỊ TRÙNG LỊCH (Bị Bận)
+        $conflictingBookingIds = DatBan::whereNotIn('trang_thai', ['huy', 'hoan_tat'])
+            ->whereBetween('gio_den', [
+                $newStart->copy()->subMinutes($duration - 1), // 119 phút trước
+                $newStart->copy()->addMinutes($duration - 1)  // 119 phút sau
+            ])
+            ->pluck('ban_id') // Chỉ lấy ID của các bàn bị trùng
+            ->toArray();
+
+        // 3. Lấy tất cả các bàn CÓ THỂ SỬ DỤNG
+        // (Trừ bàn hỏng VÀ trừ các bàn bị trùng giờ)
+        $availableTables = BanAn::where('trang_thai', '!=', 'khong_su_dung')
+            ->whereNotIn('id', $conflictingBookingIds) // 💡 Loại bỏ các bàn bị trùng
+            ->get();
+
+        // 4. Trả về dữ liệu JSON
+        return response()->json($availableTables);
     }
 }

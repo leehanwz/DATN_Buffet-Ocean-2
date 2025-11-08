@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ComboBuffetController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Admin\OrderMonController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -83,4 +84,25 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/regenerate-qr', 'regenerateQr')->name('qr');
         Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
     });
+    // 💡 === AJAX ROUTE (Lấy bàn trống theo giờ) ===
+    Route::get('/ajax/get-available-tables', [BanAnController::class, 'ajaxGetAvailableTables'])
+        ->name('ajax.get-available-tables');
+
+
+    // 💡 === CRUD CHO ĐẶT BÀN ===
+    Route::prefix('dat-ban')->name('dat-ban.')->controller(DatBanController::class)->group(function () {
+    });
+    // 💡 === CRUD CHO ĐẶT BÀN ===
+    Route::prefix('dat-ban')->name('dat-ban.')->controller(DatBanController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/{id}', 'show')->name('show');
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::post('/{id}/update', 'update')->name('update');
+        Route::post('/{id}/delete', 'destroy')->name('destroy');
+        Route::post('/{id}/update-status', 'updateStatus')->name('updateStatus');
+    });
+
 });
+
