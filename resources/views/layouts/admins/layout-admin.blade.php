@@ -78,6 +78,11 @@
             <span class="app-menu__label">Quản lý khu vực</span>
           </a>
         </li>
+        <li>
+          <a class="app-menu__item " href="{{route('admin.hoa-don.index')}}">
+            <i class='app-menu__icon bx bx-table'></i>
+            <span class="app-menu__label">Quản lý hóa đơn</span>
+          </a>
 
         {{-- 💡 ĐÃ THÊM ROUTE ĐẶT BÀN MỚI VÀO ĐÂY --}}
         <li>

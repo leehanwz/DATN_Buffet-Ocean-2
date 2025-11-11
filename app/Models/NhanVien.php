@@ -9,8 +9,8 @@ class NhanVien extends Model
     protected $table = 'nhan_vien';
 
     protected $fillable = [
-        'ten_nhan_vien',
-        'chuc_vu',
+        'ho_ten',
+        'sdt',
         'so_dien_thoai',
         'email'
     ];

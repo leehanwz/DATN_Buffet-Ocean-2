@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ComboBuffetController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Admin\DatBanController;
+use App\Http\Controllers\Admin\HoaDonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,6 +100,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/delete', 'destroy')->name('destroy');
         Route::post('/{id}/update-status', 'updateStatus')->name('updateStatus');
     });
-    
+
+    Route::resource('hoa-don', HoaDonController::class);
 });
 
