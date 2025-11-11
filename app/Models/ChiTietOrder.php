@@ -30,6 +30,9 @@ class ChiTietOrder extends Model
         return $this->belongsTo(MonAn::class, 'mon_an_id');
     }
 
+    /**
+     * Khi lưu hoặc xóa chi tiết order thì cập nhật lại tổng tiền/tổng món
+     */
     protected static function booted()
     {
         static::saved(function ($chiTiet) {
@@ -42,7 +45,10 @@ class ChiTietOrder extends Model
     }
 
     /**
-     * Accessor tính tiền từng món, bao gồm phụ phí nếu là món gọi thêm
+     * Accessor tính tiền từng món
+     * - Nếu là combo → giá combo
+     * - Nếu là gọi thêm → giá món + phụ phí vượt giới hạn
+     * - Còn lại → giá món thường
      */
     public function getThanhTienAttribute()
     {
@@ -52,8 +58,23 @@ class ChiTietOrder extends Model
         $soLuong = $this->so_luong ?? 0;
         $giaMon = $mon->gia ?? 0;
 
+        // ✅ Nếu là món combo → dùng giá combo buffet
+        if ($this->loai_mon === 'combo') {
+            $order = $this->orderMon;
+            $combo = $order?->datBan?->comboBuffet;
+            $giaCombo = $combo?->gia_co_ban ?? 0;
+
+            return $soLuong * $giaCombo;
+        }
+
+        // ✅ Nếu là món gọi thêm → tính phụ phí nếu vượt giới hạn
         if ($this->loai_mon === 'goi_them') {
             $comboMon = \App\Models\MonTrongCombo::where('mon_an_id', $mon->id)->first();
+
+            if (!$comboMon) {
+                return $soLuong * $giaMon;
+            }
+
             $gioiHanMon = $comboMon->gioi_han_so_luong ?? 0;
             $phuPhiMon = $comboMon->phu_phi_goi_them ?? 0;
             $soVuot = ($gioiHanMon > 0 && $soLuong > $gioiHanMon) ? ($soLuong - $gioiHanMon) : 0;
@@ -61,7 +82,7 @@ class ChiTietOrder extends Model
             return ($soLuong * $giaMon) + ($soVuot * $phuPhiMon);
         }
 
-        // Món trong combo → không tính phụ phí
+        // Loại khác → mặc định giá món thường
         return $soLuong * $giaMon;
     }
 
@@ -79,19 +100,18 @@ class ChiTietOrder extends Model
         $soKhach = $datBan->so_khach ?? 0;
         $giaCombo = $combo->gia_co_ban ?? 0;
 
-        // Lấy tất cả chi tiết món còn lại
+        // Lấy tất cả chi tiết món trong order
         $chiTietList = self::where('order_id', $orderId)->with('monAn')->get();
 
-        $tongMonHienThi = 0;  // tổng số món hiển thị
-        $tongTienGoiThem = 0;  // tổng tiền món gọi thêm + phụ phí
-
-        foreach ($chiTietList as $ct) {
+        $tongMonHienThi = 0;
+        $tongTienGoiThem = 0;
+foreach ($chiTietList as $ct) {
             $mon = $ct->monAn;
             if (!$mon) continue;
 
             if ($ct->loai_mon === 'goi_them') {
                 $tongTienGoiThem += $ct->thanh_tien;
-                $tongMonHienThi += 1; // hiển thị 1 món dù số lượng bao nhiêu
+                $tongMonHienThi += 1; // chỉ đếm 1 dòng
             }
 
             if ($ct->loai_mon === 'combo') {
@@ -99,7 +119,7 @@ class ChiTietOrder extends Model
             }
         }
 
-        // Tổng tiền = combo + món gọi thêm còn lại
+        // ✅ Tổng tiền = (giá combo × số khách) + tổng tiền món gọi thêm
         $tongTien = ($giaCombo * $soKhach) + $tongTienGoiThem;
 
         $order->update([

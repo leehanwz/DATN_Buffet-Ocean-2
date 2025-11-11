@@ -61,10 +61,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('combo-buffet', ComboBuffetController::class);
 
     // CHI TIẾT ORDER
-    Route::resource('chi-tiet-order', ChiTietOrderController::class)
-        ->only(['index', 'show', 'create', 'store', 'update', 'destroy', 'edit'])
-        ->names('chi-tiet-order');
-
+    Route::resource('chi-tiet-order', ChiTietOrderController::class);
 
     // NHÂN VIÊN & ĐƠN HÀNG
     Route::get('/nhan-vien', [NhanVienController::class, 'index'])->name('nhan-vien');

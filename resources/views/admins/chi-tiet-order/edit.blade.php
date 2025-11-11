@@ -7,8 +7,8 @@
     <div class="app-title">
         <ul class="app-breadcrumb breadcrumb">
             <li class="breadcrumb-item">
-                <a href="{{ route('admin.chi-tiet-order.index', ['order_id' => $chiTiet->orderMon->id]) }}">
-                    Chi tiết đơn #{{ $chiTiet->orderMon->id }}
+                <a href="{{ route('admin.chi-tiet-order.index', ['order_id' => $ct->orderMon->id]) }}">
+                    Chi tiết đơn #{{ $ct->orderMon->id }}
                 </a>
             </li>
             <li class="breadcrumb-item active">Chỉnh sửa món</li>
@@ -16,12 +16,12 @@
     </div>
 
     <div class="tile">
-        <h3 class="tile-title">Món: {{ $chiTiet->monAn->ten_mon ?? 'N/A' }}</h3>
-        <p>Đơn hàng: <strong>#{{ $chiTiet->orderMon->id }}</strong></p>
-        <p><strong>Trạng thái hiện tại:</strong> {{ ucfirst(str_replace('_', ' ', $chiTiet->trang_thai)) }}</p>
+        <h3 class="tile-title">Món: {{ $ct->monAn->ten_mon ?? 'N/A' }}</h3>
+        <p>Đơn hàng: <strong>#{{ $ct->orderMon->id }}</strong></p>
+        <p><strong>Trạng thái hiện tại:</strong> {{ ucfirst(str_replace('_', ' ', $ct->trang_thai)) }}</p>
 
         @php
-        $trangThai = $chiTiet->trang_thai;
+        $trangThai = $ct->trang_thai;
         $dsTrangThai = [
         'cho_bep' => 'Chờ bếp',
         'dang_che_bien' => 'Đang chế biến',
@@ -32,7 +32,7 @@
         @endphp
 
         <div class="tile-body">
-            <form method="POST" action="{{ route('admin.chi-tiet-order.update', $chiTiet->id) }}" class="row">
+            <form method="POST" action="{{ route('admin.chi-tiet-order.update', $ct->id) }}" class="row">
                 @csrf
                 @method('PUT')
 
@@ -59,7 +59,7 @@
 
                             @foreach ($dsTrangThai as $key => $label)
                             @if (in_array($key, $allowedTransitions[$trangThai] ?? []))
-                            <option value="{{ $key }}" {{ $chiTiet->trang_thai == $key ? 'selected' : '' }}>
+                            <option value="{{ $key }}" {{ $ct->trang_thai == $key ? 'selected' : '' }}>
                                 {{ $label }}
                             </option>
                             @endif
@@ -74,7 +74,7 @@
 
                     <div class="form-group mt-3">
                         <label class="control-label">Ghi chú (Tùy chọn)</label>
-                        <textarea class="form-control" name="ghi_chu" rows="3" style="resize: none;">{{ trim(old('ghi_chu', $chiTiet->ghi_chu)) }}</textarea>
+                        <textarea class="form-control" name="ghi_chu" rows="3" style="resize: none;">{{ trim(old('ghi_chu', $ct->ghi_chu)) }}</textarea>
                         @error('ghi_chu')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -87,7 +87,7 @@
                         <i class="fa fa-fw fa-lg fa-check-circle"></i> Lưu thay đổi
                     </button>
                     @endif
-                    <a href="{{ route('admin.chi-tiet-order.index', ['order_id' => $chiTiet->orderMon->id]) }}" class="btn btn-secondary">
+                    <a href="{{ route('admin.chi-tiet-order.index', ['order_id' => $ct->orderMon->id]) }}" class="btn btn-secondary">
                         <i class="fa fa-fw fa-lg fa-times-circle"></i> Quay lại
                     </a>
                 </div>
