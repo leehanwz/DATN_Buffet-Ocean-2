@@ -47,4 +47,10 @@ class DatBan extends Model
     {
         return $this->belongsTo(NhanVien::class, 'nhan_vien_id');
     }
+
+    public function orderMon()
+    {
+        // 'dat_ban_id' là khóa ngoại trong bảng 'order_mon'
+        return $this->hasMany(OrderMon::class, 'dat_ban_id');
+    }
 }
