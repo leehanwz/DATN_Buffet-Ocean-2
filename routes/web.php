@@ -56,16 +56,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // NHÂN VIÊN 
     Route::prefix('nhan-vien')->name('nhan-vien.')->controller(NhanVienController::class)->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::get('/create', 'create')->name('create');
-        Route::post('/store', 'store')->name('store');
-        Route::get('/{id}/edit', 'edit')->name('edit');
-        Route::post('/{id}/update', 'update')->name('update');
-        Route::post('/{id}/delete', 'destroy')->name('destroy');
-        Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
-        Route::post('/{id}/reset-mat-khau', 'resetMatKhau')->name('reset-mat-khau');
-        Route::patch('/{id}/cap-nhat-trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
 
+        // Hiển thị danh sách
+        Route::get('/', 'index')->name('index');
+    
+        // Thêm mới
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store'); // POST /nhan-vien
+    
+        // Sửa
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::put('/{id}', 'update')->name('update'); // PUT /nhan-vien/{id}
+    
+        // Xóa
+        Route::delete('/{id}', 'destroy')->name('destroy'); // DELETE /nhan-vien/{id}
+    
+        // Cập nhật trạng thái (AJAX hoặc patch)
+        Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
+    
+        // Reset mật khẩu
+        Route::post('/{id}/reset-mat-khau', 'resetMatKhau')->name('reset-mat-khau');
+    
     });
     // ĐƠN HÀNG
     Route::get('/don-hang', [DonHangController::class, 'index'])->name('don-hang');

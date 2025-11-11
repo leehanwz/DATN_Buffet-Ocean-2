@@ -37,11 +37,10 @@
             <div class="col-md-3">
                 <select name="trang_thai" class="form-control">
                     <option value="">-- Trạng thái --</option>
-                    <option value="dang_lam" {{ request('trang_thai') == 'dang_lam' ? 'selected' : '' }}>Đang Làm</option>
-                    <option value="nghi" {{ request('trang_thai') == 'nghi' ? 'selected' : '' }}>Nghỉ </option>
-                    <option value="khoa" {{ request('trang_thai') == 'khoa' ? 'selected' : '' }}>Khoá</option>
+                    <option value="1" {{ request('trang_thai') == '1' ? 'selected' : '' }}>Đang làm</option>
+                    <option value="0" {{ request('trang_thai') == '0' ? 'selected' : '' }}>Nghỉ</option>
+                    <option value="2" {{ request('trang_thai') == '2' ? 'selected' : '' }}>Khóa</option>
                 </select>
-                
             </div>
             <div class="col-md-3 d-flex">
                 <button type="submit" class="btn btn-primary mr-2"><i class="fa fa-search"></i> Tìm kiếm</button>
@@ -87,15 +86,14 @@
                                 @endif
                             </td>
                             <td>
-                                @if($nv->trang_thai == 'dang_lam')
+                                @if($nv->trang_thai == 1)
                                     <span class="badge badge-success">Đang làm</span>
-                                @elseif($nv->trang_thai == 'nghi')
+                                @elseif($nv->trang_thai == 0)
                                     <span class="badge badge-danger">Nghỉ</span>
                                 @else
-                                    <span class="badge badge-secondary">Khoá</span>
+                                    <span class="badge badge-secondary">Khóa</span>
                                 @endif
                             </td>
-                            
                             <td>
                                 <a href="{{ route('admin.nhan-vien.edit', $nv->id) }}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-edit"></i>
@@ -104,19 +102,20 @@
                                 <form action="{{ route('admin.nhan-vien.destroy', $nv->id) }}" method="POST" style="display:inline-block;"
                                       onsubmit="return confirm('Xóa nhân viên này?');">
                                     @csrf
+                                    @method('DELETE')
                                     <button class="btn btn-sm btn-danger">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </form>
 
                                 {{-- Cập nhật trạng thái --}}
-                                <form action="{{ route('admin.nhan-vien.cap-nhat-trang-thai', $nv->id) }}" method="POST" style="display:inline-block;">
-                                    @csrf
-                                    @method('PATCH')
-                                    @if($nv->trang_thai == 'hoat_dong')
-                                        <button class="btn btn-sm btn-warning">Khoá</button>
-                                    @endif
-                                </form>
+                                @if($nv->trang_thai != 2)
+                                    <form action="{{ route('admin.nhan-vien.cap-nhat-trang-thai', $nv->id) }}" method="POST" style="display:inline-block;">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="btn btn-sm btn-warning">Đổi trạng thái</button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                     @empty

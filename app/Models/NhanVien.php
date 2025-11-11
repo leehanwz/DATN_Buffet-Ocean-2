@@ -51,4 +51,39 @@ class NhanVien extends Model
     {
         return $this->vai_tro === 'phuc_vu';
     }
+
+    /**
+     * Lấy trạng thái dạng chữ theo giá trị số
+     */
+    public function getTrangThaiText()
+    {
+        switch ($this->trang_thai) {
+            case 0:
+                return 'Nghỉ';
+            case 1:
+                return 'Đang làm';
+            case 2:
+                return 'Khóa';
+            default:
+                return 'Không xác định';
+        }
+    }
+
+    /**
+     * Kiểm tra trạng thái nhân viên
+     */
+    public function isDangLam()
+    {
+        return $this->trang_thai === 1;
+    }
+
+    public function isNghi()
+    {
+        return $this->trang_thai === 0;
+    }
+
+    public function isKhoa()
+    {
+        return $this->trang_thai === 2;
+    }
 }

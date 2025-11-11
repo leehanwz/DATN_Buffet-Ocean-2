@@ -63,7 +63,7 @@ class NhanVienController extends Controller
             'email' => 'required|email|unique:nhan_vien,email',
             'mat_khau' => 'required|min:6',
             'vai_tro' => ['required', Rule::in(['quan_ly', 'phuc_vu', 'bep'])],
-            'trang_thai' => ['required', Rule::in(['dang_lam', 'nghi', 'khoa'])],
+            'trang_thai' => ['required', Rule::in([0,1,2])], // 0: nghỉ, 1: đang làm, 2: khóa
         ];
 
         $messages = [
@@ -116,7 +116,7 @@ class NhanVienController extends Controller
             'sdt' => ['required', 'string', 'max:20', Rule::unique('nhan_vien', 'sdt')->ignore($nhanVien->id)],
             'email' => ['required', 'email', Rule::unique('nhan_vien', 'email')->ignore($nhanVien->id)],
             'vai_tro' => ['required', Rule::in(['quan_ly', 'phuc_vu', 'bep'])],
-            'trang_thai' => ['required', Rule::in(['dang_lam', 'nghi', 'khoa'])],
+            'trang_thai' => ['required', Rule::in([0,1,2])], // 0: nghỉ, 1: đang làm, 2: khóa
         ];
 
         $request->validate($rules);
@@ -159,8 +159,12 @@ class NhanVienController extends Controller
     public function capNhatTrangThai($id)
     {
         $nhanVien = NhanVien::findOrFail($id);
-        $nhanVien->trang_thai = $nhanVien->trang_thai === 'dang_lam' ? 'nghi' : 'dang_lam';
-        $nhanVien->save();
+
+        // Chuyển trạng thái 1 <-> 0, 2 giữ nguyên
+        if ($nhanVien->trang_thai != 2) {
+            $nhanVien->trang_thai = $nhanVien->trang_thai == 1 ? 0 : 1;
+            $nhanVien->save();
+        }
 
         return back()->with('success', 'Cập nhật trạng thái thành công!');
     }
