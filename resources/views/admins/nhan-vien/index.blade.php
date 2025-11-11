@@ -37,10 +37,11 @@
             <div class="col-md-3">
                 <select name="trang_thai" class="form-control">
                     <option value="">-- Trạng thái --</option>
-                    <option value="hoat_dong" {{ request('trang_thai') == 'hoat_dong' ? 'selected' : '' }}>Hoạt động</option>
-                    <option value="nghi_viec" {{ request('trang_thai') == 'nghi_viec' ? 'selected' : '' }}>Nghỉ việc</option>
+                    <option value="dang_lam" {{ request('trang_thai') == 'dang_lam' ? 'selected' : '' }}>Đang Làm</option>
+                    <option value="nghi" {{ request('trang_thai') == 'nghi' ? 'selected' : '' }}>Nghỉ </option>
                     <option value="khoa" {{ request('trang_thai') == 'khoa' ? 'selected' : '' }}>Khoá</option>
                 </select>
+                
             </div>
             <div class="col-md-3 d-flex">
                 <button type="submit" class="btn btn-primary mr-2"><i class="fa fa-search"></i> Tìm kiếm</button>
@@ -86,14 +87,15 @@
                                 @endif
                             </td>
                             <td>
-                                @if($nv->trang_thai == 'hoat_dong')
-                                    <span class="badge badge-success">Hoạt động</span>
-                                @elseif($nv->trang_thai == 'nghi_viec')
-                                    <span class="badge badge-danger">Nghỉ việc</span>
+                                @if($nv->trang_thai == 'dang_lam')
+                                    <span class="badge badge-success">Đang làm</span>
+                                @elseif($nv->trang_thai == 'nghi')
+                                    <span class="badge badge-danger">Nghỉ</span>
                                 @else
                                     <span class="badge badge-secondary">Khoá</span>
                                 @endif
                             </td>
+                            
                             <td>
                                 <a href="{{ route('admin.nhan-vien.edit', $nv->id) }}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-edit"></i>
@@ -113,8 +115,6 @@
                                     @method('PATCH')
                                     @if($nv->trang_thai == 'hoat_dong')
                                         <button class="btn btn-sm btn-warning">Khoá</button>
-                                    @else
-                                        <button class="btn btn-sm btn-success">Mở</button>
                                     @endif
                                 </form>
                             </td>
