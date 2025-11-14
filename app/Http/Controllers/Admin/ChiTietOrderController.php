@@ -148,7 +148,7 @@ class ChiTietOrderController extends Controller
 
         // Update trực tiếp các trường
         $ct->update([
-            'so_luong' => $request->so_luong,
+            'so_luong' => $request->so_luong ?? $ct->so_luong,
             'ghi_chu' => $request->ghi_chu,
             'trang_thai' => $request->trang_thai,
         ]);

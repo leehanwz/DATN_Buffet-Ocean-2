@@ -6,81 +6,107 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\HoaDon;
 use App\Models\DatBan;
+use App\Models\Voucher;
 
 class HoaDonController extends Controller
 {
-    /**
-     * HIỂN THỊ DANH SÁCH HÓA ĐƠN
-     * Tải quan hệ: Hóa đơn -> Đặt Bàn -> Bàn Ăn
-     * Tải quan hệ: Hóa đơn -> Đặt Bàn -> Phiếu Order
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $hoadons = HoaDon::with([
-            'datBan.banAn', 
-            'datBan.orderMon'
-        ])->latest()->get();
+        $query = HoaDon::with([
+            'datBan.banAn',
+            'datBan.orderMon',
+            'voucher'
+        ])->latest();
+
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('ma_hoa_don', 'LIKE', $searchTerm)
+                  ->orWhereHas('datBan', function ($datBanQuery) use ($searchTerm) {
+                      $datBanQuery->where('ten_khach', 'LIKE', $searchTerm);
+                  })
+                  ->orWhereHas('datBan.banAn', function ($banAnQuery) use ($searchTerm) {
+                      $banAnQuery->where('so_ban', 'LIKE', $searchTerm);
+                  });
+            });
+        }
+
+        if ($request->filled('phuong_thuc_tt')) {
+            $query->where('phuong_thuc_tt', $request->phuong_thuc_tt);
+        }
+
+        $hoadons = $query->paginate(10);
+        
+        $hoadons->appends($request->query());
 
         return view('admins.hoa-don.index', compact('hoadons'));
     }
 
-    /**
-     * HIỂN THỊ FORM TẠO MỚI
-     * Tải các bàn ở trạng thái 'hoan_tat'
-     * Tải kèm quan hệ (with) để View 'create.blade.php' có thể tính tạm tính.
-     */
     public function create()
     {
         $datBans = DatBan::with('banAn', 'comboBuffet', 'orderMon')
             ->where('trang_thai', 'hoan_tat')
+            ->whereDoesntHave('hoaDon') // Sửa ở đây
             ->get();
             
-        return view('admins.hoa-don.create', compact('datBans'));
+        $vouchers = Voucher::where('trang_thai', 'dang_ap_dung')
+            ->where('ngay_ket_thuc', '>=', now())
+            ->whereRaw('so_luong > so_luong_da_dung')
+            ->get();
+
+        return view('admins.hoa-don.create', compact('datBans', 'vouchers'));
     }
 
-    /**
-     * LƯU HÓA ĐƠN MỚI
-     * Logic đã sửa: Tính tổng tiền từ 'orderMon' của 'datBan'.
-     * Không còn liên quan đến 'hoa_don_id' trong 'order_mon'.
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'dat_ban_id' => 'required|exists:dat_ban,id|unique:hoa_don,dat_ban_id', // Thêm unique để đảm bảo 1 dat_ban chỉ có 1 HĐ
+            'dat_ban_id' => 'required|exists:dat_ban,id|unique:hoa_don,dat_ban_id',
             'phuong_thuc_tt' => 'required|string',
-            'tien_giam' => 'nullable|numeric|min:0',
             'phu_thu' => 'nullable|numeric|min:0',
+            'voucher_id' => 'nullable|exists:vouchers,id'
         ]);
 
-        // 1. Tải DatBan và các OrderMon của nó
         $datBan = DatBan::with('orderMon', 'banAn')->findOrFail($request->dat_ban_id);
+        $voucher = $request->voucher_id ? Voucher::find($request->voucher_id) : null;
 
-        // 2. Tạo hóa đơn (chưa có tổng tiền)
+        $tongTienOrder = $datBan->orderMon->sum('tong_tien');
+        $tienCoc = (float) ($datBan->tien_coc ?? 0);
+        $phuThu = (float) ($request->phu_thu ?? 0);
+
+        $tienGiam = 0;
+        if ($voucher) {
+            if ($voucher->loai_giam == 'phan_tram') {
+                $tienGiam = $tongTienOrder * ($voucher->gia_tri / 100);
+                if ($voucher->gia_tri_toi_da && $tienGiam > $voucher->gia_tri_toi_da) {
+                    $tienGiam = $voucher->gia_tri_toi_da;
+                }
+            } else {
+                $tienGiam = $voucher->gia_tri;
+            }
+            if ($tienGiam > $tongTienOrder) {
+                $tienGiam = $tongTienOrder;
+            }
+        }
+
+        $daThanhToan = $tongTienOrder - $tienGiam + $phuThu - $tienCoc;
+        if ($daThanhToan < 0) $daThanhToan = 0;
+
         $hoaDon = HoaDon::create([
             'dat_ban_id' => $datBan->id,
-            'ma_hoa_don' => 'HD' . date('Ymd-') . $datBan->id, // Tạo mã HĐ dễ đọc
-            'tien_giam' => (float) ($request->tien_giam ?? 0),
-            'phu_thu' => (float) ($request->phu_thu ?? 0),
+            'voucher_id' => $voucher ? $voucher->id : null,
+            'ma_hoa_don' => 'HD' . date('Ymd-') . $datBan->id,
+            'tong_tien' => $tongTienOrder,
+            'tien_giam' => $tienGiam,
+            'phu_thu' => $phuThu,
+            'da_thanh_toan' => $daThanhToan,
             'phuong_thuc_tt' => $request->phuong_thuc_tt,
         ]);
-
-        // 3. Tính tổng tiền từ các 'order_mon' (CSDL đã có cột 'tong_tien')
-        $tongTienOrder = $datBan->orderMon->sum('tong_tien');
         
-        // 4. Tính tiền cọc (nếu có)
-        $tienCoc = (float) ($datBan->tien_coc ?? 0);
+        if ($voucher) {
+            $voucher->increment('so_luong_da_dung');
+        }
 
-        // 5. Tính số tiền khách phải trả cuối cùng
-        // (Tổng Order) - (Giảm giá) + (Phụ thu) - (Tiền cọc)
-        $daThanhToan = $tongTienOrder - $hoaDon->tien_giam + $hoaDon->phu_thu - $tienCoc;
-
-        // 6. Cập nhật lại tổng tiền cho hóa đơn
-        $hoaDon->update([
-            'tong_tien' => $tongTienOrder,     // Tổng tiền gốc
-            'da_thanh_toan' => $daThanhToan, // Số tiền thực tế sau giảm/phụ thu/cọc
-        ]);
-
-        // 7. Cập nhật trạng thái bàn về "trống"
         if ($datBan->banAn) {
             $datBan->banAn->update(['trang_thai' => 'trong']);
         }
@@ -89,90 +115,89 @@ class HoaDonController extends Controller
             ->with('success', 'Tạo hóa đơn thành công!');
     }
 
-    /**
-     * HIỂN THỊ CHI TIẾT HÓA ĐƠN
-     * Tải lồng 4 cấp để View 'show.blade.php' có thể lặp qua chi tiết món ăn.
-     */
     public function show($id)
     {
         $hoaDon = HoaDon::with([
-            'datBan.banAn', 
+            'datBan.banAn',
             'datBan.comboBuffet',
-            'datBan.orderMon.chiTietOrders.monAn' // Tải lồng 4 cấp
+            'datBan.orderMon.chiTietOrders.monAn',
+            'voucher'
         ])->findOrFail($id);
 
         return view('admins.hoa-don.show', compact('hoaDon'));
     }
 
-    /**
-     * HIỂN THỊ FORM CHỈNH SỬA
-     */
     public function edit($id)
     {
-        // Tải kèm 'datBan' và các quan hệ cần thiết để view hiển thị
-        $hoaDon = HoaDon::with('datBan.banAn', 'datBan.comboBuffet')->findOrFail($id);
+        $hoaDon = HoaDon::with('datBan.banAn', 'datBan.comboBuffet', 'voucher')->findOrFail($id);
         
-        // Không cần tải $datBans nữa vì không cho sửa
+        $vouchers = Voucher::where('trang_thai', 'dang_ap_dung')
+            ->where('ngay_ket_thuc', '>=', now())
+            ->whereRaw('so_luong > so_luong_da_dung')
+            ->get();
         
-        return view('admins.hoa-don.edit', compact('hoaDon'));
+        return view('admins.hoa-don.edit', compact('hoaDon', 'vouchers'));
     }
 
-    /**
-     * CẬP NHẬT HÓA ĐƠN (LOGIC ĐÃ SỬA)
-     * Chỉ cập nhật thông tin thanh toán, KHÔNG cho đổi 'dat_ban_id'.
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
-            // Bỏ 'dat_ban_id' khỏi validate
             'phuong_thuc_tt' => 'required|string',
-            'tien_giam' => 'nullable|numeric|min:0',
             'phu_thu' => 'nullable|numeric|min:0',
-            'da_thanh_toan' => 'nullable|numeric|min:0',
+            'voucher_id' => 'nullable|exists:vouchers,id'
         ]);
 
-        $hoaDon = HoaDon::findOrFail($id);
-
-        // Lấy các giá trị mới hoặc giữ lại giá trị cũ
-        $tienGiam = (float) ($request->tien_giam ?? $hoaDon->tien_giam);
-        $phuThu = (float) ($request->phu_thu ?? $hoaDon->phu_thu);
+        $hoaDon = HoaDon::with('voucher')->findOrFail($id);
         
-        // Lấy tổng tiền gốc (đã được lưu từ lúc store)
+        $oldVoucher = $hoaDon->voucher;
+        $newVoucher = $request->voucher_id ? Voucher::find($request->voucher_id) : null;
+        
+        $phuThu = (float) ($request->phu_thu ?? 0);
         $tongTienGoc = $hoaDon->tong_tien;
-
-        // Lấy tiền cọc (nếu có)
         $tienCoc = (float) ($hoaDon->datBan->tien_coc ?? 0);
 
-        // Tính lại số tiền thanh toán
-        // (Tổng Order) - (Giảm giá) + (Phụ thu) - (Tiền cọc)
-        $daThanhToanMoi = $tongTienGoc - $tienGiam + $phuThu - $tienCoc;
+        $tienGiam = 0;
+        if ($newVoucher) {
+            if ($newVoucher->loai_giam == 'phan_tram') {
+                $tienGiam = $tongTienGoc * ($newVoucher->gia_tri / 100);
+                if ($newVoucher->gia_tri_toi_da && $tienGiam > $newVoucher->gia_tri_toi_da) {
+                    $tienGiam = $newVoucher->gia_tri_toi_da;
+                }
+            } else {
+                $tienGiam = $newVoucher->gia_tri;
+            }
+            if ($tienGiam > $tongTienGoc) $tienGiam = $tongTienGoc;
+        }
 
-        // Kiểm tra xem admin có tự nhập số tiền thanh toán hay không
-        $daThanhToan = $request->da_thanh_toan !== null
-            ? (float) $request->da_thanh_toan  // Lấy số admin tự nhập
-            : $daThanhToanMoi;                  // Lấy số vừa tính lại
+        $daThanhToanMoi = $tongTienGoc - $tienGiam + $phuThu - $tienCoc;
+        if ($daThanhToanMoi < 0) $daThanhToanMoi = 0;
 
         $hoaDon->update([
-            // Bỏ 'dat_ban_id' khỏi update
+            'voucher_id' => $newVoucher ? $newVoucher->id : null,
             'tien_giam' => $tienGiam,
             'phu_thu' => $phuThu,
-            'da_thanh_toan' => $daThanhToan,
+            'da_thanh_toan' => $daThanhToanMoi,
             'phuong_thuc_tt' => $request->phuong_thuc_tt,
         ]);
+
+        if ($oldVoucher && (!$newVoucher || $oldVoucher->id != $newVoucher->id)) {
+            $oldVoucher->decrement('so_luong_da_dung');
+        }
+        if ($newVoucher && (!$oldVoucher || $oldVoucher->id != $newVoucher->id)) {
+            $newVoucher->increment('so_luong_da_dung');
+        }
 
         return redirect()->route('admin.hoa-don.index')
             ->with('success', 'Cập nhật hóa đơn thành công!');
     }
 
-    /**
-     * XÓA HÓA ĐƠN
-     */
     public function destroy($id)
     {
-        $hoaDon = HoaDon::findOrFail($id);
+        $hoaDon = HoaDon::with('voucher')->findOrFail($id);
         
-        // Cân nhắc: Khi xóa HĐ, có nên cập nhật lại trang_thai bàn thành 'hoan_tat'?
-        // (Hiện tại code này chỉ xóa HĐ)
+        if ($hoaDon->voucher) {
+            $hoaDon->voucher->decrement('so_luong_da_dung');
+        }
         
         $hoaDon->delete();
 

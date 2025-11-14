@@ -18,8 +18,36 @@
     </div>
     @endif
 
+    {{-- THÊM MỚI: FORM TÌM KIẾM --}}
+    <div class="tile mb-4">
+        <h3 class="tile-title">Bộ lọc tìm kiếm</h3>
+        <form class="row" method="GET" action="{{ route('admin.hoa-don.index') }}">
+            <div class="col-md-5">
+                <label class="form-label">Từ khóa</label>
+                <input class="form-control" type="text" name="search" value="{{ request('search') }}"
+                    placeholder="Mã HĐ, Tên khách, Số bàn...">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Phương thức thanh toán</label>
+                <select class="form-control" name="phuong_thuc_tt">
+                    <option value="">Tất cả</option>
+                    <option value="Tiền mặt" {{ request('phuong_thuc_tt') == 'Tiền mặt' ? 'selected' : '' }}>Tiền mặt</option>
+                    <option value="Chuyển khoản ngân hàng" {{ request('phuong_thuc_tt') == 'Chuyển khoản ngân hàng' ? 'selected' : '' }}>Chuyển khoản ngân hàng</option>
+                    <option value="Thẻ Visa/Mastercard" {{ request('phuong_thuc_tt') == 'Thẻ Visa/Mastercard' ? 'selected' : '' }}>Thẻ Visa/Mastercard</option>
+                    <option value="Ví điện tử Momo" {{ request('phuong_thuc_tt') == 'Ví điện tử Momo' ? 'selected' : '' }}>Ví điện tử Momo</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary me-2" type="submit"><i class="fa fa-search"></i> Tìm kiếm</button>
+                <a href="{{ route('admin.hoa-don.index') }}" class="btn ml-2 btn-secondary"><i class="fa fa-refresh"></i> Reset</a>
+            </div>
+        </form>
+    </div>
+    {{-- KẾT THÚC FORM TÌM KIẾM --}}
+
+
     @if($hoadons->isEmpty())
-    <div class="alert alert-info">Chưa có hóa đơn nào.</div>
+    <div class="alert alert-info">Không tìm thấy hóa đơn nào.</div>
     @else
     <div class="table-responsive">
         <table class="table table-hover table-bordered align-middle text-center">
@@ -29,6 +57,7 @@
                     <th>Mã hóa đơn</th>
                     <th>Bàn / Khách</th>
                     <th>Tổng tiền món</th>
+                    <th>Voucher</th>
                     <th>Tiền giảm</th>
                     <th>Phụ thu</th>
                     <th>Đã thanh toán</th>
@@ -43,54 +72,46 @@
                     <td>{{ $hd->id }}</td>
                     <td><span class="badge bg-info">{{ $hd->ma_hoa_don }}</span></td>
                     <td>
-                        {{-- Sửa: Thêm 'so_ban' cho an toàn --}}
                         <strong>{{ $hd->datBan->banAn->so_ban ?? 'N/A' }}</strong><br> 
                         <small>Khách: {{ $hd->datBan->ten_khach ?? 'N/A' }}</small>
                     </td>
                     
-                    {{-- ========= SỬA LỖI Ở ĐÂY ========= --}}
-                    {{-- 
-                        Lỗi: $hd->tinhTongTien() không còn tồn tại.
-                        Sửa: Dùng $hd->tong_tien (đã được lưu trong CSDL).
-                    --}}
                     <td class="text-end">{{ number_format($hd->tong_tien ?? 0) }}₫</td>
+
+                    <td>
+                        @if($hd->voucher)
+                            <span class="badge bg-primary">{{ $hd->voucher->ma_voucher }}</span>
+                        @else
+                            <span class="text-muted small">Không có</span>
+                        @endif
+                    </td>
                     
-                    {{-- Tiền giảm --}}
                     <td class="text-end text-success">{{ number_format($hd->tien_giam ?? 0) }}₫</td>
                     
-                    {{-- Phụ thu --}}
                     <td class="text-end text-warning">{{ number_format($hd->phu_thu ?? 0) }}₫</td>
                     
-                    {{-- 
-                        Đã thanh toán (Phần này ĐÚNG, không cần sửa)
-                        Vì hàm tinhDaThanhToan() đã được sửa trong Model.
-                    --}}
                     <td class="text-end">
                         @if($hd->da_thanh_toan >= $hd->tinhDaThanhToan())
-                        <span class="badge bg-success">Đã thanh toán</span>
+                            <span class="badge bg-success">Đã thanh toán</span>
                         @else
-                        <span class="badge bg-danger">Chưa đủ</span>
+                            <span class="badge bg-danger">Chưa đủ</span>
                         @endif
                         <br>
                         <small>{{ number_format($hd->tinhDaThanhToan()) }}₫</small>
                     </td>
 
-                    {{-- Phương thức thanh toán --}}
                     <td>
-                        {{-- Sửa: Chuyển sang dùng text đã lưu trong CSDL --}}
                         @if($hd->phuong_thuc_tt == 'tien_mat')
                             <span class="badge bg-primary" data-bs-toggle="tooltip" title="Thanh toán tiền mặt">Tiền mặt</span>
                         @elseif($hd->phuong_thuc_tt == 'chuyen_khoan')
-                             <span class="badge bg-secondary" data-bs-toggle="tooltip" title="Thanh toán QR / Chuyển khoản">Chuyển khoản</span>
+                                <span class="badge bg-secondary" data-bs-toggle="tooltip" title="Thanh toán QR / Chuyển khoản">Chuyển khoản</span>
                         @else
-                             <span class="badge bg-dark" data-bs-toggle="tooltip" title="{{ $hd->phuong_thuc_tt }}">{{ $hd->phuong_thuc_tt }}</span>
+                                <span class="badge bg-dark" data-bs-toggle="tooltip" title="{{ $hd->phuong_thuc_tt }}">{{ $hd->phuong_thuc_tt }}</span>
                         @endif
                     </td>
 
-                    {{-- Ngày tạo --}}
                     <td>{{ $hd->created_at?->format('d/m/Y H:i') ?? 'N/A' }}</td>
                     
-                    {{-- Hành động --}}
                     <td>
                         <a href="{{ route('admin.hoa-don.show', $hd->id) }}" class="btn btn-info btn-sm mb-1"
                             title="Xem chi tiết">
@@ -115,11 +136,15 @@
             </tbody>
         </table>
     </div>
+
+    <div class="d-flex justify-content-center">
+        {{ $hoadons->links() }}
+    </div>
+    
     @endif
 </main>
 
 <script>
-    // Khởi tạo tooltip của Bootstrap 5
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)

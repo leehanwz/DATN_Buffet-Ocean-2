@@ -113,6 +113,13 @@
                 </a>
             </li>
 
+            <li>
+                <a class="app-menu__item {{ Request::is('admin/voucher*') ? 'active' : '' }}"
+                    href="{{ route('admin.voucher.index') }}">
+                    <i class="app-menu__icon fa fa-ticket-alt"></i><span class="app-menu__label">Quản lý Voucher</span>
+                </a>
+            </li>
+
 
 
         </ul>

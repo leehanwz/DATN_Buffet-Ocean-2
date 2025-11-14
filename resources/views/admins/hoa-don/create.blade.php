@@ -26,8 +26,6 @@
                 
                 @foreach($datBans as $datBan)
                     @php
-                        // Tính toán tổng tiền và tiền cọc ngay trong vòng lặp
-                        // Controller đã 'with('orderMon')' nên không gây N+1 query
                         $tongTienOrder = $datBan->orderMon->sum('tong_tien');
                         $tienCoc = $datBan->tien_coc ?? 0;
                     @endphp
@@ -61,6 +59,18 @@
             </div>
         @endif
 
+        {{-- SỬA: Thêm ô chọn Voucher --}}
+        <div class="form-group mb-3">
+            <label>Chọn Voucher (Nếu có)</label>
+            <select name="voucher_id" class="form-control">
+                <option value="">--- Không dùng voucher ---</option>
+                @foreach($vouchers as $voucher)
+                    <option value="{{ $voucher->id }}" {{ old('voucher_id') == $voucher->id ? 'selected' : '' }}>
+                        [{{ $voucher->ma_voucher }}] - {{ $voucher->mo_ta }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
         <div class="form-group mb-3">
             <label>Phương thức thanh toán</label>
@@ -72,10 +82,7 @@
             </select>
         </div>
 
-        <div class="form-group mb-3">
-            <label>Tiền giảm</label>
-            <input type="number" name="tien_giam" value="{{ old('tien_giam', 0) }}" min="0" class="form-control" placeholder="0">
-        </div>
+        {{-- SỬA: Xóa ô Tiền Giảm. Controller sẽ tự tính --}}
 
         <div class="form-group mb-3">
             <label>Phụ thu</label>
@@ -83,7 +90,7 @@
         </div>
         
         <small class="form-text text-muted mb-3">
-            *Lưu ý: Tiền cọc (nếu có) sẽ tự động được trừ vào tổng thanh toán.
+            *Lưu ý: Tiền cọc (nếu có) và Tiền giảm (từ voucher) sẽ tự động được trừ vào tổng thanh toán.
         </small>
 
         <br>

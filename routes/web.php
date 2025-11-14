@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\DatBanController;
 use App\Http\Controllers\Admin\ChiTietOrderController;
 use App\Http\Controllers\Admin\OrderMonController;
 use App\Http\Controllers\Admin\HoaDonController;
+use App\Http\Controllers\Admin\VoucherController;
 
 
 
@@ -63,6 +64,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     //hoa don
         Route::resource('hoa-don', HoaDonController::class);
+
+    //voucher
+    Route::resource('voucher', VoucherController::class)->except(['show']);
 
 
 

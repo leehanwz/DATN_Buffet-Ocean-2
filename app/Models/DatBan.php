@@ -9,10 +9,8 @@ class DatBan extends Model
 {
     use HasFactory;
 
-    // Chỉ định tên bảng vì tên Model (DatBan) khác tên bảng (dat_ban)
     protected $table = 'dat_ban';
 
-    // Các trường được phép gán hàng loạt
     protected $fillable = [
         'ma_dat_ban',
         'ten_khach',
@@ -30,18 +28,15 @@ class DatBan extends Model
         'ghi_chu',
     ];
 
-
     public function banAn()
     {
         return $this->belongsTo(BanAn::class, 'ban_id');
     }
 
-
     public function comboBuffet()
     {
         return $this->belongsTo(ComboBuffet::class, 'combo_id');
     }
-
 
     public function nhanVien()
     {
@@ -50,7 +45,14 @@ class DatBan extends Model
 
     public function orderMon()
     {
-        // 'dat_ban_id' là khóa ngoại trong bảng 'order_mon'
         return $this->hasMany(OrderMon::class, 'dat_ban_id');
+    }
+
+    /**
+     * THÊM MỚI: Quan hệ một-một với Hóa Đơn
+     */
+    public function hoaDon()
+    {
+        return $this->hasOne(HoaDon::class, 'dat_ban_id');
     }
 }
