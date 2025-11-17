@@ -24,12 +24,9 @@ return new class extends Migration
             $table->dateTime('thoi_gian_bat_dau')->nullable();
             $table->dateTime('thoi_gian_ket_thuc')->nullable();
 
-<<<<<<< HEAD
-=======
             // 🖼️ Cột ảnh combo
             $table->string('anh')->nullable()->comment('Đường dẫn ảnh combo buffet');
 
->>>>>>> origin/Trung
             $table->enum('trang_thai', [
                 'dang_ban',
                 'ngung_ban'

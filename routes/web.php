@@ -13,10 +13,8 @@ use App\Http\Controllers\Admin\MonTrongComboController;
 use App\Http\Controllers\Admin\KhuVucController;
 use App\Http\Controllers\Admin\BanAnController;
 use App\Http\Controllers\Admin\DanhMucController;
-use App\Http\Controllers\Admin\DatBanController;
 use App\Http\Controllers\Admin\MonAnController;
 use App\Http\Controllers\Admin\ComboBuffetController;
-use App\Http\Controllers\Admin\ChiTietOrderController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -37,13 +35,13 @@ use App\Http\Controllers\Admin\VoucherController;
 // ==================== CLIENT SITE ====================
 Route::prefix('/')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
-        // Route::get('/about', [AboutController::class, 'index'])->name('about');
-        // Route::get('/contact', [ContactController::class, 'index'])->name('contact');
-        // Route::get('/booking', [BookingController::class, 'index'])->name('booking');
-        // Route::get('/menu', [MenuController::class, 'index'])->name('menu');
-        // Route::get('/service', [ServiceController::class, 'index'])->name('service');
-        // Route::get('/team', [TeamController::class, 'index'])->name('team');
-        // Route::get('/testimonial', [TestimonialController::class, 'index'])->name('testimonial');
+    // Route::get('/about', [AboutController::class, 'index'])->name('about');
+    // Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+    // Route::get('/booking', [BookingController::class, 'index'])->name('booking');
+    // Route::get('/menu', [MenuController::class, 'index'])->name('menu');
+    // Route::get('/service', [ServiceController::class, 'index'])->name('service');
+    // Route::get('/team', [TeamController::class, 'index'])->name('team');
+    // Route::get('/testimonial', [TestimonialController::class, 'index'])->name('testimonial');
 });
 
 
@@ -69,7 +67,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('order-mon', OrderMonController::class);
 
     //hoa don
-        Route::resource('hoa-don', HoaDonController::class);
+    Route::resource('hoa-don', HoaDonController::class);
 
     //voucher
     Route::resource('voucher', VoucherController::class)->except(['show']);
@@ -98,7 +96,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Reset mật khẩu
         Route::post('/{id}/reset-mat-khau', 'resetMatKhau')->name('reset-mat-khau');
-
     });
 
     Route::get('/don-hang', [DonHangController::class, 'index'])->name('don-hang');
