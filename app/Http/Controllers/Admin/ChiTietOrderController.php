@@ -49,7 +49,7 @@ class ChiTietOrderController extends Controller
         }
 
         // Nếu KHÔNG có order_id → hiển thị danh sách tất cả đơn
-        $orders = OrderMon::latest()->paginate(10);
+        $orders = OrderMon::with('datBan')->latest()->paginate(10);
 
         // ✅ Nếu bạn muốn hiển thị combo chọn món ngay tại trang index, giữ dòng dưới
         $monAns = MonAn::where('trang_thai', 'dang_ban')->get();
