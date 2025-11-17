@@ -18,6 +18,7 @@
             <div class="tile">
                 <h3 class="tile-title">Tạo mới món ăn</h3>
 
+                {{-- Đảm bảo Form có method="POST" và enctype="multipart/form-data" --}}
                 <form action="{{ route('admin.san-pham.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="tile-body">
@@ -115,18 +116,32 @@
                                 </div>
                             </div>
 
-                            {{-- Cột phải (Chỉ còn Ảnh) --}}
+                            {{-- Cột phải (Ảnh chính và Thư viện ảnh) --}}
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label class="form-label">Ảnh món ăn</label>
+                                    <label class="form-label">Ảnh đại diện (Chính)</label>
                                     <input type="file" name="hinh_anh" class="form-control" accept="image/*"
-                                        onchange="previewImage(event)">
+                                        onchange="previewImage(event, 'preview_chinh')">
+                                    <div class="text-center mt-2">
+                                        <img id="preview_chinh" src="https://placehold.co/200x200/eee/ccc?text=Ảnh+chính" class="img-fluid rounded border shadow-sm"
+                                            style="max-height: 200px; object-fit: cover;">
+                                    </div>
                                 </div>
 
-                                <div class="text-center">
-                                    <img id="preview" src="https://placehold.co/200x200/eee/ccc?text=Preview" class="img-fluid rounded border shadow-sm"
-                                        style="max-height: 200px; object-fit: cover;">
+                                {{-- START: Thêm trường Thư viện ảnh --}}
+                                <hr>
+                                <div class="mb-3">
+                                    <label class="form-label">Thư viện ảnh (Ảnh phụ)</label>
+                                    <input type="file" name="anh_thu_vien[]" class="form-control" accept="image/*" multiple
+                                        onchange="previewGallery(event)">
+                                    <small class="form-text text-muted">Có thể chọn nhiều ảnh.</small>
                                 </div>
+
+                                {{-- Khu vực hiển thị preview ảnh phụ --}}
+                                <div class="d-flex flex-wrap gap-2 mt-2 border p-2 rounded" id="gallery_preview">
+                                    <span class="text-muted small">Ảnh sẽ hiển thị ở đây.</span>
+                                </div>
+                                {{-- END: Thêm trường Thư viện ảnh --}}
                             </div>
                         </div>
                     </div>
@@ -146,12 +161,50 @@
 </main>
 @endsection
 
-@push('scripts')
+{{-- PHẦN SỬA ĐỔI QUAN TRỌNG: Đảm bảo JavaScript được chèn đúng bằng @section('script') --}}
+@section('script')
 <script>
-    function previewImage(event) {
-        const preview = document.getElementById('preview');
-        preview.src = URL.createObjectURL(event.target.files[0]);
-        preview.onload = () => URL.revokeObjectURL(preview.src);
+    // Hàm preview cho ảnh chính
+    function previewImage(event, previewId) {
+        const preview = document.getElementById(previewId);
+        // Kiểm tra xem có file nào được chọn không
+        if (event.target.files.length > 0) {
+            preview.src = URL.createObjectURL(event.target.files[0]);
+            preview.onload = () => URL.revokeObjectURL(preview.src);
+        } else {
+            // Trường hợp hủy chọn file, đặt lại ảnh placeholder
+            preview.src = "https://placehold.co/200x200/eee/ccc?text=Ảnh+chính";
+        }
+    }
+
+    // Hàm preview cho Thư viện ảnh (chọn nhiều ảnh)
+    function previewGallery(event) {
+        const previewContainer = document.getElementById('gallery_preview');
+        // Xóa tất cả các ảnh preview cũ
+        previewContainer.innerHTML = '';
+
+        const files = event.target.files;
+
+        if (files.length === 0) {
+            previewContainer.innerHTML = '<span class="text-muted small">Ảnh sẽ hiển thị ở đây.</span>';
+            return;
+        }
+
+        // Lặp qua tất cả các file được chọn và tạo thẻ <img>
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.classList.add('img-thumbnail'); // Dùng class Bootstrap để làm thumbnail
+            img.style.width = '80px';
+            img.style.height = '80px';
+            img.style.objectFit = 'cover';
+            img.style.marginRight = '5px'; // Thêm khoảng cách giữa các ảnh
+
+            previewContainer.appendChild(img);
+            img.onload = () => URL.revokeObjectURL(img.src);
+        }
     }
 </script>
-@endpush
+@endsection

@@ -18,12 +18,7 @@ class KhuVuc extends Model
         'tang'
     ];
 
-    // Tắt timestamps mặc định và định nghĩa lại tên cột của bạn
-    public $timestamps = false;
-    protected $dates = [
-        'ngay_tao',
-        'ngay_cap_nhat'
-    ];
+
 
     // Định nghĩa mối quan hệ: Một Khu vực có nhiều Bàn ăn
     public function banAns()

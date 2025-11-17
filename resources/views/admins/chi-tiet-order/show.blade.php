@@ -43,8 +43,8 @@
                     @forelse ($order->chiTietOrders as $ct)
                     <tr>
                         <td>{{ $ct->monAn->ten_mon ?? 'N/A' }}</td>
-                        <td>{{ $soLuongMonTrongCombo[$ct->mon_an_id] ?? $ct->so_luong }}</td>
-                        <td>{{ $ct->loai_mon }}</td>
+                        <td>{{ $ct->so_luong_hien_thi }}</td>
+                        <td>{{ $ct->loai_mon_hien_thi }}</td>
                         <td>
                             @switch($ct->trang_thai)
                             @case('cho_bep') <span class="badge bg-warning text-dark">Chờ bếp</span> @break

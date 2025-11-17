@@ -34,15 +34,14 @@ class OrderMon extends Model
         return $this->hasMany(ChiTietOrder::class, 'order_id', 'id');
     }
 
-    public function recalculateTotal()
+     public function recalculateTotal()
     {
-        // Sử dụng Accessor 'thanh_tien' từ ChiTietOrder để tính tổng chính xác
         $totalAmount = $this->chiTietOrders()->get()->sum(function ($item) {
             return $item->thanh_tien;
         });
 
-        // Tính tổng số lượng món
-        $totalQuantity = $this->chiTietOrders()->get()->sum('so_luong');
+        // Tổng món hiển thị: mỗi món combo/goi_them +1
+        $totalQuantity = $this->chiTietOrders()->get()->count();
 
         $this->update([
             'tong_tien' => $totalAmount,

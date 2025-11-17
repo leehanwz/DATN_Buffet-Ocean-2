@@ -42,10 +42,16 @@ class DatBan extends Model
         return $this->belongsTo(NhanVien::class, 'nhan_vien_id');
     }
 
-    public function orders()
+    public function orderMon()
     {
         return $this->hasMany(OrderMon::class, 'dat_ban_id');
     }
-    
-}
 
+    /**
+     * THÊM MỚI: Quan hệ một-một với Hóa Đơn
+     */
+    public function hoaDon()
+    {
+        return $this->hasOne(HoaDon::class, 'dat_ban_id');
+    }
+}

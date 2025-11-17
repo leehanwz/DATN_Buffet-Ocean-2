@@ -12,31 +12,26 @@ class ChiTietOrderSeeder extends Seeder
     {
         $faker = Faker::create('vi_VN');
 
-        // Lấy danh sách id từ các bảng liên quan
-        $orderIds = DB::table('order_mon')->pluck('id')->toArray();
-        $monAnIds = DB::table('mon_an')->pluck('id')->toArray();
-
-        // Nếu chưa có dữ liệu thì cảnh báo
-        if (empty($orderIds) || empty($monAnIds)) {
-            $this->command->warn('⚠️ Vui lòng seed dữ liệu cho bảng order_mon và mon_an trước!');
-            return;
-        }
-
-        // Fake dữ liệu chi tiết order
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 1; $i <= 30; $i++) {
             DB::table('chi_tiet_order')->insert([
-                'order_id'   => $faker->randomElement($orderIds),
-                'mon_an_id'  => $faker->randomElement($monAnIds),
+                'order_id'   => $faker->numberBetween(1, 20), // giả sử có 20 order_mon
+                'mon_an_id'  => $faker->numberBetween(1, 30), // giả sử có 30 món ăn
                 'so_luong'   => $faker->numberBetween(1, 5),
-                'loai_mon'   => $faker->randomElement(['combo', 'goi_them']), // ✅ chỉ 2 giá trị này thôi
-                'trang_thai' => $faker->randomElement([
-                    'cho_bep',
-                    'dang_che_bien',
-                    'da_len_mon',
-                    'huy_mon'
+                'loai_mon'   => $faker->randomElement(['combo', 'goi_them']),
+                'trang_thai' => $faker->randomElement(['cho_bep', 'dang_che_bien', 'da_len_mon', 'huy_mon']),
+                'ghi_chu'    => $faker->optional()->randomElement([
+                    'Ít cay',
+                    'Thêm nước chấm',
+                    'Không hành',
+                    'Làm chín kỹ giúp khách',
+                    'Bỏ đá',
+                    'Thêm rau ăn kèm',
+                    'Khách yêu cầu làm nhanh',
+                    'Mang ra sau món chính',
+                    'Dọn sớm',
+                    'Gọi thêm phần nhỏ'
                 ]),
-                'ghi_chu'    => $faker->optional(0.3)->sentence(),
-                'created_at' => now(),
+                'created_at' => now()->subDays($faker->numberBetween(0, 5))->addHours($faker->numberBetween(0, 23)),
                 'updated_at' => now(),
             ]);
         }

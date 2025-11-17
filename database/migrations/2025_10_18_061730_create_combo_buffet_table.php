@@ -1,6 +1,5 @@
 <?php
 
-// database/migrations/2025_10_18_000006_create_combo_buffet_table.php
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -25,6 +24,12 @@ return new class extends Migration
             $table->dateTime('thoi_gian_bat_dau')->nullable();
             $table->dateTime('thoi_gian_ket_thuc')->nullable();
 
+<<<<<<< HEAD
+=======
+            // 🖼️ Cột ảnh combo
+            $table->string('anh')->nullable()->comment('Đường dẫn ảnh combo buffet');
+
+>>>>>>> origin/Trung
             $table->enum('trang_thai', [
                 'dang_ban',
                 'ngung_ban'

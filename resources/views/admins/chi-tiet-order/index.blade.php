@@ -21,6 +21,7 @@
                 <div class="tile-title-w-btn">
                     <h3 class="tile-title">Chi tiết order</h3>
 
+                    {{-- 🧩 Form chọn đơn hàng --}}
                     <form action="{{ route('admin.chi-tiet-order.index') }}" method="GET" class="d-flex align-items-center gap-2">
                         <select name="order_id" id="order_id" class="form-select form-select-sm" style="width:200px;">
                             <option value="">-- Chọn đơn hàng --</option>
@@ -54,7 +55,8 @@
                                     <td>{{ $order->id }}</td>
 
                                     {{-- ✅ Mã order: dùng ID order_mon --}}
-                                    <td>{{ str_pad($order->datBan->ma_dat_ban, 0, '0', STR_PAD_LEFT) }}</td>
+                                    <td>ORDER-{{ str_pad($order->id, 0, '0', STR_PAD_LEFT) }}</td>
+
 
                                     <td>{{ $order->datBan->ten_khach ?? 'N/A' }}</td>
                                     <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>

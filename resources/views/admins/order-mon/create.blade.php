@@ -43,7 +43,7 @@
             <div class="col-md-6">
                 <label for="trang_thai">Trạng thái:</label>
                 <select name="trang_thai" id="trang_thai" class="form-control">
-                    <option value="cho_bep">Chờ bếp</option>
+                    <option value="dang_xu_li">Đang xử lí</option>
                 </select>
             </div>
         </div>
