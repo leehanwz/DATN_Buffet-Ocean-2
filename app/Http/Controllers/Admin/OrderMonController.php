@@ -125,13 +125,6 @@ class OrderMonController extends Controller
     {
         $request->validate([
             'dat_ban_id' => 'required|exists:dat_ban,id',
-<<<<<<< HEAD
-            'trang_thai' => 'required|in:cho_bep,dang_che_bien,da_len_mon,huy_mon',
-            'tong_mon' => 'nullable|integer|min:0',
-            'tong_tien' => 'nullable|numeric|min:0',
-        ]);
-
-=======
             'trang_thai' => 'required|in:dang_xu_li,hoan_thanh',
         ]);
 
@@ -149,28 +142,16 @@ class OrderMonController extends Controller
             }
         }
 
->>>>>>> origin/Trung
         $datBan = DatBan::findOrFail($request->dat_ban_id);
 
         $orderMon->update([
             'dat_ban_id' => $datBan->id,
             'ban_id' => $datBan->ban_id,
-<<<<<<< HEAD
-            'tong_mon' => $request->input('tong_mon', $orderMon->tong_mon),
-            'tong_tien' => $request->input('tong_tien', $orderMon->tong_tien),
-            'trang_thai' => $request->trang_thai,
-=======
             'trang_thai' => $newStatus,
->>>>>>> origin/Trung
         ]);
 
         return redirect()->route('admin.order-mon.index')->with('success', 'Cập nhật Order món thành công!');
     }
-<<<<<<< HEAD
-
-    // Destroy
-=======
->>>>>>> origin/Trung
     public function destroy(OrderMon $orderMon)
     {
         $orderMon->delete();

@@ -24,17 +24,9 @@ return new class extends Migration
 
             // ✅ Giữ lại 2 trạng thái chính
             $table->enum('trang_thai', [
-<<<<<<< HEAD
-                'cho_bep',        // Chờ bếp nhận
-                'dang_che_bien',  // Đang chế biến
-                'da_len_mon',     // Đã lên món
-                'huy_mon'         // Hủy món
-            ])->default('cho_bep')->comment('Trạng thái tổng của phiếu order');
-=======
                 'dang_xu_li',  // Đang xử lý (chưa xong)
                 'hoan_thanh'   // Hoàn thành
             ])->default('dang_xu_li')->comment('Trạng thái tổng của phiếu order');
->>>>>>> origin/Trung
 
             $table->timestamps();
         });
