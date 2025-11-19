@@ -118,7 +118,7 @@ class ChiTietOrder extends Model
 
         $tongTienGoiThem = 0;
         $tongPhuPhiVuot = 0;
-        $tongMonHienThi = $chiTietList->count(); // tổng món hiển thị = số loại món
+        $tongMonHienThi = $chiTietList->sum('so_luong'); // tổng món hiển thị = số loại món
 
         $grouped = $chiTietList->groupBy('mon_an_id');
 

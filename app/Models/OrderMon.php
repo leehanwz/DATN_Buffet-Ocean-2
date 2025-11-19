@@ -70,31 +70,13 @@ class OrderMon extends Model
 
 
      public function recalculateTotal()
+{
+    $totalAmount = $this->chiTietOrders()->sum('thanh_tien');
+    $totalQuantity = $this->chiTietOrders()->sum('so_luong');
 
-    {
-
-        $totalAmount = $this->chiTietOrders()->get()->sum(function ($item) {
-
-            return $item->thanh_tien;
-
-        });
-
-
-
-        // Tổng món hiển thị: mỗi món combo/goi_them +1
-
-        $totalQuantity = $this->chiTietOrders()->get()->count();
-
-
-
-        $this->update([
-
-            'tong_tien' => $totalAmount,
-
-            'tong_mon' => $totalQuantity,
-
-        ]);
-
-    }
-
+    $this->update([
+        'tong_tien' => $totalAmount,
+        'tong_mon'  => $totalQuantity,
+    ]);
 }
+    }

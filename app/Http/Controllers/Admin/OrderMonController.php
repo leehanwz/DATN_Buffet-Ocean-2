@@ -56,7 +56,7 @@ class OrderMonController extends Controller
                 $monAnModel = $monCombo->monAn;
                 if (!$monAnModel) continue;
 
-                $soLuongCombo = $monCombo->so_luong ?? 1;
+                $soLuongCombo = $monCombo->gioi_han_so_luong ?? 1;
                 $tongMon += $soLuongCombo;
 
                 ChiTietOrder::create([
@@ -95,7 +95,6 @@ class OrderMonController extends Controller
                 }
             }
         }
-
         $tongTien = ($giaCombo * $soKhach) + $tongTienGoiThem + $tongPhuPhiVuot - $giamGia;
 
         $order->update([
