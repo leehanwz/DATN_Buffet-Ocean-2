@@ -3,31 +3,58 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use League\CommonMark\Extension\CommonMark\Parser\Inline\BangParser;
 
 class HoaDon extends Model
 {
+    // Bảng trong DB
     protected $table = 'hoa_don';
 
+    // Các trường được phép gán hàng loạt
     protected $fillable = [
         'dat_ban_id',
+        'voucher_id', // Thêm voucher_id vào fillable
         'tong_tien',
-        'ngay_tao',
-        'nhan_vien_id'
+        'tien_giam',
+        'phu_thu',
+        'da_thanh_toan',
+        'phuong_thuc_tt',
+        'ma_hoa_don',
     ];
 
+    /**
+     * Quan hệ: Một hoá đơn thuộc về một Đặt Bàn
+     */
     public function datBan()
     {
-        return $this->belongsTo(BanAn::class, 'dat_ban_id');
+        return $this->belongsTo(DatBan::class, 'dat_ban_id');
     }
 
-    public function nhanVien()
+    /**
+     * Quan hệ: Một hoá đơn thuộc về một Voucher (có thể là null)
+     */
+    public function voucher()
     {
-        return $this->belongsTo(NhanVien::class, 'nhan_vien_id');
+        return $this->belongsTo(Voucher::class, 'voucher_id');
     }
 
-    public function orderMons()
+    /**
+     * Tính tiền phải thanh toán cuối cùng
+     */
+    public function tinhDaThanhToan(): float
     {
-        return $this->hasMany(OrderMon::class, 'hoa_don_id');
+        // Sử dụng các thuộc tính (cột) đã được lưu của Model
+        $tongTien = $this->tong_tien ?? 0;
+        $tienGiam = $this->tien_giam ?? 0;
+        $phuThu = $this->phu_thu ?? 0;
+
+        return $tongTien - $tienGiam + $phuThu;
+    }
+    
+    /**
+     * Tính tiền trả lại cho khách
+     */
+    public function tienTraLai(float $tienKhachDua): float
+    {
+        return max(0, $tienKhachDua - $this->tinhDaThanhToan());
     }
 }
