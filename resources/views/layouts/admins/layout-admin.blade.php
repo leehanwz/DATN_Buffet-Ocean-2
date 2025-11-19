@@ -23,8 +23,7 @@
 
 <body onload="time()" class="app sidebar-mini rtl">
     <header class="app-header">
-        <a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
-            aria-label="Hide Sidebar"></a>
+        <a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>
         <ul class="app-nav">
 
 
@@ -44,71 +43,90 @@
         </div>
         <hr>
         <ul class="app-menu">
-            <li><a class="app-menu__item " href="{{route('admin.dashboard')}}">
+            <li><a class="app-menu__item " href="{{ route('admin.dashboard') }}">
                     <i class='app-menu__icon bx bx-home'></i>
                     <span class="app-menu__label">Trang chủ</span>
                 </a>
             </li>
             <li>
-                <a class="app-menu__item " href="{{route('admin.danh-muc.index')}}">
+                <a class="app-menu__item " href="{{ route('admin.danh-muc.index') }}">
                     <i class='app-menu__icon bx bx-home'></i>
                     <span class="app-menu__label">Quản lý danh mục Món</span>
                 </a>
             </li>
             <li>
-                <a class="app-menu__item" href="{{route('admin.san-pham.index')}}">
+                <a class="app-menu__item" href="{{ route('admin.san-pham.index') }}">
                     <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
                     <span class="app-menu__label">Quản lý món ăn</span>
                 </a>
             </li>
 
-            <a class="app-menu__item" href="{{route('admin.combo-buffet.index')}}">
+            <a class="app-menu__item" href="{{ route('admin.combo-buffet.index') }}">
                 <i class='app-menu__icon bx bx-task'></i>
                 <span class="app-menu__label">Quản lý combo buffet</span>
             </a>
             <li>
-                <a class="app-menu__item " href="{{route('admin.mon-trong-combo.index')}}">
+                <a class="app-menu__item " href="{{ route('admin.mon-trong-combo.index') }}">
                     <i class='app-menu__icon bx bx-table'></i>
                     <span class="app-menu__label">Quản lý món trong combo</span>
                 </a>
             </li>
             <li>
-                <a class="app-menu__item " href="{{route('admin.khu-vuc-ban-an')}}">
+                <a class="app-menu__item " href="{{ route('admin.khu-vuc-ban-an') }}">
                     <i class='app-menu__icon bx bx-table'></i>
-                    <span class="app-menu__label">Quản lý khu vực</span>
+                    <span class="app-menu__label">Khu vực & bàn ăn</span>
                 </a>
             </li>
+
+            {{-- 💡 ĐÃ THÊM ROUTE ĐẶT BÀN MỚI VÀO ĐÂY --}}
             <li>
-                <a class="app-menu__item" href="{{route('admin.order-mon.index')}}">
+                <a class="app-menu__item" href="{{ route('admin.dat-ban.index') }}">
+                    <i class='app-menu__icon bx bx-calendar-check'></i>
+                    <span class="app-menu__label">Quản lý Đặt Bàn</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="app-menu__item" href="{{ route('admin.order-mon.index') }}">
                     <i class='app-menu__icon bx bx-task'></i>
                     <span class="app-menu__label">Quản lý order</span>
                 </a>
             </li>
+
             <li>
-                <a class="app-menu__item" href="{{route('admin.dat-ban.index')}}">
-                    <i class='app-menu__icon bx bx-task'></i>
-                    <span class="app-menu__label">Quản lý đat ban</span>
-                </a>
-            </li>
-            <li>
-                <a class="app-menu__item " href="{{route('admin.chi-tiet-order.index')}}">
+                <a class="app-menu__item " href="{{ route('admin.chi-tiet-order.index') }}">
                     <i class='app-menu__icon bx bx-building'></i>
                     <span class="app-menu__label">Chi tiết order</span>
                 </a>
             </li>
-            {{-- <li>
-          <a class="app-menu__item " href="{{route('admin.nhan-vien')}}">
-            <i class='app-menu__icon bx bx-id-card'></i>
-            <span class="app-menu__label">Quản lý người dùng</span>
-            </a>
-            </li>
+
             <li>
-                <a class="app-menu__item" href="{{route('admin.don-hang')}}">
-                    <i class='app-menu__icon bx bx-task'></i>
-                    <span class="app-menu__label">Quản lý đơn hàng</span>
+                <a class="app-menu__item" href="{{ route('admin.nhan-vien.index') }}">
+                    <i class='app-menu__icon bx bx-calendar-check'></i>
+                    <span class="app-menu__label">Quản lý Nhân Viên</span>
                 </a>
             </li>
-            <li> --}}
+            <li>
+                <a class="app-menu__item" href="{{ route('admin.hoa-don.index') }}">
+                    <i class='app-menu__icon bx bx-calendar-check'></i>
+                    <span class="app-menu__label">Quản lý hóa đơn</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="app-menu__item {{ Request::is('admin/voucher*') ? 'active' : '' }}"
+                    href="{{ route('admin.voucher.index') }}">
+                    <i class="app-menu__icon fa fa-ticket-alt"></i><span class="app-menu__label">Quản lý Voucher</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="app-menu__item" href="{{ route('admin.ban-an.qr_tool') }}">
+                    <i class='app-menu__icon bx bx-calendar-check'></i>
+                    <span class="app-menu__label">Quản lý mã QR</span>
+                </a>
+            </li>
+
 
         </ul>
     </aside>
@@ -126,9 +144,9 @@
     <script type="text/javascript" src="{{ asset('admin/doc/js/plugins/chart.js') }}"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="src/jquery.table2excel.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-    <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css"></script>
+    <script type="text/javascript" src="{{ asset('admin/doc/js/plugins/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('admin/doc/js/plugins/dataTables.bootstrap.min.js') }}"></script>
     <script type="text/javascript">
         $('#sampleTable').DataTable();
     </script>

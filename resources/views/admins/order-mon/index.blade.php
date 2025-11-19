@@ -56,7 +56,7 @@
                 <td>{{ $order->id }}</td>
                 <td>{{ $order->datBan->ma_dat_ban ?? 'N/A' }}</td>
                 <td>{{ $order->datBan->ten_khach ?? 'N/A' }}</td>
-                <td>{{ $order->banAn->so_ban ?? 'N/A' }}</td>
+                <td>{{ $order->datBan->ban_id ?? 'N/A' }}</td>
                 <td>{{ $order->tong_mon }}</td>
                 <td>{{ number_format($order->tong_tien, 0, ',', '.') }} đ</td>
                 <td>
