@@ -29,6 +29,11 @@ class ChiTietOrder extends Model
     {
         return $this->belongsTo(MonAn::class, 'mon_an_id');
     }
+    public function nhanVien()
+    {
+        return $this->belongsTo(User::class, 'nhan_vien_id');
+    }
+
 
     protected static function booted()
     {

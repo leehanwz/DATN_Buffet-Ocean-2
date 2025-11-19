@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 
 // Controllers
 use App\Http\Controllers\Shop\HomeController;
-
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\Admin\NhanVienController;
@@ -15,7 +14,6 @@ use App\Http\Controllers\Admin\BanAnController;
 use App\Http\Controllers\Admin\DanhMucController;
 use App\Http\Controllers\Admin\MonAnController;
 use App\Http\Controllers\Admin\ComboBuffetController;
-
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Admin\DatBanController;
@@ -24,6 +22,11 @@ use App\Http\Controllers\Admin\OrderMonController;
 use App\Http\Controllers\Admin\HoaDonController;
 use App\Http\Controllers\Admin\VoucherController;
 
+use App\Http\Controllers\NhanVien\NhanVienOrderMonController;
+
+// ===== PHẦN THÊM MỚI 1: KHAI BÁO CONTROLLER =====
+use App\Http\Controllers\Shop\Oderqr\OrderController;
+// ===============================================
 
 
 /*
@@ -54,8 +57,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // (Sửa lỗi biểu đồ trống)
     Route::get('/dashboard/data', [DashboardController::class, 'getChartData'])->name('dashboard.data');
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('dat-ban/{id}/info', [DatBanController::class, 'getComboInfo'])->name('dat-ban.info');
     // SẢN PHẨM & MÓN ĂN
     Route::resource('danh-muc', DanhMucController::class);
     Route::resource('san-pham', SanPhamController::class); // Tên này có thể nên là 'mon-an'
@@ -65,7 +66,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // CHI TIẾT ORDER
     Route::resource('chi-tiet-order', ChiTietOrderController::class);
     Route::resource('order-mon', OrderMonController::class);
-
     //hoa don
     Route::resource('hoa-don', HoaDonController::class);
 
@@ -140,3 +140,77 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/update-status', 'updateStatus')->name('updateStatus');
     });
 });
+// <-- ** KẾT THÚC NHÓM ADMIN **
+
+
+
+
+
+
+// ==========================================================
+// ===== MÀN HÌNH NHÂN VIÊN (CHỈ ROUTE CHÍNH) =====
+// ==========================================================
+// Route::prefix('nhan-vien')->name('nhan-vien.')->controller(NhanVienController::class)->group(function () {
+//     // Route chính: Trang quản lý nhân viên (danh sách, thao tác chính)
+//     Route::get('/', 'index')->name('index');
+
+//     Route::get('/order', [NhanVienOrderMonController::class, 'index'])->name('order.index');
+//     Route::post('/order/mo-order', [NhanVienOrderMonController::class, 'moOrder'])->name('order.mo-order');
+// });
+
+Route::prefix('nhanvien')->name('nhanvien.')->group(function () {
+    Route::get('/order', [NhanVienOrderMonController::class, 'index'])->name('order.index');
+    Route::post('/order/mo-order', [NhanVienOrderMonController::class, 'moOrder'])->name('order.mo-order');
+
+    // Chi tiết order – dùng show
+    Route::get('/chi-tiet-order/{orderId}', [NhanVienOrderMonController::class, 'show'])->name('chi-tiet-order.show');
+
+    Route::get('chi-tiet-order/{orderId}/edit/{ctId}', [NhanVienOrderMonController::class, 'edit'])->name('chi-tiet-order.edit');
+    Route::post('/chi-tiet-order', [NhanVienOrderMonController::class, 'store'])->name('chi-tiet-order.store');
+    Route::put('chi-tiet-order/{ctId}', [NhanVienOrderMonController::class, 'update'])->name('chi-tiet-order.update');
+    Route::delete('/chi-tiet-order/{id}', [NhanVienOrderMonController::class, 'destroy'])->name('chi-tiet-order.destroy');
+});
+
+// ==========================================================
+// ===== MÀN HÌNH BẾP (CHỈ ROUTE CHÍNH) =====
+// ==========================================================
+// Route::prefix('bep')->name('bep.')->controller(OrderController::class)->group(function () {
+//     // Route chính: Trang hiển thị các món cần chế biến / trạng thái order
+//     Route::get('/', 'showKitchenDashboard')->name('dashboard');
+// });
+
+
+
+
+
+// ==========================================================
+// ===== PHẦN THÊM MỚI 2: NHÓM ROUTE "oderqr" =====
+// ==========================================================
+// Route::prefix('oderqr')->group(function () {
+
+//     /**
+//      * MỚI: Trang Blade hiển thị giao diện gọi món cho khách
+//      * VD: GET /oderqr/menu/3 (3 là banId)
+//      */
+//     Route::get('menu/{banId}', [OrderController::class, 'showGoiMonPage'])->name('oderqr.menu');
+
+//     /**
+//      * API khi quét QR: Lấy thông tin bàn, menu và trạng thái order hiện tại
+//      * VD: GET /oderqr/session/table/1
+//      */
+//     Route::get('session/table/{banId}', [OrderController::class, 'getSessionInfo']);
+
+//     /**
+//      * API gửi order (gọi thêm món)
+//      * VD: POST /oderqr/order/submit
+//      */
+//     Route::post('order/submit', [OrderController::class, 'submitOrder']);
+
+//     /**
+//      * API xem trạng thái các món đã gọi (cho bếp)
+//      * VD: GET /oderqr/order/status/21
+//      */
+//     Route::get('order/status/{datBanId}', [OrderController::class, 'getOrderStatus']);
+
+
+// });

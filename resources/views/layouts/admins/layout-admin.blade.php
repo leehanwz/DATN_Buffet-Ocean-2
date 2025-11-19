@@ -74,7 +74,7 @@
             <li>
                 <a class="app-menu__item " href="{{ route('admin.khu-vuc-ban-an') }}">
                     <i class='app-menu__icon bx bx-table'></i>
-                    <span class="app-menu__label">Quản lý khu vực</span>
+                    <span class="app-menu__label">Quản lý khu vực</span>  
                 </a>
             </li>
 
