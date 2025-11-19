@@ -12,16 +12,45 @@ use Illuminate\Http\Request;
 
 class OrderMonController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = OrderMon::with(['datBan', 'banAn'])->latest()->paginate(10);
-        return view('admins.order-mon.index', compact('orders',));
-    }
+        $query = OrderMon::with(['datBan', 'banAn'])->latest();
 
+        // Lọc theo mã đặt bàn
+        if ($request->filled('ma_dat_ban')) {
+            $query->whereHas('datBan', function ($q) use ($request) {
+                $q->where('ma_dat_ban', 'like', '%' . $request->ma_dat_ban . '%');
+            });
+        }
+
+        // Lọc theo tên khách
+        if ($request->filled('ten_khach')) {
+            $query->whereHas('datBan', function ($q) use ($request) {
+                $q->where('ten_khach', 'like', '%' . $request->ten_khach . '%');
+            });
+        }
+
+        // Lọc theo số bàn
+        if ($request->filled('so_ban')) {
+            $query->whereHas('banAn', function ($q) use ($request) {
+                $q->where('so_ban', 'like', '%' . $request->so_ban . '%');
+            });
+        }
+
+        // Lọc theo trạng thái order
+        if ($request->filled('trang_thai')) {
+            $query->where('trang_thai', $request->trang_thai);
+        }
+
+        $orders = $query->paginate(10)->withQueryString();
+
+        return view('admins.order-mon.index', compact('orders'));
+    }
     public function create()
     {
         $datBans = DatBan::with(['banAn', 'comboBuffet.monTrongCombo.monAn'])
-            ->orderByDesc('id') // hoặc orderByDesc('created_at')
+            ->where('trang_thai', 'da_xac_nhan') // chỉ lấy những đơn đã xác nhận
+            ->orderByDesc('id')
             ->get();
         $banAns = BanAn::all();
         return view('admins.order-mon.create', compact('datBans', 'banAns'));
