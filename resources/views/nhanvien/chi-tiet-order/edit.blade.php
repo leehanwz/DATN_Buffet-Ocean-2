@@ -1,4 +1,4 @@
-@extends('layouts.admins.layout-admin')
+@extends('layouts.Shop.layout-nhanvien')
 
 @section('title', 'Sửa món trong Order')
 

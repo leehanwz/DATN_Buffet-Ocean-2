@@ -1,4 +1,4 @@
-@extends('layouts.admins.layout-admin')
+@extends('layouts.Shop.layout-nhanvien')
 
 @section('title', 'Chi tiết Order')
 
@@ -12,39 +12,20 @@
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    @if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
+    @if(session('warning'))
+    <div class="alert alert-warning">{{ session('warning') }}</div>
+    @endif
+
+
+    <a href="{{ route('nhanvien.chi-tiet-order.create', ['order_id' => $order->id]) }}"
+        class="btn btn-primary mb-3">
+        + Thêm món mới vào order
+    </a>
     <hr>
-
-    <!-- Form thêm món -->
-    <form action="{{ route('nhanvien.chi-tiet-order.store') }}" method="POST">
-        @csrf
-        <input type="hidden" name="order_id" value="{{ $order->id }}">
-
-        <div class="row">
-            <div class="col-md-4">
-                <select name="mon_an_id" class="form-control" required>
-                    <option value="">-- Chọn món --</option>
-                    @foreach($monAns as $mon)
-                    <option value="{{ $mon->id }}">{{ $mon->ten_mon }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <input type="number" name="so_luong" class="form-control" min="1" value="1">
-            </div>
-
-            <div class="col-md-4">
-                <input type="text" name="ghi_chu" class="form-control" placeholder="Ghi chú">
-            </div>
-
-            <div class="col-md-2">
-                <button class="btn btn-primary w-100">Thêm món</button>
-            </div>
-        </div>
-    </form>
-
-    <hr>
-
     <!-- Danh sách món trong order -->
     <table class="table table-bordered">
         <thead>
@@ -58,23 +39,28 @@
         <tbody>
             @foreach($order->chiTietOrders as $ct)
             <tr>
-                <td>{{ $ct->monAn->ten_mon }}</td>
-                <td>{{ $ct->so_luong }}</td>
+                <td>{{ $ct->monAn->ten_mon ?? 'Không xác định' }}</td>
+                <td>{{ $ct->so_luong_hien_thi }}</td>
                 <td>{{ $ct->ghi_chu }}</td>
-
                 <td>
-                    <!-- Chuyển sửa sang trang edit riêng -->
-                    <a href="{{ route('nhanvien.chi-tiet-order.edit', [$order->id, $ct->id]) }}" class="btn btn-sm btn-warning">
-                        Sửa
-                    </a>
-
-                    <form action="{{ route('nhanvien.chi-tiet-order.destroy', $ct->id) }}" method="POST" class="d-inline">
-                        @csrf @method('DELETE')
+                    @if ($ct->loai_mon === 'combo')
+                    <a href="{{ route('nhanvien.chi-tiet-order.edit', [$order->id, $ct->id]) }}"
+                        class="btn btn-sm btn-warning">Sửa</a>
+                    <span class="text-muted ms-2"></span>
+                    @elseif ($ct->loai_mon === 'goi_them')
+                    <a href="{{ route('nhanvien.chi-tiet-order.edit', [$order->id, $ct->id]) }}"
+                        class="btn btn-sm btn-warning">Sửa</a>
+                    <form action="{{ route('nhanvien.chi-tiet-order.destroy', $ct->id) }}"
+                        method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
                         <button class="btn btn-sm btn-danger">Xóa</button>
                     </form>
+                    @endif
                 </td>
             </tr>
             @endforeach
+
         </tbody>
     </table>
 

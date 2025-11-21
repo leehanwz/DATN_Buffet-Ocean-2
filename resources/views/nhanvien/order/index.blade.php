@@ -1,4 +1,4 @@
-@extends('layouts.admins.layout-admin')
+@extends('layouts.Shop.layout-nhanvien')
 
 @section('title', 'Danh sách bàn')
 
@@ -10,110 +10,94 @@
     </div>
     @endif
 
-    <div class="app-title">
-        <ul class="app-breadcrumb breadcrumb side">
-            <li class="breadcrumb-item active"><b>Danh sách bàn</b></li>
+    <div class="app-title d-flex justify-content-between align-items-center mb-4">
+        <ul class="app-breadcrumb breadcrumb side mb-0">
+            <li class="breadcrumb-item active">
+                <h2 class="fw-bold">Danh sách bàn</h2>
+            </li>
         </ul>
-        <div id="clock"></div>
+        <div id="clock" class="text-muted fw-semibold"></div>
     </div>
 
-    <div class="row">
-        @foreach($bans as $index => $ban)
+    <div class="row g-3">
+        @foreach($bans as $ban)
         @php
         $order = $orders->has($ban->id) ? $orders[$ban->id] : null;
         @endphp
 
-        <div class="col-md-2 mb-3">
-            <div class="card text-center cursor-pointer"
-                id="ban-{{ $ban->id }}"
-                style="cursor: pointer;"
-                data-ban-id="{{ $ban->id }}"
-                data-order-id="{{ $order?->id ?? '' }}"
-                onclick="moOrder(this)">
+        <div class="col-md-2 col-sm-4 col-6">
+            <div class="card shadow-sm rounded-4 border-0 position-relative overflow-hidden"
+                style="cursor: pointer; transition: transform 0.2s;">
 
-                <div class="card-body
-                @if($ban->trang_thai == 'dang_trong') bg-success text-white
-                @elseif($ban->trang_thai == 'co_khach') bg-danger text-white
-                @else bg-secondary text-white @endif">
-
-                    <h5 class="card-title">Bàn {{ $ban->so_ban }}</h5>
-                    <p class="card-text">
+                {{-- Header trạng thái --}}
+                <div class="p-3 text-white fw-bold rounded-top
+                    @if($ban->trang_thai == 'dang_trong') bg-success
+                    @elseif($ban->trang_thai == 'co_khach') bg-danger
+                    @else bg-secondary @endif
+                    text-center">
+                    <h6 class="mb-1" style="color: red;">Bàn {{ $ban->so_ban }}</h6>
+                    <small class="opacity-75">
                         @if($order)
-                        Order ID: {{ $order->id }} <br>
-                        Tổng món: {{ $order->tong_mon }} <br>
-                        Tổng tiền: {{ number_format($order->tong_tien) }}
+                        Đang phục vụ
                         @else
                         Trống
                         @endif
-                    </p>
+                    </small>
+                </div>
 
-                    <div class="d-flex gap-2 justify-content-center mt-2">
-                        @if(!$order)
-                        <!-- Nút mở order -->
-                        <button class="btn btn-light btn-sm"
-                            onclick="moOrder(this.closest('.card'))">
+                {{-- Thân card --}}
+                <div class="card-body text-center py-3">
+                    @if($order)
+                    <p class="mb-1"><i class="bi bi-receipt"></i> Order ID: <b>{{ $order->id }}</b></p>
+                    <p class="mb-1"><i class="bi bi-basket3"></i> Tổng món: <b>{{ $order->tong_mon }}</b></p>
+                    <p class="mb-2"><i class="bi bi-currency-dollar"></i> Tổng tiền: <b>{{ number_format($order->tong_tien) }} đ</b></p>
+
+                    <a href="{{ route('nhanvien.order.page', $order->id) }}"
+                        class="btn btn-warning btn-sm fw-semibold w-100 rounded-3 shadow-sm">
+                        Chi tiết / Thêm món
+                    </a>
+                    @else
+                    <p class="text-muted mb-3"><i class="bi bi-clock-history"></i> Chưa có order</p>
+
+                    <form action="{{ route('nhanvien.order.mo-order') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="ban_id" value="{{ $ban->id }}">
+                        <button class="btn btn-outline-primary btn-sm fw-semibold w-100 rounded-3 shadow-sm">
                             Mở Order
                         </button>
-                        <!-- Nút chi tiết vô hiệu -->
-                        <button class="btn btn-secondary btn-sm" disabled>Chi tiết</button>
-                        @else
-                        <!-- Khi đã có order thì chỉ hiển thị nút chi tiết với orderId -->
-                        <a href="{{ route('nhanvien.chi-tiet-order.show', ['orderId' => $order->id]) }}"
-                            class="btn btn-warning btn-sm">
-                            Chi tiết
-                        </a>
-                        @endif
-                    </div>
+                    </form>
+                    @endif
                 </div>
+
             </div>
         </div>
         @endforeach
-
     </div>
 </main>
-@endsection
 
-@section('scripts')
-<script>
-    function cardClick(el) {
-        // Nếu bàn đã có order, redirect sang chi tiết luôn
-        const orderId = el.dataset.orderId;
-        const banId = el.dataset.banId;
+{{-- Hover effect --}}
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(255, 0, 191, 0.15);
+    }
 
-        if (orderId) {
-            window.location.href = '/nhanvien/chi-tiet-order?order_id=' + orderId;
+    #flashMsg {
+        animation: fadeOut 5s forwards;
+    }
+
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+
+        80% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0;
         }
     }
-
-    function moOrder(el, event) {
-        event.stopPropagation(); // tránh click lên card
-
-        const banId = el.dataset.banId || el.getAttribute('data-ban-id');
-        const orderId = el.dataset.orderId || el.getAttribute('data-order-id');
-
-        fetch("{{ route('nhanvien.order.mo-order') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    ban_id: banId
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // redirect sang chi tiết order
-                    window.location.href = '/nhanvien/chi-tiet-order?order_id=' + data.order.id;
-                } else {
-                    alert('Mở order thất bại!');
-                }
-            })
-            .catch(err => {
-                console.error('AJAX lỗi:', err);
-                alert('Có lỗi xảy ra. Kiểm tra console.');
-            });
-    }
-</script>
+</style>
 @endsection

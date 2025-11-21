@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\HoaDonController;
 use App\Http\Controllers\Admin\VoucherController;
 
 use App\Http\Controllers\NhanVien\NhanVienOrderMonController;
+use App\Http\Controllers\NhanVien\BepController;
 
 // ===== PHẦN THÊM MỚI 1: KHAI BÁO CONTROLLER =====
 use App\Http\Controllers\Shop\Oderqr\OrderController;
@@ -121,6 +122,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/delete', 'destroy')->name('destroy');
         Route::post('/{id}/regenerate-qr', 'regenerateQr')->name('qr');
         Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
+        Route::get('/qr-tool', 'showQrGeneratorPage')->name('qr_tool');                 // Trang công cụ tạo QR hàng loạt
     });
 
     // AJAX ROUTE (Lấy bàn trống theo giờ)
@@ -162,7 +164,10 @@ Route::prefix('nhanvien')->name('nhanvien.')->group(function () {
     Route::get('/order', [NhanVienOrderMonController::class, 'index'])->name('order.index');
     Route::post('/order/mo-order', [NhanVienOrderMonController::class, 'moOrder'])->name('order.mo-order');
 
-    // Chi tiết order – dùng show
+    Route::get('/chi-tiet-order/create', [NhanVienOrderMonController::class, 'create'])->name('chi-tiet-order.create');
+    Route::get('/order/{orderId}', [NhanVienOrderMonController::class, 'orderPage'])->name('order.page');
+    Route::post('/order/{orderId}/gui-bep', [NhanVienOrderMonController::class, 'guiBep'])->name('order.gui-bep');
+
     Route::get('/chi-tiet-order/{orderId}', [NhanVienOrderMonController::class, 'show'])->name('chi-tiet-order.show');
 
     Route::get('chi-tiet-order/{orderId}/edit/{ctId}', [NhanVienOrderMonController::class, 'edit'])->name('chi-tiet-order.edit');
@@ -179,38 +184,57 @@ Route::prefix('nhanvien')->name('nhanvien.')->group(function () {
 //     Route::get('/', 'showKitchenDashboard')->name('dashboard');
 // });
 
+Route::prefix('bep')->name('bep.')->group(function () {
+    // Trang hiển thị các order đã gửi bếp
+    Route::get('/', [BepController::class, 'index'])->name('dashboard');
+
+    // Tùy chọn: cập nhật trạng thái món đã xong
+    Route::post('/order/{orderId}/hoan-tat', [BepController::class, 'hoanTatOrder'])->name('hoan-tat');
+});
 
 
 
 
 // ==========================================================
-// ===== PHẦN THÊM MỚI 2: NHÓM ROUTE "oderqr" =====
+// ===== PHẦN THÊM MỚI 2: NHÓM ROUTE "oderqr" (Đã thêm Combo Selection) =====
 // ==========================================================
-// Route::prefix('oderqr')->group(function () {
+Route::prefix('oderqr')->group(function () {
 
-//     /**
-//      * MỚI: Trang Blade hiển thị giao diện gọi món cho khách
-//      * VD: GET /oderqr/menu/3 (3 là banId)
-//      */
-//     Route::get('menu/{banId}', [OrderController::class, 'showGoiMonPage'])->name('oderqr.menu');
+    /**
+     * MỚI THÊM: TRANG CHỌN COMBO (Chuyển hướng từ /menu sang đây nếu thiếu combo)
+     * VD: GET /oderqr/select-combo/3
+     */
+    Route::get('select-combo/{qrKey}', [OrderController::class, 'showComboSelectionPage'])
+        ->name('oderqr.select_combo');
 
-//     /**
-//      * API khi quét QR: Lấy thông tin bàn, menu và trạng thái order hiện tại
-//      * VD: GET /oderqr/session/table/1
-//      */
-//     Route::get('session/table/{banId}', [OrderController::class, 'getSessionInfo']);
+    /**
+     * MỚI THÊM: API XỬ LÝ POST CHỌN COMBO VÀ TẠO SESSION
+     * VD: POST /oderqr/start-order
+     */
+    Route::post('start-order', [OrderController::class, 'startOrder'])
+        ->name('oderqr.start_order');
 
-//     /**
-//      * API gửi order (gọi thêm món)
-//      * VD: POST /oderqr/order/submit
-//      */
-//     Route::post('order/submit', [OrderController::class, 'submitOrder']);
+    /**
+     * Điểm vào chính (sẽ kiểm tra và chuyển hướng)
+     */
+    Route::get('menu/{qrKey}', [OrderController::class, 'showGoiMonPage'])
+        ->name('oderqr.menu');
 
-//     /**
-//      * API xem trạng thái các món đã gọi (cho bếp)
-//      * VD: GET /oderqr/order/status/21
-//      */
-//     Route::get('order/status/{datBanId}', [OrderController::class, 'getOrderStatus']);
+    /**
+     * API khi quét QR: Lấy thông tin bàn, menu và trạng thái order hiện tại
+     */
+    Route::get('session/table/{qrKey}', [OrderController::class, 'getSessionInfo']);
 
+    /**
+     * API gửi order (gọi thêm món)
+     */
+    Route::post('order/submit', [OrderController::class, 'submitOrder']);
 
-// });
+    /**
+     * API xem trạng thái các món đã gọi (cho bếp)
+     * VD: GET /oderqr/order/status/21
+     */
+    Route::get('order/status/{datBanId}', [OrderController::class, 'getOrderStatus']);
+
+    Route::get('list', [OrderController::class, 'showQrListPage'])->name('oderqr.list');
+});

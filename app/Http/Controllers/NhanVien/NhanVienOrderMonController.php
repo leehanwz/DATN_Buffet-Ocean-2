@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\ChiTietOrder;
 use App\Models\OrderMon;
 use App\Models\MonTrongCombo;
+use App\Models\DatBan;
 use App\Models\MonAn;
 use App\Models\BanAn;
 use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Cache;
 
 class NhanVienOrderMonController extends Controller
 {
@@ -24,10 +27,26 @@ class NhanVienOrderMonController extends Controller
     // Hiển thị chi tiết 1 order
     public function show($orderId)
     {
-        $order = OrderMon::with(['chiTietOrders.monAn', 'datBan.comboBuffet'])
+        $order = OrderMon::with(['chiTietOrders.monAn', 'banAn', 'datBan.comboBuffet'])
             ->findOrFail($orderId);
 
         $monAns = MonAn::where('trang_thai', 'dang_ban')->get();
+
+        // Lấy số lượng món combo (nếu có)
+        $comboId = $order->datBan->combo_id ?? null;
+        $soLuongMonTrongCombo = [];
+        if ($comboId) {
+            $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
+            $soLuongMonTrongCombo = $monTrongCombo->pluck('gioi_han_so_luong', 'mon_an_id')->toArray();
+        }
+
+        // Gắn số lượng hiển thị cho từng chi tiết order
+        $order->chiTietOrders->transform(function ($ct) use ($soLuongMonTrongCombo) {
+            $ct->so_luong_hien_thi = $ct->loai_mon === 'combo'
+                ? ($soLuongMonTrongCombo[$ct->mon_an_id] ?? $ct->so_luong)
+                : $ct->so_luong;
+            return $ct;
+        });
 
         return view('nhanvien.chi-tiet-order.show', compact('order', 'monAns'));
     }
@@ -36,40 +55,89 @@ class NhanVienOrderMonController extends Controller
     public function moOrder(Request $request)
     {
         $banId = $request->input('ban_id');
-        $datBanId = $request->input('dat_ban_id') ?? null;
 
-        $order = OrderMon::where('ban_id', $banId)->latest()->first();
+        // Kiểm tra xem bàn này đã có order dang_xu_li chưa
+        $existingOrder = OrderMon::where('ban_id', $banId)
+            ->where('trang_thai', 'dang_xu_li')
+            ->first();
 
-        if (!$order) {
-            $order = OrderMon::create([
-                'ban_id' => $banId,
-                'dat_ban_id' => $datBanId,
-                'tong_mon' => 0,
-                'tong_tien' => 0,
-                'trang_thai' => 'dang_xu_li',
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'order' => $order,
-                'mode' => 'tao_moi'
-            ]);
+        if ($existingOrder) {
+            return redirect()->back()->with('warning', 'Bàn này đã có order đang xử lý!');
         }
 
-        if ($order->trang_thai === 'dang_xu_li') {
-            return response()->json([
-                'success' => true,
-                'order' => $order,
-                'mode' => 'tiep_tuc_order'
-            ]);
+        // Tìm đặt bàn hợp lệ: CHỈ 2 trạng thái này được mở order
+        $datBan = DatBan::where('ban_id', $banId)
+            ->whereIn('trang_thai', ['da_xac_nhan', 'khach_da_den'])
+            ->latest()
+            ->first();
+
+        if (!$datBan) {
+            return redirect()->back()->with('warning', 'Bàn này chưa có đặt bàn hợp lệ!');
         }
 
-        return response()->json([
-            'success' => true,
-            'order' => $order,
-            'mode' => 'chi_xem'
+        // Cập nhật trạng thái đặt bàn thành khách đã đến
+        if ($datBan->trang_thai != 'khach_da_den') {
+            $datBan->update(['trang_thai' => 'khach_da_den']);
+        }
+
+        // Tạo order
+        $order = OrderMon::create([
+            'ban_id'     => $banId,
+            'dat_ban_id' => $datBan->id,
+            'tong_mon'   => 0,
+            'tong_tien'  => 0,
+            'trang_thai' => 'dang_xu_li',
         ]);
+
+        return redirect()->route('nhanvien.order.index', ['order_id' => $order->id])
+            ->with('success', 'Mở order thành công!');
     }
+
+    // public function moOrder(Request $request)
+    // {
+    //     $banId = $request->ban_id;
+
+    //     // Kiểm tra bàn tồn tại
+    //     $ban = BanAn::find($banId);
+    //     if (!$ban) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Bàn không tồn tại!'
+    //         ]);
+    //     }
+
+    //     // Kiểm tra xem bàn đã có order đang xử lý chưa
+    //     $order = OrderMon::where('ban_id', $banId)
+    //         ->where('trang_thai', 'dang_xu_li')
+    //         ->first();
+
+    //     // 👉 Nếu đã có order đang xử lý → tiếp tục order đó
+    //     if ($order) {
+    //         return response()->json([
+    //             'success' => true,
+    //             'order' => $order,
+    //             'mode' => 'tiep_tuc_order'
+    //         ]);
+    //     }
+
+    //     // 👉 Nếu chưa có → tạo order mới
+    //     $order = OrderMon::create([
+    //         'ban_id'     => $banId,
+    //         'tong_mon'   => 0,
+    //         'tong_tien'  => 0,
+    //         'trang_thai' => 'dang_xu_li',
+    //     ]);
+
+    //     // 👉 Cập nhật trạng thái bàn thành "có khách"
+    //     $ban->update(['trang_thai' => 'co_khach']);
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'order' => $order,
+    //         'mode' => 'tao_moi'
+    //     ]);
+    // }
+
 
     public function edit($orderId, $ctId)
     {
@@ -81,25 +149,67 @@ class NhanVienOrderMonController extends Controller
         return view('nhanvien.chi-tiet-order.edit', compact('order', 'ct'));
     }
 
-    // Thêm món
+    // Hiển thị form tạo chi tiết order mới
+    public function create(Request $request)
+    {
+        $orderId = $request->query('order_id');
+
+        // Lấy order cùng bàn và combo
+        $order = OrderMon::with(['banAn', 'datBan.comboBuffet'])->findOrFail($orderId);
+
+        // Lấy danh sách món đang bán
+        $monAns = MonAn::where('trang_thai', 'con')->get();
+
+        // Nếu cần gợi ý món combo
+        $comboId = $order->datBan->combo_id ?? null;
+        $soLuongMonTrongCombo = [];
+        if ($comboId) {
+            $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
+            $soLuongMonTrongCombo = $monTrongCombo->pluck('gioi_han_so_luong', 'mon_an_id')->toArray();
+        }
+
+        return view('nhanvien.chi-tiet-order.create', compact('order', 'monAns', 'soLuongMonTrongCombo'));
+    }
+
+
+    // Xử lý lưu món mới vào database
     public function store(Request $request)
     {
-        $request->validate([
-            'order_id' => 'required',
-            'mon_an_id' => 'required',
-            'so_luong' => 'required|integer|min:1'
-        ]);
+        $data = $request->all();
 
-        ChiTietOrder::create([
-            'order_id' => $request->order_id,
-            'mon_an_id' => $request->mon_an_id,
-            'so_luong' => $request->so_luong,
-            'loai_mon' => 'goi_them',
-            'ghi_chu' => $request->ghi_chu,
-            'trang_thai' => 'cho_bep'
-        ]);
+        // Nếu gửi theo AJAX, items là mảng
+        if (isset($data['items'])) {
+            foreach ($data['items'] as $item) {
+                ChiTietOrder::create([
+                    'order_id' => $data['order_id'],
+                    'mon_an_id' => $item['mon_an_id'],
+                    'so_luong' => $item['so_luong'] ?? 1,
+                    'loai_mon' => 'goi_them',
+                    'ghi_chu' => $item['ghi_chu'] ?? null,
+                    'trang_thai' => 'cho_bep',
+                ]);
+            }
+        } else {
+            // Nếu gửi form bình thường
+            $request->validate([
+                'order_id' => 'required',
+                'mon_an_id' => 'required',
+                'so_luong' => 'required|integer|min:1'
+            ]);
+            ChiTietOrder::create([
+                'order_id' => $request->order_id,
+                'mon_an_id' => $request->mon_an_id,
+                'so_luong' => $request->so_luong,
+                'loai_mon' => 'goi_them',
+                'ghi_chu' => $request->ghi_chu,
+                'trang_thai' => 'cho_bep',
+            ]);
+        }
 
-        return back()->with('success', 'Đã thêm món!');
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã thêm món vào order!'
+        ]);
     }
 
     // Sửa món
@@ -119,8 +229,51 @@ class NhanVienOrderMonController extends Controller
     public function destroy($id)
     {
         $ct = ChiTietOrder::findOrFail($id);
+        if ($ct->loai_mon === 'combo') {
+            return back()->with('error', 'Món trong combo không thể xóa!');
+        }
         $ct->delete();
 
         return back()->with('success', 'Đã xóa món!');
+    }
+
+    public function orderPage($orderId)
+    {
+        $order = OrderMon::with(['banAn', 'chiTietOrders.monAn'])
+            ->findOrFail($orderId);
+        // Lấy số lượng món combo (nếu có)
+        $comboId = $order->datBan->combo_id ?? null;
+        $soLuongMonTrongCombo = [];
+        if ($comboId) {
+            $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
+            $soLuongMonTrongCombo = $monTrongCombo->pluck('gioi_han_so_luong', 'mon_an_id')->toArray();
+        }
+
+        // Gắn số lượng hiển thị cho từng chi tiết order
+        $order->chiTietOrders->transform(function ($ct) use ($soLuongMonTrongCombo) {
+            $ct->so_luong_hien_thi = $ct->loai_mon === 'combo'
+                ? ($soLuongMonTrongCombo[$ct->mon_an_id] ?? $ct->so_luong)
+                : $ct->so_luong;
+            return $ct;
+        });
+
+        return view('nhanvien.order.page', compact('order'));
+    }
+
+    // Gửi order sang bếp
+
+    public function guiBep($orderId)
+    {
+        $order = OrderMon::findOrFail($orderId);
+        $order->load(['banAn', 'chiTietOrders.monAn']);
+
+        // Lấy danh sách order gửi bếp hiện tại trong cache
+        $ordersGuiBep = Cache::get('orders_gui_bep', []);
+
+        $ordersGuiBep[$order->id] = $order; // thêm order vào cache
+
+        Cache::put('orders_gui_bep', $ordersGuiBep, 3600); // lưu 1 giờ
+
+        return redirect()->back()->with('success', 'Đã gửi bếp');
     }
 }
