@@ -49,7 +49,7 @@ class OrderMonController extends Controller
     public function create()
     {
         $datBans = DatBan::with(['banAn', 'comboBuffet.monTrongCombo.monAn'])
-            ->where('trang_thai', 'da_xac_nhan') // chỉ lấy những đơn đã xác nhận
+            ->where('trang_thai', 'khach_da_den') // chỉ lấy những đơn đã xác nhận
             ->orderByDesc('id')
             ->get();
         $banAns = BanAn::all();

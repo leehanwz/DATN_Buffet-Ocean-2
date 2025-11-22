@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\NhanVien;
+namespace App\Http\Controllers\Shop\NhanVien;
 
 use App\Http\Controllers\Controller;
 use App\Models\BanAn;

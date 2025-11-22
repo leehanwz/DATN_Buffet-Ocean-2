@@ -27,10 +27,9 @@ use App\Http\Controllers\Admin\VoucherController;
 // ===== PHẦN THÊM MỚI 1: KHAI BÁO CONTROLLER =====
 use App\Http\Controllers\Shop\Oderqr\OrderController;
 
-use App\Http\Controllers\NhanVien\BanAnController as NVBanController;
-use App\Http\Controllers\NhanVien\DatBanController as NVDatBanController;
-use App\Http\Controllers\NhanVien\OrderMonController as NVOrderMonController;
-// ===============================================
+use App\Http\Controllers\Shop\Nhanvien\BanAnController as NVBanController;
+use App\Http\Controllers\Shop\Nhanvien\DatBanController as NVDatBanController;
+use App\Http\Controllers\Shop\Nhanvien\OrderMonController as NVOrderMonController;
 
 
 /*
@@ -63,6 +62,8 @@ Route::prefix('Nhan-Vien')->name('NhanVien.')->group(function () {
     Route::post('/dat-ban/store', [NVDatBanController::class, 'store'])->name('datban.store');
     Route::post('/dat-ban/{id}/xac-nhan', [NVDatBanController::class, 'xacNhan'])->name('datban.xacnhan');
     Route::post('/dat-ban/{id}/huy', [NVDatBanController::class, 'huy'])->name('datban.huy');
+   Route::post('/dat-ban/{id}/thay-doi-trang-thai', [NVDatBanController::class, 'thayDoiTrangThai'])->name('datban.thaydoitrangthai');
+
 
     // 3) Order món
     Route::get('/order/{banId}', [NVOrderMonController::class, 'index'])->name('order.index');
@@ -164,6 +165,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/update', 'update')->name('update');
         Route::post('/{id}/delete', 'destroy')->name('destroy');
         Route::post('/{id}/update-status', 'updateStatus')->name('updateStatus');
+
     });
 });
 // <-- ** KẾT THÚC NHÓM ADMIN **
