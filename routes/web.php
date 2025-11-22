@@ -24,11 +24,12 @@ use App\Http\Controllers\Admin\VoucherController;
 
 // ===== PHẦN THÊM MỚI 1: KHAI BÁO CONTROLLER =====
 use App\Http\Controllers\Shop\Oderqr\OrderController;
+use App\Http\Controllers\Shop\NhanVien\KhuVuc\NhanVienBanAnController;
 // ===============================================
 
 
 /*
-|--------------------------------------------------------------------------
+|-------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
@@ -145,15 +146,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 
-    
+// ==========================================================
+// ===== MÀN Nhân Viên =====
+// ==========================================================
 
-// ==========================================================
-// ===== MÀN HÌNH NHÂN VIÊN (CHỈ ROUTE CHÍNH) =====
-// ==========================================================
-Route::prefix('nhan-vien')->name('nhan-vien.')->controller(NhanVienController::class)->group(function () {
-    // Route chính: Trang quản lý nhân viên (danh sách, thao tác chính)
-    Route::get('/', 'index')->name('index');
+Route::prefix('nv')->name('nv.')->group(function () {
+    Route::prefix('ban-an')->name('ban-an.')->group(function () {
+        Route::get('/', [NhanVienBanAnController::class, 'index'])->name('index');
+
+        // POST cho walk-in
+        Route::post('/check-in-walkin', [NhanVienBanAnController::class, 'checkInWalkIn'])->name('check-in-walkin');
+
+        // POST cho khách đặt trước
+        Route::post('/check-in-dattruoc', [NhanVienBanAnController::class, 'checkInDatTruoc'])->name('check-in-dattruoc');
+
+        // GET nút reset bàn (tất cả bàn quá hạn)
+        Route::post('/reset/{id}', [NhanVienBanAnController::class, 'resetBan'])->name('reset-ban');
+    });
 });
+
+
 
 // ==========================================================
 // ===== MÀN HÌNH BẾP (CHỈ ROUTE CHÍNH) =====
