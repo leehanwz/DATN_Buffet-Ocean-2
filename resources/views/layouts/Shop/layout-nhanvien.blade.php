@@ -180,6 +180,7 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('restaurant/js/main.js') }}"></script>
+    @stack('scripts')
 </body>
 
 </html>

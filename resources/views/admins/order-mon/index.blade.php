@@ -28,13 +28,13 @@
             </select>
         </div>
         <div class="col-md-4 d-flex gap-2">
-        <button type="submit" class="btn btn-primary flex-grow-1">
-            <i class="fas fa-filter me-1"></i> Lọc
-        </button>
-        <a href="{{ route('admin.order-mon.index') }}" class="btn btn-secondary flex-grow-1">
-            <i class="fas fa-undo me-1"></i> Reset
-        </a>
-    </div>
+            <button type="submit" class="btn btn-primary flex-grow-1">
+                <i class="fas fa-filter me-1"></i> Lọc
+            </button>
+            <a href="{{ route('admin.order-mon.index') }}" class="btn btn-secondary flex-grow-1">
+                <i class="fas fa-undo me-1"></i> Reset
+            </a>
+        </div>
     </form>
     <table class="table table-bordered text-center">
         <thead class="table-dark">
@@ -56,7 +56,7 @@
                 <td>{{ $order->id }}</td>
                 <td>{{ $order->datBan->ma_dat_ban ?? 'N/A' }}</td>
                 <td>{{ $order->datBan->ten_khach ?? 'N/A' }}</td>
-                <td>{{ $order->datBan->ban_id ?? 'N/A' }}</td>
+                <td>{{ $order->datBan->banAn->so_ban ?? 'N/A' }}</td>
                 <td>{{ $order->tong_mon }}</td>
                 <td>{{ number_format($order->tong_tien, 0, ',', '.') }} đ</td>
                 <td>

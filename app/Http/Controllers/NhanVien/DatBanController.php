@@ -9,95 +9,138 @@ use App\Models\ComboBuffet;
 use App\Models\NhanVien;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class DatBanController extends Controller
 {
-    public function index()
+    public function index(Request $r)
+{
+    $query = DatBan::with(['banAn', 'nhanVien', 'comboBuffet'])->select('dat_ban.*');
+
+    if ($r->ma_dat_ban) {
+        $query->where('ma_dat_ban', 'like', '%' . $r->ma_dat_ban . '%');
+    }
+
+    if ($r->ban) {
+        $query->whereHas('banAn', function ($q) use ($r) {
+            $q->where('so_ban', 'like', '%' . $r->ban . '%');
+        });
+    }
+
+    if ($r->ten_khach) {
+        $query->where('ten_khach', 'like', '%' . $r->ten_khach . '%');
+    }
+
+    if ($r->so_khach) {
+        $query->where('so_khach', $r->so_khach);
+    }
+
+    if ($r->nhan_vien) {
+        $query->whereHas('nhanVien', function ($q) use ($r) {
+            $q->where('ho_ten', 'like', '%' . $r->nhan_vien . '%');
+        });
+    }
+
+    if ($r->combo) {
+        $query->whereHas('comboBuffet', function ($q) use ($r) {
+            $q->where('ten_combo', 'like', '%' . $r->combo . '%');
+        });
+    }
+
+    if ($r->trang_thai) {
+        $query->where('trang_thai', $r->trang_thai);
+    }
+
+    $ds = $query->orderByDesc('id')->distinct()->get();
+
+    return view('nhanvien.datban.index', compact('ds'));
+}
+
+
+    public function create()
     {
-        $ds = DatBan::with(['banAn', 'nhanVien', 'comboBuffet'])
-            ->orderByDesc('id')
+        // Lấy ID các bàn đang chờ xác nhận
+        $datBanChoXacNhan = DatBan::where('trang_thai', 'cho_xac_nhan')
+            ->pluck('ban_id')
+            ->toArray();
+
+        // Lấy các bàn trống và chưa có đặt bàn chờ xác nhận
+        $bans = BanAn::where('trang_thai', 'trong')
+            ->whereNotIn('id', $datBanChoXacNhan)
             ->get();
 
-        return view('nhanvien.datban.index', compact('ds'));
-    }
+        $combos = ComboBuffet::all(); // nếu muốn chọn combo khi tạo bàn
+        $nhanViens = NhanVien::where('trang_thai', 1)
+            ->where('vai_tro', 'le_tan')
+            ->get();
 
-   public function create()
+        return view('nhanvien.datban.create', compact('bans', 'combos', 'nhanViens'));
+    }
+public function store(Request $r)
 {
-    // Lấy ID các bàn đang chờ xác nhận
-    $datBanChoXacNhan = DatBan::where('trang_thai', 'cho_xac_nhan')
-                              ->pluck('ban_id')
-                              ->toArray();
+    $data = $r->validate([
+        'ban_an_id' => 'required',
+        'ten_khach' => 'required',
+        'so_dien_thoai' => 'nullable',
+        'so_luong' => 'required',
+        'thoi_gian_den' => 'required',
+        'combo_id' => 'nullable|integer',
+        'ghi_chu' => 'nullable|string|max:500',
+    ]);
 
-    // Lấy các bàn trống và chưa có đặt bàn chờ xác nhận
-    $bans = BanAn::where('trang_thai', 'trong')
-                 ->whereNotIn('id', $datBanChoXacNhan)
-                 ->get();
+    // Sinh mã đặt bàn
+    do {
+        $maDatBan = 'DB-' . Str::upper(substr(uniqid(), -6));
+    } while (DatBan::where('ma_dat_ban', $maDatBan)->exists());
 
-    $combos = ComboBuffet::all(); // nếu muốn chọn combo khi tạo bàn
-   $nhanViens = NhanVien::where('trang_thai', 1)->get();
+    $data['ma_dat_ban'] = $maDatBan;
+    $data['sdt_khach'] = $r->so_dien_thoai ?? '';
+    $data['nhan_vien_id'] = $r->nhan_vien_id ?? auth()->id();
+    $data['ban_id'] = $data['ban_an_id'];
+    $data['so_khach'] = $data['so_luong'];
+    $data['gio_den'] = $data['thoi_gian_den'];
 
-    return view('nhanvien.datban.create', compact('bans', 'combos','nhanViens'));
+    // Thời lượng phút theo combo hoặc mặc định 120 phút
+    if ($data['combo_id']) {
+        $combo = ComboBuffet::find($data['combo_id']);
+        $data['thoi_luong_phut'] = $combo ? $combo->thoi_luong_phut : 120;
+    } else {
+        $data['thoi_luong_phut'] = 120;
+    }
+
+    // Trạng thái mặc định là chờ xác nhận
+    $data['trang_thai'] = 'cho_xac_nhan';
+    unset($data['ban_an_id'], $data['so_luong'], $data['thoi_gian_den']);
+
+    DatBan::create($data);
+
+    // Update trạng thái bàn
+    BanAn::find($data['ban_id'])->update(['trang_thai' => 'da_dat']);
+
+    return redirect()->route('NhanVien.datban.index')->with('success', 'Tạo đặt bàn thành công!');
 }
-    public function store(Request $r)
-    {
-        $data = $r->validate([
-            'ban_an_id' => 'required',
-            'ten_khach' => 'required',
-            'so_dien_thoai' => 'nullable',
-            'so_luong' => 'required',
-            'thoi_gian_den' => 'required',
-            'combo_id' => 'nullable|integer'
-        ]);
-        $data['ma_dat_ban'] = 'DB-' . strtoupper(substr(uniqid(), -6));
-        $data['sdt_khach'] = $r->so_dien_thoai ?? '';
-        $data['trang_thai'] = 'cho_xac_nhan';
-        $data['nhan_vien_id'] = $r->nhan_vien_id ?? auth()->id();
-        $data['ban_id'] = $data['ban_an_id'];
-        $data['so_khach'] = $data['so_luong'];
-        $data['gio_den'] = $data['thoi_gian_den'];
+public function xacNhan($id)
+{
+    $datBan = DatBan::findOrFail($id);
+    $datBan->trang_thai = 'da_xac_nhan';
+    $datBan->gio_xac_nhan = now();
+    $datBan->save(); // kiểm tra thật sự update
 
-        unset($data['ban_an_id'], $data['so_luong'], $data['thoi_gian_den']);
+    $datBan->banAn->update(['trang_thai' => 'da_dat']);
 
-        DatBan::create($data);
+    return back()->with('success','Đã xác nhận bàn thành công!');
+}
+public function khachDaDen($id)
+{
+    $datBan = DatBan::findOrFail($id);
+    $datBan->trang_thai = 'khach_da_den';
+    // Không gán lại gio_xac_nhan, giữ nguyên từ lúc xác nhận
+    $datBan->save();
 
-        return redirect()->route('NhanVien.datban.index')->with('success', 'Tạo đặt bàn thành công!');
-    }
-    public function xacNhan($id)
-    {
-        // 1. Lấy bàn đã đặt kèm combo
-        $datBan = DatBan::with('comboBuffet')->findOrFail($id);
+    $datBan->banAn->update(['trang_thai' => 'da_dat']);
 
-        // 2. Tính tổng thời lượng combo (phút)
-        $tongThoiLuong = $datBan->comboBuffet ? $datBan->comboBuffet->thoi_luong_phut : 0;
-
-        // 3. Giờ đến
-        $gioDen = Carbon::parse($datBan->gio_den);
-
-        // 4. Giờ kết thúc theo combo
-        $gioKetThuc = $gioDen->copy()->addMinutes($tongThoiLuong);
-
-        // 5. Giờ đóng cửa (có thể đặt config)
-        $gioDongCua = Carbon::parse('22:00');
-
-        // 6. Kiểm tra nếu combo kết thúc sau giờ đóng cửa
-        if ($gioKetThuc->gt($gioDongCua)) {
-            return back()->with('error', 'Combo sẽ kết thúc sau giờ đóng cửa, không thể xác nhận!');
-        }
-
-        // 7. Gắn nhân viên xử lý và cập nhật trạng thái
-        $datBan->nhan_vien_id = auth()->id(); // hoặc có thể lấy từ form nếu muốn chỉ định nhân viên
-        $datBan->trang_thai = 'da_xac_nhan';
-        $datBan->save();
-
-        // 8. Cập nhật trạng thái bàn
-        $ban = $datBan->banAn;
-        if ($ban) {
-            $ban->trang_thai = 'da_dat';
-            $ban->save();
-        }
-
-        return back()->with('success', 'Đã xác nhận bàn thành công!');
-    }
+    return back()->with('success', 'Khách đã đến và được nhận bàn!');
+}
     public function huy($id)
     {
         $db = DatBan::findOrFail($id);
@@ -110,4 +153,5 @@ class DatBanController extends Controller
 
         return back()->with('success', 'Đã hủy bàn!');
     }
+
 }
