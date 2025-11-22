@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\NhanVien;
+namespace App\Http\Controllers\Shop\NhanVien;
 
 use App\Http\Controllers\Controller;
 use App\Models\ChiTietOrder;
@@ -21,7 +21,7 @@ class NhanVienOrderMonController extends Controller
         $bans = BanAn::with('khuVuc')->get();
         $orders = OrderMon::where('trang_thai', 'dang_xu_li')->get()->keyBy('ban_id');
 
-        return view('nhanvien.order.index', compact('bans', 'orders'));
+        return view('Shop.nhanvien.order.index', compact('bans', 'orders'));
     }
 
     // Hiển thị chi tiết 1 order
@@ -48,7 +48,7 @@ class NhanVienOrderMonController extends Controller
             return $ct;
         });
 
-        return view('nhanvien.chi-tiet-order.show', compact('order', 'monAns'));
+        return view('Shop.nhanvien.chi-tiet-order.show', compact('order', 'monAns'));
     }
 
     // Mở order cho bàn đang hoạt động
@@ -146,7 +146,7 @@ class NhanVienOrderMonController extends Controller
 
         $ct = ChiTietOrder::findOrFail($ctId);
 
-        return view('nhanvien.chi-tiet-order.edit', compact('order', 'ct'));
+        return view('Shop.nhanvien.chi-tiet-order.edit', compact('order', 'ct'));
     }
 
     // Hiển thị form tạo chi tiết order mới
@@ -168,7 +168,7 @@ class NhanVienOrderMonController extends Controller
             $soLuongMonTrongCombo = $monTrongCombo->pluck('gioi_han_so_luong', 'mon_an_id')->toArray();
         }
 
-        return view('nhanvien.chi-tiet-order.create', compact('order', 'monAns', 'soLuongMonTrongCombo'));
+        return view('Shop.nhanvien.chi-tiet-order.create', compact('order', 'monAns', 'soLuongMonTrongCombo'));
     }
 
 
@@ -230,17 +230,25 @@ class NhanVienOrderMonController extends Controller
     {
         $ct = ChiTietOrder::findOrFail($id);
         if ($ct->loai_mon === 'combo') {
-            return back()->with('error', 'Món trong combo không thể xóa!');
+            return redirect()->back()->with('error', 'Món trong combo không thể xóa!');
         }
         $ct->delete();
 
-        return back()->with('success', 'Đã xóa món!');
+        return redirect()->back()->with('success', 'Đã xóa món!');
     }
 
     public function orderPage($orderId)
     {
         $order = OrderMon::with(['banAn', 'chiTietOrders.monAn'])
             ->findOrFail($orderId);
+
+        // Nếu chưa chọn combo thì chuyển sang trang chọn combo
+        if (!$order->datBan->combo_id) {
+            return redirect()
+                ->route('Shop.nhanvien.order.chon-combo', $orderId)
+                ->with('warning', 'Vui lòng chọn combo trước khi gọi món!');
+        }
+
         // Lấy số lượng món combo (nếu có)
         $comboId = $order->datBan->combo_id ?? null;
         $soLuongMonTrongCombo = [];
@@ -257,7 +265,7 @@ class NhanVienOrderMonController extends Controller
             return $ct;
         });
 
-        return view('nhanvien.order.page', compact('order'));
+        return view('Shop.nhanvien.order.page', compact('order'));
     }
 
     // Gửi order sang bếp
@@ -275,5 +283,51 @@ class NhanVienOrderMonController extends Controller
         Cache::put('orders_gui_bep', $ordersGuiBep, 3600); // lưu 1 giờ
 
         return redirect()->back()->with('success', 'Đã gửi bếp');
+    }
+
+    public function chonCombo($orderId)
+    {
+        $order = OrderMon::with('datBan')->findOrFail($orderId);
+
+        // Lấy combo kèm hình ảnh, giá và danh sách món trong combo
+        $combos = \App\Models\ComboBuffet::with([
+            'monTrongCombo.monAn'
+        ])
+            ->where('trang_thai', 'dang_ban')
+            ->get();
+
+        return view('Shop.nhanvien.order.chon-combo', compact('order', 'combos'));
+    }
+
+
+    public function luuCombo(Request $request, $orderId)
+    {
+        $order = OrderMon::with('datBan')->findOrFail($orderId);
+
+        $request->validate([
+            'combo_id' => 'required|exists:combo_buffet,id'
+        ]);
+
+        // Lưu combo vào đặt bàn
+        $order->datBan->update([
+            'combo_id' => $request->combo_id
+        ]);
+
+        // Lấy danh sách món trong combo
+        $monTrongCombo = MonTrongCombo::where('combo_id', $request->combo_id)->get();
+
+        // Thêm món combo vào order
+        foreach ($monTrongCombo as $item) {
+            ChiTietOrder::create([
+                'order_id' => $orderId,
+                'mon_an_id' => $item->mon_an_id,
+                'so_luong' => $item->gioi_han_so_luong,
+                'loai_mon' => 'combo',
+                'trang_thai' => 'cho_bep',
+            ]);
+        }
+
+        return redirect()->route('nhanvien.order.page', $orderId)
+            ->with('success', 'Đã chọn combo cho khách!');
     }
 }

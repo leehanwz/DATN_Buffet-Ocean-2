@@ -22,7 +22,7 @@ use App\Http\Controllers\Admin\OrderMonController;
 use App\Http\Controllers\Admin\HoaDonController;
 use App\Http\Controllers\Admin\VoucherController;
 
-use App\Http\Controllers\NhanVien\NhanVienOrderMonController;
+use App\Http\Controllers\Shop\NhanVien\NhanVienOrderMonController;
 use App\Http\Controllers\NhanVien\BepController;
 
 // ===== PHẦN THÊM MỚI 1: KHAI BÁO CONTROLLER =====
@@ -161,8 +161,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // });
 
 Route::prefix('nhanvien')->name('nhanvien.')->group(function () {
+
     Route::get('/order', [NhanVienOrderMonController::class, 'index'])->name('order.index');
     Route::post('/order/mo-order', [NhanVienOrderMonController::class, 'moOrder'])->name('order.mo-order');
+
+    // 👉 NEW: Bắt buộc chọn combo trước
+    Route::get('/order/{orderId}/chon-combo', [NhanVienOrderMonController::class, 'chonCombo'])->name('order.chon-combo');
+    Route::post('/order/{orderId}/chon-combo', [NhanVienOrderMonController::class, 'luuCombo'])->name('order.luu-combo');
 
     Route::get('/chi-tiet-order/create', [NhanVienOrderMonController::class, 'create'])->name('chi-tiet-order.create');
     Route::get('/order/{orderId}', [NhanVienOrderMonController::class, 'orderPage'])->name('order.page');

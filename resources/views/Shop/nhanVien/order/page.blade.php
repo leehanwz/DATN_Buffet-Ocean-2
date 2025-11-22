@@ -60,10 +60,13 @@
                                 class="btn btn-sm btn-warning rounded-pill shadow-sm me-1 mb-1">Sửa</a>
 
                             <form action="{{ route('nhanvien.chi-tiet-order.destroy', $ct->id) }}"
-                                method="POST" class="d-inline">
-                                @csrf @method('DELETE')
+                                method="POST" class="d-inline"
+                                onsubmit="return confirm('Bạn có chắc chắn muốn xóa món này không?');">
+                                @csrf
+                                @method('DELETE')
                                 <button class="btn btn-sm btn-danger rounded-pill shadow-sm mb-1">Xóa</button>
                             </form>
+
                         </td>
                     </tr>
                     @endforeach

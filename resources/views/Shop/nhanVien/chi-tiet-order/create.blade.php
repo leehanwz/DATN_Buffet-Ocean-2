@@ -38,7 +38,7 @@
                 <h5 class="fw-semibold mb-3"><i class="bi bi-cart3 me-2"></i>Giỏ hàng</h5>
                 <ul id="cart-items" class="list-unstyled"></ul>
                 <button id="submit-order-btn" class="btn btn-primary w-100 mt-3 rounded-pill shadow-sm py-2 fs-6">
-                    <i class="bi bi-send me-1"></i> Gửi Order
+                    <i class="bi bi-send me-1"></i> Thêm món ăn
                 </button>
             </div>
         </aside>
