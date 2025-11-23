@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Shop\NhanVien;
 use App\Http\Controllers\Controller;
 use App\Models\BanAn;
 
-class BanAnController extends Controller
+class NVBanAnController extends Controller
 {
     public function index()
     {

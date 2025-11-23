@@ -40,16 +40,14 @@
                         <td>{{ $d->comboBuffet? $d->comboBuffet->ten_combo.' ('.$d->comboBuffet->thoi_luong_phut.' phút)':'-' }}</td>
                         <td>{{ $d->ghi_chu ?? '-' }}</td>
 
-                        <td class="text-center td-countdown"
-                            data-id="{{ $d->id }}"
-                            data-minutes="{{ $d->comboBuffet ? $d->comboBuffet->thoi_luong_phut : 120 }}">
+                        <td class="text-center td-countdown" data-id="{{ $d->id }}" data-minutes="{{ $d->comboBuffet ? $d->comboBuffet->thoi_luong_phut : 120 }}">
                             @if($d->trang_thai == 'khach_da_den')
-                            {{ $d->comboBuffet ? $d->comboBuffet->thoi_luong_phut : 120 }} phút
+                            <span class="countdown-text">Đang tải...</span>
                             @else
                             -
                             @endif
                         </td>
-                        {{-- Trạng thái --}}
+
                         <td class="text-center">
                             @php
                             $statusLabels = [
@@ -59,16 +57,16 @@
                             'huy'=>'Hủy'
                             ];
                             @endphp
-                            <span class="badge bg-{{ $d->trang_thai=='huy'?'danger':($d->trang_thai=='da_xac_nhan'?'success':'warning') }}">
+                            <span id="badge-{{ $d->id }}" class="badge {{ $d->trang_thai=='huy'?'bg-danger':($d->trang_thai=='da_xac_nhan'?'bg-success':'bg-warning') }}">
                                 {{ $statusLabels[$d->trang_thai] ?? $d->trang_thai }}
                             </span>
                         </td>
 
-                        {{-- Hành động --}}
                         <td class="text-center">
                             @if($d->trang_thai == 'cho_xac_nhan')
-                            <form method="post" action="{{ route('NhanVien.datban.thaydoitrangthai', $d->id) }}">
+                            <form method="post" action="{{ route('NhanVien.datban.thaydoitrangthai', $d->id) }}" class="d-inline">
                                 @csrf
+                                <input type="hidden" name="trang_thai" value="da_xac_nhan">
                                 <button type="submit" class="btn btn-sm btn-success">✅</button>
                             </form>
                             <form method="post" action="{{ route('NhanVien.datban.thaydoitrangthai', $d->id) }}" class="d-inline">
@@ -76,15 +74,15 @@
                                 <input type="hidden" name="trang_thai" value="huy">
                                 <button type="submit" class="btn btn-sm btn-danger">❌</button>
                             </form>
-
                             @elseif($d->trang_thai == 'da_xac_nhan')
-                            <form class="form-khach-da-den" method="post" action="{{ route('NhanVien.datban.thaydoitrangthai', $d->id) }}">
-                                @csrf
-                                <button type="button" class="btn btn-sm btn-primary btn-khach-da-den"
-                                    data-id="{{ $d->id }}">
-                                    👤 Khách đã đến
-                                </button>
-                            </form>
+                            <button type="button"
+                                class="btn btn-sm btn-primary btn-khach-da-den"
+                                data-id="{{ $d->id }}"
+                                data-minutes="{{ $d->comboBuffet ? $d->comboBuffet->thoi_luong_phut : 120 }}">
+                                👤 Khách đã đến
+                            </button>
+                            @elseif($d->trang_thai == 'khach_da_den')
+                            <span class="text-success">Khách đã đến</span>
                             @else
                             <span class="text-muted">-</span>
                             @endif
@@ -100,53 +98,85 @@
 
 @push('scripts')
 <script>
-    function startCountdowns() {
-        document.querySelectorAll('.td-countdown').forEach(td => {
-            if (td.innerText.trim() === '-') return;
+document.addEventListener('DOMContentLoaded', function() {
+    const timers = {};
 
-            let id = td.dataset.id;
-            let minutes = parseInt(td.dataset.minutes) || 120;
+    function startCountdown(td, minutes, startTime) {
+        let countdownSpan = td.querySelector('.countdown-text');
+        if (!countdownSpan) {
+            countdownSpan = document.createElement('span');
+            countdownSpan.classList.add('countdown-text');
+            td.innerHTML = '';
+            td.appendChild(countdownSpan);
+        }
 
-            // Lấy start time từ localStorage, nếu chưa có thì đặt bây giờ
-            let startTimestamp = localStorage.getItem('start_' + id);
-            let start = startTimestamp ? new Date(parseInt(startTimestamp)) : new Date();
-            if (!startTimestamp) localStorage.setItem('start_' + id, start.getTime());
+        if (timers[td.dataset.id]) clearInterval(timers[td.dataset.id]);
 
-            let alerted = false;
+        const endTime = startTime + minutes * 60 * 1000;
 
-            const interval = setInterval(() => {
-                let now = new Date();
-                let end = new Date(start.getTime() + minutes * 60 * 1000);
-                let diffMs = end - now;
+        timers[td.dataset.id] = setInterval(() => {
+            const now = Date.now();
+            let diffMs = endTime - now;
 
-                if (diffMs <= 0) {
-                    td.innerText = 'Đã hết giờ';
-                    td.classList.add('text-danger');
+            if (diffMs <= 0) {
+                countdownSpan.textContent = 'ĐÃ HẾT GIỜ';
+                td.classList.add('text-danger');
+                clearInterval(timers[td.dataset.id]);
+                localStorage.removeItem('datban_' + td.dataset.id);
+                return;
+            }
 
-                    if (!alerted) {
-                        let maDatBan = td.closest('tr').querySelector('td:nth-child(2)').innerText;
-                        let soBan = td.closest('tr').querySelector('td:nth-child(3)').innerText;
-                        alert(`Đặt bàn ${maDatBan} (Bàn ${soBan}) đã hết giờ!`);
-                        alerted = true;
-                        localStorage.removeItem('start_' + id);
-                    }
-
-                    clearInterval(interval); // dừng interval khi hết giờ
-                } else {
-                    let h = Math.floor(diffMs / (1000 * 60 * 60));
-                    let m = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-                    let s = Math.floor((diffMs % (1000 * 60)) / 1000);
-                    td.innerText = `${h} giờ ${m} phút ${s} giây`;
-                }
-            }, 1000);
-        });
+            const totalSec = Math.floor(diffMs / 1000);
+            const h = Math.floor(totalSec / 3600);
+            const m = Math.floor((totalSec % 3600) / 60);
+            const s = totalSec % 60;
+            countdownSpan.textContent = `${h} giờ ${m} phút ${s} giây`;
+        }, 1000);
     }
 
-    document.addEventListener('DOMContentLoaded', startCountdowns);
-    document.querySelectorAll('.btn-khach-da-den').forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.closest('form').submit();
+    // Xử lý nút "Khách đã đến"
+document.querySelectorAll('.btn-khach-da-den').forEach(button => {
+    button.addEventListener('click', function() {
+        const id = this.dataset.id;
+
+        fetch(`/Nhan-Vien/dat-ban/${id}/khach-da-den-ajax`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+            },
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success){
+                // reload trang để load badge, màu, countdown từ server
+                location.reload();
+            } else {
+                alert('Cập nhật thất bại');
+            }
         });
     });
+});
+    // Khi load trang, khởi countdown cho các bàn đã có trạng thái "Khách đã đến"
+    document.querySelectorAll('tr').forEach(tr => {
+        const badge = tr.querySelector('span[id^="badge-"]');
+        if(!badge) return;
+        if(badge.textContent.trim() !== 'Khách đã đến') return;
+
+        const td = tr.querySelector('.td-countdown');
+        const id = td.dataset.id;
+        const minutes = parseInt(td.dataset.minutes) || 120;
+
+        let startTime = localStorage.getItem('datban_' + id);
+        if(!startTime){
+            startTime = Date.now();
+            localStorage.setItem('datban_' + id, startTime);
+        } else {
+            startTime = parseInt(startTime);
+        }
+
+        startCountdown(td, minutes, startTime);
+    });
+});
 </script>
 @endpush

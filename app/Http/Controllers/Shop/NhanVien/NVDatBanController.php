@@ -11,16 +11,14 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
-class DatBanController extends Controller
+class NVDatBanController extends Controller
 {
     public function index(Request $r)
     {
         $query = DatBan::with(['banAn', 'nhanVien', 'comboBuffet'])->select('dat_ban.*');
-        $ds = $query->orderByDesc('id')->distinct()->get();
-        $ds->transform(function ($d) {
-            $d->thoiGianConLaiPhut = $d->thoiGianConLai; // dùng attribute trong model
-            return $d;
-        });
+         $ds = DatBan::with(['banAn', 'nhanVien', 'comboBuffet'])
+        ->orderByDesc('id')
+        ->get();
         if ($r->ma_dat_ban) {
             $query->where('ma_dat_ban', 'like', '%' . $r->ma_dat_ban . '%');
         }
@@ -177,25 +175,16 @@ class DatBanController extends Controller
 
     return back()->with('error', 'Không có trạng thái để cập nhật!');
 }
-    public function khachDaDenAjax(Request $request, $id)
+public function khachDaDenAjax(Request $request, $id)
 {
     $datBan = DatBan::findOrFail($id);
 
-    // Chỉ set start_time nếu chưa có
-    if (!$datBan->start_time) {
-        $datBan->trang_thai = 'khach_da_den';
-        $datBan->start_time = now(); // start time hiện tại
-        $datBan->save();
-
-        // Cập nhật trạng thái bàn
-        if ($datBan->banAn) {
-            $datBan->banAn->update(['trang_thai' => 'da_dat']);
-        }
-    }
+    // Cập nhật trạng thái trực tiếp, không cần start_time
+    $datBan->trang_thai = 'khach_da_den';
+    $datBan->save();
 
     return response()->json([
         'success' => true,
-        'start_time' => $datBan->start_time,
         'minutes' => $datBan->comboBuffet ? $datBan->comboBuffet->thoi_luong_phut : 120
     ]);
 }

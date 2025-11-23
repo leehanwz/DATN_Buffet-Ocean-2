@@ -27,9 +27,9 @@ use App\Http\Controllers\Admin\VoucherController;
 // ===== PHẦN THÊM MỚI 1: KHAI BÁO CONTROLLER =====
 use App\Http\Controllers\Shop\Oderqr\OrderController;
 
-use App\Http\Controllers\Shop\Nhanvien\BanAnController as NVBanController;
-use App\Http\Controllers\Shop\Nhanvien\DatBanController as NVDatBanController;
-use App\Http\Controllers\Shop\Nhanvien\OrderMonController as NVOrderMonController;
+use App\Http\Controllers\Shop\NhanVien\NVBanAnController;
+use App\Http\Controllers\Shop\NhanVien\NVDatBanController;
+use App\Http\Controllers\Shop\NhanVien\NVOrderMonController;
 
 
 /*
@@ -53,8 +53,8 @@ Route::prefix('/')->group(function () {
 Route::prefix('Nhan-Vien')->name('NhanVien.')->group(function () {
 
     // 1) Danh sách bàn
-    Route::get('/ban', [NVBanController::class, 'index'])->name('ban.index');
-    Route::get('/ban/{id}', [NVBanController::class, 'show'])->name('ban.show');
+    Route::get('/ban', [NVBanAnController::class, 'index'])->name('ban.index');
+    Route::get('/ban/{id}', [NVBanAnController::class, 'show'])->name('ban.show');
 
     // 2) Đặt bàn
     Route::get('/dat-ban', [NVDatBanController::class, 'index'])->name('datban.index');
@@ -63,6 +63,8 @@ Route::prefix('Nhan-Vien')->name('NhanVien.')->group(function () {
     Route::post('/dat-ban/{id}/xac-nhan', [NVDatBanController::class, 'xacNhan'])->name('datban.xacnhan');
     Route::post('/dat-ban/{id}/huy', [NVDatBanController::class, 'huy'])->name('datban.huy');
    Route::post('/dat-ban/{id}/thay-doi-trang-thai', [NVDatBanController::class, 'thayDoiTrangThai'])->name('datban.thaydoitrangthai');
+   Route::post('/dat-ban/{id}/khach-da-den-ajax', [NVDatBanController::class, 'khachDaDenAjax'])
+    ->name('datban.khachdadenajax');
 
 
     // 3) Order món

@@ -9,7 +9,7 @@ use App\Models\MonAn;
 use App\Models\BanAn;
 use Illuminate\Http\Request;
 
-class OrderMonController extends Controller
+class NVOrderMonController extends Controller
 {
     public function index($banId)
     {

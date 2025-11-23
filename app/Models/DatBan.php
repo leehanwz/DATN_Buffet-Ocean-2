@@ -50,22 +50,38 @@ class DatBan extends Model
 
 public function getThoiGianConLaiAttribute()
 {
-    if (!$this->gio_den || !$this->thoi_luong_phut) return null;
-
-    // Bắt đầu tính ngay khi có khách
-    $now = Carbon::now('Asia/Ho_Chi_Minh');
-    $gioKetThuc = $this->gio_den->copy()->addMinutes($this->thoi_luong_phut);
-
-    if ($now->lt($this->gio_den)) {
-        return 'Chưa bắt đầu'; // Chưa tới giờ
+    if (!$this->gio_den) {
+        return null; // chưa tới giờ hoặc chưa xác nhận khách đã đến
     }
 
-    if ($now->gt($gioKetThuc)) {
-        return 'Đã hết giờ';
+    $gioDen = \Carbon\Carbon::parse($this->gio_den);
+    $bayGio = \Carbon\Carbon::now();
+
+    // Nếu thời gian chưa bắt đầu → không tính
+    if ($bayGio->lt($gioDen)) {
+        return "Chưa bắt đầu";
     }
 
-    // Tính thời gian còn lại
-    $diff = $gioKetThuc->diff($now);
-    return sprintf('%02d giờ %02d phút', $diff->h, $diff->i);
+    // Nếu có combo → lấy phút combo
+    if ($this->comboBuffet && $this->comboBuffet->thoi_luong) {
+        $tongPhut = $this->comboBuffet->thoi_luong;
+    } else {
+        $tongPhut = 120; // mặc định 120 phút
+    }
+
+    // thời gian đã sử dụng
+    $phutDaSuDung = $gioDen->diffInMinutes($bayGio);
+
+    // tính thời gian còn lại
+    $phutConLai = $tongPhut - $phutDaSuDung;
+
+    if ($phutConLai <= 0) {
+        return "ĐÃ HẾT GIỜ";
+    }
+
+    $gio = floor($phutConLai / 60);
+    $phut = $phutConLai % 60;
+
+    return sprintf("%02d:%02d", $gio, $phut);
 }
 }
