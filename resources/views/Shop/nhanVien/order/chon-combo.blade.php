@@ -44,7 +44,7 @@
                         @endforeach
                     </ul>
 
-                    <form method="POST" action="{{ route('nhanvien.order.luu-combo', $order->id) }}" class="mt-auto">
+                    <form method="POST" action="{{ route('nhanVien.order.luu-combo', $order->id) }}" class="mt-auto">
                         @csrf
                         <input type="hidden" name="combo_id" value="{{ $combo->id }}">
                         <button type="submit" class="btn btn-success btn-block font-weight-bold btn-hover-scale">

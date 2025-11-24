@@ -10,6 +10,22 @@
         <span class="badge bg-primary fs-6">Bàn: {{ $order->banAn->so_ban ?? 'Không xác định' }}</span>
     </div>
 
+    {{-- Thông tin bàn & order --}}
+    <div class="card shadow-sm mb-4 p-4 rounded-4 border-0" style="background: #f8f9fa;">
+        <h5 class="fw-semibold"><i class="bi bi-table"></i> Bàn số: {{ $order->banAn->so_ban }}</h5>
+        <p class="mb-1"><i class="bi bi-receipt"></i> Order ID: <b>{{ $order->id }}</b></p>
+        @if($order && $order->datBan)
+        <p class="mb-2"><i class="bi bi-person-fill"></i> Khách:
+            <b>{{ $order->datBan->ten_khach }}</b>
+        </p>
+        <p class="mb-2"><i class="bi bi-telephone-fill"></i> SĐT:
+            <b>{{ $order->datBan->sdt_khach }}</b>
+        </p>
+        @endif
+        <p class="mb-1"><i class="bi bi-basket3"></i> Tổng món: <b>{{ $order->tong_mon }}</b></p>
+        <p class="mb-0"><i class="bi bi-currency-dollar"></i> Tổng tiền: <b>{{ number_format($order->tong_tien) }} đ</b></p>
+    </div>
+
     {{-- Thông báo --}}
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -34,7 +50,7 @@
 
     {{-- Nút thêm món --}}
     <div class="mb-3">
-        <a href="{{ route('nhanvien.chi-tiet-order.create', ['order_id' => $order->id]) }}"
+        <a href="{{ route('nhanVien.chi-tiet-order.create', ['order_id' => $order->id]) }}"
             class="btn btn-success rounded-pill shadow-sm fw-semibold">
             <i class="bi bi-plus-circle me-1"></i> Thêm món mới
         </a>
@@ -59,13 +75,13 @@
                         <td>{{ $ct->so_luong_hien_thi }}</td>
                         <td>{{ $ct->ghi_chu ?? '-' }}</td>
                         <td class="text-end">
-                            <a href="{{ route('nhanvien.chi-tiet-order.edit', [$order->id, $ct->id]) }}"
+                            <a href="{{ route('nhanVien.chi-tiet-order.edit', [$order->id, $ct->id]) }}"
                                 class="btn btn-sm btn-warning rounded-pill shadow-sm me-1 mb-1" title="Sửa">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
 
                             @if ($ct->loai_mon === 'goi_them')
-                            <form action="{{ route('nhanvien.chi-tiet-order.destroy', $ct->id) }}" method="POST" class="d-inline">
+                            <form action="{{ route('nhanVien.chi-tiet-order.destroy', $ct->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-danger rounded-pill shadow-sm mb-1" title="Xóa">

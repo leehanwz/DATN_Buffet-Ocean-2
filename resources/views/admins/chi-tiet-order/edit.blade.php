@@ -87,11 +87,7 @@
                         <i class="fa fa-fw fa-lg fa-check-circle"></i> Lưu thay đổi
                     </button>
                     @endif
-<<<<<<< HEAD
-                    <a href="{{ route('admin.chi-tiet-order.index', ['order_id' => $chiTiet->orderMon->id]) }}" class="btn btn-secondary">
-=======
                     <a href="{{ route('admin.chi-tiet-order.index', ['order_id' => $ct->orderMon->id]) }}" class="btn btn-secondary">
->>>>>>> origin/Trung
                         <i class="fa fa-fw fa-lg fa-times-circle"></i> Quay lại
                     </a>
                 </div>
@@ -99,8 +95,4 @@
         </div>
     </div>
 </main>
-<<<<<<< HEAD
 @endsection
-=======
-@endsection
->>>>>>> origin/Trung

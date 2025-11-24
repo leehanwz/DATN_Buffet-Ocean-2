@@ -6,7 +6,7 @@
 <main class="app-content">
     <h3 class="fw-bold mb-4">Sửa món: {{ $ct->monAn->ten_mon }}</h3>
 
-    <form action="{{ route('nhanvien.chi-tiet-order.update', $ct->id) }}" method="POST">
+    <form action="{{ route('nhanVien.chi-tiet-order.update', $ct->id) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -34,7 +34,7 @@
 
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-success rounded-pill shadow-sm px-4">Cập nhật</button>
-            <a href="{{ route('nhanvien.chi-tiet-order.show', $order->id) }}" class="btn btn-secondary rounded-pill shadow-sm px-4">Hủy</a>
+            <a href="{{ route('nhanVien.chi-tiet-order.show', $order->id) }}" class="btn btn-secondary rounded-pill shadow-sm px-4">Hủy</a>
         </div>
     </form>
 </main>

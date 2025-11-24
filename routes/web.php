@@ -160,7 +160,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 //     Route::post('/order/mo-order', [NhanVienOrderMonController::class, 'moOrder'])->name('order.mo-order');
 // });
 
-Route::prefix('nhanvien')->name('nhanvien.')->group(function () {
+Route::prefix('nhanVien')->name('nhanVien.')->group(function () {
 
     Route::get('/order', [NhanVienOrderMonController::class, 'index'])->name('order.index');
     Route::post('/order/mo-order', [NhanVienOrderMonController::class, 'moOrder'])->name('order.mo-order');
@@ -168,13 +168,12 @@ Route::prefix('nhanvien')->name('nhanvien.')->group(function () {
     // 👉 NEW: Bắt buộc chọn combo trước
     Route::get('/order/{orderId}/chon-combo', [NhanVienOrderMonController::class, 'chonCombo'])->name('order.chon-combo');
     Route::post('/order/{orderId}/chon-combo', [NhanVienOrderMonController::class, 'luuCombo'])->name('order.luu-combo');
-
+    // index chi tiết order
     Route::get('/chi-tiet-order/create', [NhanVienOrderMonController::class, 'create'])->name('chi-tiet-order.create');
     Route::get('/order/{orderId}', [NhanVienOrderMonController::class, 'orderPage'])->name('order.page');
-    Route::post('/order/{orderId}/gui-bep', [NhanVienOrderMonController::class, 'guiBep'])->name('order.gui-bep');
 
     Route::get('/chi-tiet-order/{orderId}', [NhanVienOrderMonController::class, 'show'])->name('chi-tiet-order.show');
-
+    // crud chi tiết order
     Route::get('chi-tiet-order/{orderId}/edit/{ctId}', [NhanVienOrderMonController::class, 'edit'])->name('chi-tiet-order.edit');
     Route::post('/chi-tiet-order', [NhanVienOrderMonController::class, 'store'])->name('chi-tiet-order.store');
     Route::put('chi-tiet-order/{ctId}', [NhanVienOrderMonController::class, 'update'])->name('chi-tiet-order.update');

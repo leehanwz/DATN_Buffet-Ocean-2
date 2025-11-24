@@ -11,6 +11,13 @@
         <h2 class="fw-bold mb-0">Order bàn {{ $order->banAn->so_ban }}</h2>
     </div>
 
+    <div class="mb-3">
+        <a href="{{ route('nhanVien.order.index') }}"
+            class="btn btn-secondary fw-semibold rounded-pill shadow-sm">
+            ← Quay lại danh sách bàn
+        </a>
+    </div>
+
     {{-- Thông tin bàn & order --}}
     <div class="card shadow-sm mb-4 p-4 rounded-4 border-0" style="background: #f8f9fa;">
         <h5 class="fw-semibold"><i class="bi bi-table"></i> Bàn số: {{ $order->banAn->so_ban }}</h5>
@@ -21,15 +28,10 @@
 
     {{-- Nút chức năng --}}
     <div class="mb-4 d-flex flex-wrap gap-2">
-        <a href="{{ route('nhanvien.chi-tiet-order.create', ['order_id' => $order->id]) }}"
+        <a href="{{ route('nhanVien.chi-tiet-order.create', ['order_id' => $order->id]) }}"
             class="btn btn-primary fw-semibold rounded-pill shadow-sm">
             ➕ Thêm món
         </a>
-
-        <form action="{{ route('nhanvien.order.gui-bep', $order->id) }}" method="POST" class="m-0">
-            @csrf
-            <button type="submit" class="btn btn-warning fw-semibold rounded-pill shadow-sm">📤 Gửi bếp</button>
-        </form>
     </div>
 
     {{-- Danh sách món --}}
@@ -56,10 +58,10 @@
                         <td>{{ $ct->so_luong_hien_thi }}</td>
                         <td>{{ $ct->ghi_chu }}</td>
                         <td>
-                            <a href="{{ route('nhanvien.chi-tiet-order.edit', [$order->id, $ct->id]) }}"
+                            <a href="{{ route('nhanVien.chi-tiet-order.edit', [$order->id, $ct->id]) }}"
                                 class="btn btn-sm btn-warning rounded-pill shadow-sm me-1 mb-1">Sửa</a>
 
-                            <form action="{{ route('nhanvien.chi-tiet-order.destroy', $ct->id) }}"
+                            <form action="{{ route('nhanVien.chi-tiet-order.destroy', $ct->id) }}"
                                 method="POST" class="d-inline"
                                 onsubmit="return confirm('Bạn có chắc chắn muốn xóa món này không?');">
                                 @csrf

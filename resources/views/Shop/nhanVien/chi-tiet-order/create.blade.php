@@ -117,7 +117,7 @@
     document.getElementById('submit-order-btn').addEventListener('click', async () => {
         if (cart.length === 0) return alert('Chọn món trước khi gửi!');
         try {
-            const res = await fetch("{{ route('nhanvien.chi-tiet-order.store') }}", {
+            const res = await fetch("{{ route('nhanVien.chi-tiet-order.store') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -134,7 +134,7 @@
             if (!data.success) throw new Error(data.message || 'Lỗi khi gửi order');
 
             alert(data.message);
-            const referrer = document.referrer || "{{ route('nhanvien.order.index') }}";
+            const referrer = document.referrer || "{{ route('nhanVien.order.index') }}";
             window.location.href = referrer;
         } catch (err) {
             alert(err.message);

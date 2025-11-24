@@ -61,7 +61,5 @@ class BanAn extends Model
 
 
         return $this->belongsTo(KhuVuc::class, 'khu_vuc_id');
-
     }
-
 }
