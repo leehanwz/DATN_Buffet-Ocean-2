@@ -21,9 +21,13 @@ use App\Http\Controllers\Admin\ChiTietOrderController;
 use App\Http\Controllers\Admin\OrderMonController;
 use App\Http\Controllers\Admin\HoaDonController;
 use App\Http\Controllers\Admin\VoucherController;
-
-use App\Http\Controllers\Shop\NhanVien\NhanVienOrderMonController;
-use App\Http\Controllers\NhanVien\BepController;
+use App\Http\Controllers\Shop\BookingController;
+use App\Http\Controllers\Shop\OtpController;
+use App\Http\Controllers\Shop\MomoController;
+use App\Http\Controllers\Shop\ComboClientController;
+use App\Http\Controllers\Shop\nhanVien\KhuVuc\NhanVienBanAnController;
+use App\Http\Controllers\Shop\nhanVien\NhanVienOrderMonController;
+use App\Http\Controllers\Shop\Bep\BepController;
 
 // ===== PHẦN THÊM MỚI 1: KHAI BÁO CONTROLLER =====
 use App\Http\Controllers\Shop\Oderqr\OrderController;
@@ -38,14 +42,54 @@ use App\Http\Controllers\Shop\Oderqr\OrderController;
 
 // ==================== CLIENT SITE ====================
 Route::prefix('/')->group(function () {
+
+    // Trang chủ
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    // Route::get('/about', [AboutController::class, 'index'])->name('about');
-    // Route::get('/contact', [ContactController::class, 'index'])->name('contact');
-    // Route::get('/booking', [BookingController::class, 'index'])->name('booking');
-    // Route::get('/menu', [MenuController::class, 'index'])->name('menu');
-    // Route::get('/service', [ServiceController::class, 'index'])->name('service');
-    // Route::get('/team', [TeamController::class, 'index'])->name('team');
-    // Route::get('/testimonial', [TestimonialController::class, 'index'])->name('testimonial');
+
+    // Combos
+    Route::get('/combos', [ComboClientController::class, 'index'])->name('combos.index');
+    Route::get('/combos/{id}', [ComboClientController::class, 'show'])->name('combos.show');
+
+    // Booking: resource (trừ show)
+    Route::resource('booking', BookingController::class)->except(['show']);
+
+    // Trang đặt bàn thành công
+    Route::get('booking/success', [BookingController::class, 'success'])->name('booking.success');
+
+    // AJAX: lấy bàn theo khu vực
+    Route::get('booking/bans-by-khuvuc/{khu_vuc_id}', [BookingController::class, 'getBansByKhuVuc']);
+
+    // ==== OTP cho booking ====
+    Route::prefix('otp')->group(function () {
+        Route::get('verify', [OtpController::class, 'showOtpForm'])->name('otp.form');
+        Route::post('send', [OtpController::class, 'sendOtp'])->name('otp.send');
+        Route::post('verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');
+    });
+
+    // ==== Chọn phương thức thanh toán sau khi xác thực OTP ====
+    Route::get('booking/{booking_id}/payment-method', [BookingController::class, 'paymentMethod'])
+        ->name('booking.payment_method');
+
+    // ==== Các phương thức thanh toán ====
+    Route::get('booking/{booking_id}/pay-cash', [BookingController::class, 'payCash'])->name('booking.pay_cash');
+    Route::get('booking/{booking_id}/pay-bank', [BookingController::class, 'payBank'])->name('booking.pay_bank');
+    Route::get('booking/{booking_id}/pay-vnpay', [BookingController::class, 'payVNPay'])->name('booking.pay_vnpay');
+    Route::get('booking/{booking_id}/pay-vietqr', [BookingController::class, 'payVietQR'])->name('booking.pay_vietqr');
+    Route::get('booking/{booking_id}/pay-momo', [BookingController::class, 'payMomo'])->name('booking.pay_momo');
+
+    Route::post('/booking/momo/{booking_id}', [MomoController::class, 'createPayment']);
+    Route::get('/booking/momo-return', [MomoController::class, 'handleReturn']);
+    Route::post('/booking/momo-notify', [MomoController::class, 'handleNotify']);
+
+    // Khi MoMo redirect khách về sau thanh toán
+    Route::get('booking/momo-return', [BookingController::class, 'momoReturn'])->name('booking.momo_return');
+
+    // Khi MoMo gửi callback (IPN) để thông báo kết quả thanh toán
+    Route::post('booking/momo-notify', [BookingController::class, 'momoNotify'])->name('booking.momo_notify');
+
+    // VNPAY
+    Route::get('booking/vnpay-return', [BookingController::class, 'vnpayReturn'])->name('booking.vnpay_return');
+    Route::post('booking/vnpay-notify', [BookingController::class, 'vnpayNotify'])->name('booking.vnpay_notify');
 });
 
 
@@ -150,7 +194,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 // ==========================================================
-// ===== MÀN HÌNH NHÂN VIÊN (CHỈ ROUTE CHÍNH) =====
+// ===== MÀN Nhân Viên =====
 // ==========================================================
 // Route::prefix('nhan-vien')->name('nhan-vien.')->controller(NhanVienController::class)->group(function () {
 //     // Route chính: Trang quản lý nhân viên (danh sách, thao tác chính)
@@ -183,17 +227,9 @@ Route::prefix('nhanVien')->name('nhanVien.')->group(function () {
 // ==========================================================
 // ===== MÀN HÌNH BẾP (CHỈ ROUTE CHÍNH) =====
 // ==========================================================
-// Route::prefix('bep')->name('bep.')->controller(OrderController::class)->group(function () {
-//     // Route chính: Trang hiển thị các món cần chế biến / trạng thái order
-//     Route::get('/', 'showKitchenDashboard')->name('dashboard');
-// });
-
 Route::prefix('bep')->name('bep.')->group(function () {
-    // Trang hiển thị các order đã gửi bếp
-    Route::get('/', [BepController::class, 'index'])->name('dashboard');
-
-    // Tùy chọn: cập nhật trạng thái món đã xong
-    Route::post('/order/{orderId}/hoan-tat', [BepController::class, 'hoanTatOrder'])->name('hoan-tat');
+    Route::get('/', [BepController::class, 'dashboard'])->name('dashboard');
+    Route::post('/update-status', [BepController::class, 'updateMonStatus'])->name('update-status');
 });
 
 
@@ -241,4 +277,11 @@ Route::prefix('oderqr')->group(function () {
     Route::get('order/status/{datBanId}', [OrderController::class, 'getOrderStatus']);
 
     Route::get('list', [OrderController::class, 'showQrListPage'])->name('oderqr.list');
+});
+
+
+
+// ===== PHẦN THÊM MỚI 3: ROUTE TRUY CẬP NHANH (DÙNG CHO DEMO) =====
+Route::get('/tong', function () {
+    return view('quick-access');
 });

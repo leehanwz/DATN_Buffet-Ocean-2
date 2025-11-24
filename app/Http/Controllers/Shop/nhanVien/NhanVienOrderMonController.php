@@ -114,7 +114,7 @@ class NhanVienOrderMonController extends Controller
             $datBan->update(['trang_thai' => 'khach_da_den']);
         }
 
-        // **Tạo order mới hoàn toàn**
+        // Tạo order
         $order = OrderMon::create([
             'ban_id'     => $banId,
             'dat_ban_id' => $datBan->id,

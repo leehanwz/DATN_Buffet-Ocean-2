@@ -24,28 +24,27 @@
         <h4 class="fw-bold mb-3">
             <i class="bi bi-building me-2"></i> {{ $khu->ten_khu_vuc }} (Tầng {{ $khu->tang }})
         </h4>
-        <div class="row g-3">
+        <div class="row g-3 justify-content-start">
             @foreach($bans->where('khu_vuc_id', $khu->id) as $ban)
             @php
             $order = $orders->has($ban->id) ? $orders[$ban->id] : null;
 
             if($ban->trang_thai == 'trong') {
-            $bgHeader = 'linear-gradient(135deg, #28a745, #7be495)'; // xanh lá
+            $bgHeader = 'linear-gradient(135deg, #28a745, #7be495)';
             $icon = 'bi-person-check';
             } elseif($ban->trang_thai == 'dang_phuc_vu') {
-            $bgHeader = 'linear-gradient(135deg, #dc3545, #ff6b6b)'; // đỏ
+            $bgHeader = 'linear-gradient(135deg, #dc3545, #ff6b6b)';
             $icon = 'bi-people-fill';
             } else {
-            $bgHeader = 'linear-gradient(135deg, #ffc107, #ffe58a)'; // vàng
+            $bgHeader = 'linear-gradient(135deg, #ffc107, #ffe58a)';
             $icon = 'bi-tools';
             }
             @endphp
 
-            {{-- Card bàn giống như code cũ --}}
-            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
-                <div class="card table-card shadow-sm rounded-4 border-0 position-relative overflow-hidden">
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12 d-flex">
+                <div class="card table-card shadow-sm rounded-4 border-0 position-relative overflow-hidden flex-fill d-flex flex-column">
                     {{-- Header trạng thái --}}
-                    <div class="table-card-header text-center text-white fw-bold py-3 rounded-top"
+                    <div class="table-card-header text-center text-white fw-bold py-2 rounded-top"
                         style="background: {{ $bgHeader }};">
                         <h5 class="mb-1"><i class="bi {{ $icon }}"></i> Bàn {{ $ban->so_ban }}</h5>
                         <small class="opacity-75">
@@ -60,34 +59,36 @@
                     </div>
 
                     {{-- Thân card --}}
-                    <div class="card-body text-center py-4">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center p-3">
                         @if($order)
-                        <p class="mb-2 text-truncate"><i class="bi bi-receipt"></i> <b>Order #{{ $order->id }}</b></p>
+                        <p class="mb-1 text-truncate"><i class="bi bi-receipt"></i> <b>Order #{{ $order->id }}</b></p>
                         @if($order && $order->datBan)
-                        <p class="mb-2"><i class="bi bi-person-fill"></i> Khách: <b>{{ $order->datBan->ten_khach }}</b></p>
-                        <p class="mb-2"><i class="bi bi-telephone-fill"></i> SĐT: <b>{{ $order->datBan->sdt_khach }}</b></p>
+                        <p class="mb-1"><i class="bi bi-person-fill"></i> Khách: <b>{{ $order->datBan->ten_khach }}</b></p>
+                        <p class="mb-1"><i class="bi bi-telephone-fill"></i> SĐT: <b>{{ $order->datBan->sdt_khach }}</b></p>
                         @endif
-                        <p class="mb-2"><i class="bi bi-basket3"></i> Tổng món: <b>{{ $order->tong_mon }}</b></p>
-                        <p class="mb-3"><i class="bi bi-currency-dollar"></i> <b>{{ number_format($order->tong_tien) }} đ</b></p>
+                        <p class="mb-1"><i class="bi bi-basket3"></i> Tổng món: <b>{{ $order->tong_mon }}</b></p>
+                        <p class="mb-2"><i class="bi bi-currency-dollar"></i> <b>{{ number_format($order->tong_tien) }} đ</b></p>
 
-                        {{-- Icon chi tiết / thêm món --}}
+                        {{-- Icon chi tiết --}}
                         <a href="{{ route('nhanVien.order.page', $order->id) }}"
-                            class="btn btn-warning btn-lg rounded-circle shadow-sm" style="width:50px; height:50px; padding:0; display:flex; align-items:center; justify-content:center;">
+                            class="btn btn-warning btn-lg rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                            style="width:50px; height:50px; padding:0;">
                             <i class="bi bi-card-checklist fs-5"></i>
                         </a>
                         @else
                         {{-- Icon mở order --}}
-                        <form action="{{ route('nhanVien.order.mo-order') }}" method="POST">
+                        <form action="{{ route('nhanVien.order.mo-order') }}" method="POST" class="d-flex">
                             @csrf
                             <input type="hidden" name="ban_id" value="{{ $ban->id }}">
-                            <button class="btn btn-success btn-lg rounded-circle shadow-sm" type="submit" style="width:50px; height:50px; padding:0; display:flex; align-items:center; justify-content:center;">
+                            <button class="btn btn-success btn-lg rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                type="submit" style="width:50px; height:50px; padding:0;">
                                 <i class="bi bi-plus-circle fs-5"></i>
                             </button>
                         </form>
                         @endif
                     </div>
 
-                    {{-- Footer trạng thái nhỏ --}}
+                    {{-- Footer trạng thái --}}
                     <div class="table-card-footer position-absolute bottom-0 start-0 w-100 text-center py-1 text-white opacity-75"
                         style="font-size: 0.75rem;">
                         @if($order)
@@ -104,7 +105,7 @@
     @endforeach
 </main>
 
-{{-- CSS giữ nguyên code cũ --}}
+{{-- CSS --}}
 <style>
     .table-card {
         background: linear-gradient(145deg, #ffffff, #f0f2f5);
@@ -112,7 +113,8 @@
     }
 
     .table-card:hover {
-        transform: translateY(-8px) scale(1.03);
+        transform: translateY(-5px) scale(1.02);
+        /* giảm scale tránh lệch */
         box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
     }
 
@@ -149,4 +151,5 @@
         pointer-events: none;
     }
 </style>
+
 @endsection
