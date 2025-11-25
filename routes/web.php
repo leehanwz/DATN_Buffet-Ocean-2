@@ -13,23 +13,28 @@ use App\Http\Controllers\Admin\MonTrongComboController;
 use App\Http\Controllers\Admin\KhuVucController;
 use App\Http\Controllers\Admin\BanAnController;
 use App\Http\Controllers\Admin\DanhMucController;
-use App\Http\Controllers\Admin\DatBanController;
 use App\Http\Controllers\Admin\MonAnController;
 use App\Http\Controllers\Admin\ComboBuffetController;
-use App\Http\Controllers\Admin\ChiTietOrderController;
-
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Admin\DatBanController;
+use App\Http\Controllers\Admin\ChiTietOrderController;
 use App\Http\Controllers\Admin\OrderMonController;
 use App\Http\Controllers\Admin\HoaDonController;
 use App\Http\Controllers\Admin\VoucherController;
+use App\Http\Controllers\Shop\BookingController;
+use App\Http\Controllers\Shop\OtpController;
+use App\Http\Controllers\Shop\MomoController;
+use App\Http\Controllers\Shop\ComboClientController;
+use App\Http\Controllers\Shop\NhanVien\KhuVuc\NhanVienBanAnController;
+use App\Http\Controllers\Shop\NhanVien\NhanVienOrderMonController;
+use App\Http\Controllers\Shop\Bep\BepController;
+use App\Http\Controllers\Shop\NhanVien\NVDatBanController;
+
 
 // ===== PHẦN THÊM MỚI 1: KHAI BÁO CONTROLLER =====
 use App\Http\Controllers\Shop\Oderqr\OrderController;
-
-use App\Http\Controllers\Shop\NhanVien\NVBanAnController;
-use App\Http\Controllers\Shop\NhanVien\NVDatBanController;
-use App\Http\Controllers\Shop\NhanVien\NVOrderMonController;
+// ===============================================
 
 
 /*
@@ -40,41 +45,57 @@ use App\Http\Controllers\Shop\NhanVien\NVOrderMonController;
 
 // ==================== CLIENT SITE ====================
 Route::prefix('/')->group(function () {
-    // Route::get('/', [HomeController::class, 'index'])->name('home');
-    // Route::get('/about', [AboutController::class, 'index'])->name('about');
-    // Route::get('/contact', [ContactController::class, 'index'])->name('contact');
-    // Route::get('/booking', [BookingController::class, 'index'])->name('booking');
-    // Route::get('/menu', [MenuController::class, 'index'])->name('menu');
-    // Route::get('/service', [ServiceController::class, 'index'])->name('service');
-    // Route::get('/team', [TeamController::class, 'index'])->name('team');
-    // Route::get('/testimonial', [TestimonialController::class, 'index'])->name('testimonial');
+
+    // Trang chủ
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    // Combos
+    Route::get('/combos', [ComboClientController::class, 'index'])->name('combos.index');
+    Route::get('/combos/{id}', [ComboClientController::class, 'show'])->name('combos.show');
+
+    // Booking: resource (trừ show)
+    Route::resource('booking', BookingController::class)->except(['show']);
+
+    // Trang đặt bàn thành công
+    Route::get('booking/success', [BookingController::class, 'success'])->name('booking.success');
+
+    // AJAX: lấy bàn theo khu vực
+    Route::get('booking/bans-by-khuvuc/{khu_vuc_id}', [BookingController::class, 'getBansByKhuVuc']);
+
+    // ==== OTP cho booking ====
+    Route::prefix('otp')->group(function () {
+        Route::get('verify', [OtpController::class, 'showOtpForm'])->name('otp.form');
+        Route::post('send', [OtpController::class, 'sendOtp'])->name('otp.send');
+        Route::post('verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');
+    });
+
+    // ==== Chọn phương thức thanh toán sau khi xác thực OTP ====
+    Route::get('booking/{booking_id}/payment-method', [BookingController::class, 'paymentMethod'])
+        ->name('booking.payment_method');
+
+    // ==== Các phương thức thanh toán ====
+    Route::get('booking/{booking_id}/pay-cash', [BookingController::class, 'payCash'])->name('booking.pay_cash');
+    Route::get('booking/{booking_id}/pay-bank', [BookingController::class, 'payBank'])->name('booking.pay_bank');
+    Route::get('booking/{booking_id}/pay-vnpay', [BookingController::class, 'payVNPay'])->name('booking.pay_vnpay');
+    Route::get('booking/{booking_id}/pay-vietqr', [BookingController::class, 'payVietQR'])->name('booking.pay_vietqr');
+    Route::get('booking/{booking_id}/pay-momo', [BookingController::class, 'payMomo'])->name('booking.pay_momo');
+
+    Route::post('/booking/momo/{booking_id}', [MomoController::class, 'createPayment']);
+    Route::get('/booking/momo-return', [MomoController::class, 'handleReturn']);
+    Route::post('/booking/momo-notify', [MomoController::class, 'handleNotify']);
+
+    // Khi MoMo redirect khách về sau thanh toán
+    Route::get('booking/momo-return', [BookingController::class, 'momoReturn'])->name('booking.momo_return');
+
+    // Khi MoMo gửi callback (IPN) để thông báo kết quả thanh toán
+    Route::post('booking/momo-notify', [BookingController::class, 'momoNotify'])->name('booking.momo_notify');
+
+    // VNPAY
+    Route::get('booking/vnpay-return', [BookingController::class, 'vnpayReturn'])->name('booking.vnpay_return');
+    Route::post('booking/vnpay-notify', [BookingController::class, 'vnpayNotify'])->name('booking.vnpay_notify');
 });
 
-Route::prefix('Nhan-Vien')->name('NhanVien.')->group(function () {
 
-    // 1) Danh sách bàn
-    Route::get('/ban', [NVBanAnController::class, 'index'])->name('ban.index');
-    Route::get('/ban/{id}', [NVBanAnController::class, 'show'])->name('ban.show');
-
-    // 2) Đặt bàn
-    Route::get('/dat-ban', [NVDatBanController::class, 'index'])->name('datban.index');
-    Route::get('/dat-ban/create', [NVDatBanController::class, 'create'])->name('datban.create');
-    Route::post('/dat-ban/store', [NVDatBanController::class, 'store'])->name('datban.store');
-    Route::post('/dat-ban/{id}/xac-nhan', [NVDatBanController::class, 'xacNhan'])->name('datban.xacnhan');
-    Route::post('/dat-ban/{id}/huy', [NVDatBanController::class, 'huy'])->name('datban.huy');
-   Route::post('/dat-ban/{id}/thay-doi-trang-thai', [NVDatBanController::class, 'thayDoiTrangThai'])->name('datban.thaydoitrangthai');
-   Route::post('/dat-ban/{id}/khach-da-den-ajax', [NVDatBanController::class, 'khachDaDenAjax'])
-    ->name('datban.khachdadenajax');
-
-
-    // 3) Order món
-    Route::get('/order/{banId}', [NVOrderMonController::class, 'index'])->name('order.index');
-    Route::post('/order/{banId}/open', [NVOrderMonController::class, 'open'])->name('order.open');
-    Route::post('/order/{orderId}/add', [NVOrderMonController::class, 'add'])->name('order.add');
-    Route::post('/order/{orderId}/update', [NVOrderMonController::class, 'update'])->name('order.update');
-    Route::post('/order/{orderId}/delete', [NVOrderMonController::class, 'delete'])->name('order.delete');
-    Route::post('/order/{orderId}/send-kitchen', [NVOrderMonController::class, 'sendKitchen'])->name('order.sendkitchen');
-});
 // ==================== ADMIN SITE ====================
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -167,7 +188,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{id}/update', 'update')->name('update');
         Route::post('/{id}/delete', 'destroy')->name('destroy');
         Route::post('/{id}/update-status', 'updateStatus')->name('updateStatus');
-
     });
 });
 // <-- ** KẾT THÚC NHÓM ADMIN **
@@ -178,19 +198,62 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 // ==========================================================
-// ===== MÀN HÌNH NHÂN VIÊN (CHỈ ROUTE CHÍNH) =====
+// ===== MÀN Nhân Viên =====
 // ==========================================================
-Route::prefix('nhan-vien')->name('nhan-vien.')->controller(NhanVienController::class)->group(function () {
-    // Route chính: Trang quản lý nhân viên (danh sách, thao tác chính)
-    Route::get('/', 'index')->name('index');
+
+Route::prefix('nhanVien')->name('nhanVien.')->group(function () {
+    Route::prefix('ban-an')->name('ban-an.')->group(function () {
+        Route::get('/', [NhanVienBanAnController::class, 'index'])->name('index');
+
+        // POST cho walk-in
+        Route::post('/check-in-walkin', [NhanVienBanAnController::class, 'checkInWalkIn'])->name('check-in-walkin');
+
+        // POST cho khách đặt trước
+        Route::post('/check-in-dattruoc', [NhanVienBanAnController::class, 'checkInDatTruoc'])->name('check-in-dattruoc');
+
+        // GET nút reset bàn (tất cả bàn quá hạn)
+        Route::post('/reset/{id}', [NhanVienBanAnController::class, 'resetBan'])->name('reset-ban');
+    });
+
+
+// DatBan NhanVien
+Route::get('/dat-ban', [NVDatBanController::class, 'index'])->name('datban.index');
+Route::get('/dat-ban/create', [NVDatBanController::class, 'create'])->name('datban.create');
+Route::post('/dat-ban/store', [NVDatBanController::class, 'store'])->name('datban.store');
+
+// Đã sửa: Đồng bộ với tên phương thức Controller (thayDoiTrangThai) và sử dụng Model Binding ({datBan})
+Route::post('/dat-ban/{datBan}/thay-doi-trang-thai', [NVDatBanController::class, 'thayDoiTrangThai'])->name('datban.thaydoitrangthai');
+
+Route::get('/dat-ban/check-ban-trong', [NVDatBanController::class, 'ajaxCheckBanTrong'])->name('datban.check_ban');
+
+
+
+    //gọi món tạo order
+    Route::get('/order', [NhanVienOrderMonController::class, 'index'])->name('order.index');
+    Route::post('/order/mo-order', [NhanVienOrderMonController::class, 'moOrder'])->name('order.mo-order');
+
+    // 👉 NEW: Bắt buộc chọn combo trước
+    Route::get('/order/{orderId}/chon-combo', [NhanVienOrderMonController::class, 'chonCombo'])->name('order.chon-combo');
+    Route::post('/order/{orderId}/chon-combo', [NhanVienOrderMonController::class, 'luuCombo'])->name('order.luu-combo');
+
+    Route::get('/chi-tiet-order/create', [NhanVienOrderMonController::class, 'create'])->name('chi-tiet-order.create');
+    Route::get('/order/{orderId}', [NhanVienOrderMonController::class, 'orderPage'])->name('order.page');
+    Route::post('/order/{orderId}/gui-bep', [NhanVienOrderMonController::class, 'guiBep'])->name('order.gui-bep');
+
+    Route::get('/chi-tiet-order/{orderId}', [NhanVienOrderMonController::class, 'show'])->name('chi-tiet-order.show');
+
+    Route::get('chi-tiet-order/{orderId}/edit/{ctId}', [NhanVienOrderMonController::class, 'edit'])->name('chi-tiet-order.edit');
+    Route::post('/chi-tiet-order', [NhanVienOrderMonController::class, 'store'])->name('chi-tiet-order.store');
+    Route::put('chi-tiet-order/{ctId}', [NhanVienOrderMonController::class, 'update'])->name('chi-tiet-order.update');
+    Route::delete('/chi-tiet-order/{id}', [NhanVienOrderMonController::class, 'destroy'])->name('chi-tiet-order.destroy');
 });
 
 // ==========================================================
 // ===== MÀN HÌNH BẾP (CHỈ ROUTE CHÍNH) =====
 // ==========================================================
-Route::prefix('bep')->name('bep.')->controller(OrderController::class)->group(function () {
-    // Route chính: Trang hiển thị các món cần chế biến / trạng thái order
-    Route::get('/', 'showKitchenDashboard')->name('dashboard');
+Route::prefix('bep')->name('bep.')->group(function () {
+    Route::get('/', [BepController::class, 'dashboard'])->name('dashboard');
+    Route::post('/update-status', [BepController::class, 'updateMonStatus'])->name('update-status');
 });
 
 
@@ -240,9 +303,11 @@ Route::prefix('oderqr')->group(function () {
     Route::get('order/status/{datBanId}', [OrderController::class, 'getOrderStatus']);
 
     Route::get('list', [OrderController::class, 'showQrListPage'])->name('oderqr.list');
-
-
-
-
 });
 
+
+
+// ===== PHẦN THÊM MỚI 3: ROUTE TRUY CẬP NHANH (DÙNG CHO DEMO) =====
+Route::get('/tong', function () {
+    return view('quick-access');
+});
