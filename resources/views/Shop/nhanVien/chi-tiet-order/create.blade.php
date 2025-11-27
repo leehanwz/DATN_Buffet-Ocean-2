@@ -3,9 +3,26 @@
 @section('title', 'Thêm món vào Order')
 
 @section('content')
-<main class="app-content">
+<main class="app-content">{{-- Flash message --}}
+    @if(session('success'))
+    <div class="alert alert-success text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+        {{ session('success') }}
+    </div>
+    @endif
 
-    <h3 class="fw-bold mb-3">Thêm món vào Order #{{ $order->id }}</h3>
+    @if(session('warning'))
+    <div class="alert alert-warning text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+        {{ session('warning') }}
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+        {{ session('error') }}
+    </div>
+    @endif
+
+    <h3 class="fw-bold mb-3">Thêm món vào Order số:{{ $order->id }}</h3>
     <p class="mb-3"><b>Bàn:</b> {{ $order->banAn->so_ban ?? 'Không xác định' }}</p>
     <hr>
 

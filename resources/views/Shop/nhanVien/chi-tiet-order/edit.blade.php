@@ -34,7 +34,7 @@
 
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-success rounded-pill shadow-sm px-4">Cập nhật</button>
-            <a href="{{ route('nhanVien.chi-tiet-order.show', $order->id) }}" class="btn btn-secondary rounded-pill shadow-sm px-4">Hủy</a>
+            <a href="{{ route('nhanVien.order.page', $order->id) }}" class="btn btn-secondary rounded-pill shadow-sm px-4">Hủy</a>
         </div>
     </form>
 </main>

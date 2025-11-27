@@ -4,6 +4,24 @@
 
 @section('content')
 <main class="app-content">
+    {{-- Flash message --}}
+    @if(session('success'))
+    <div class="alert alert-success text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+        {{ session('success') }}
+    </div>
+    @endif
+
+    @if(session('warning'))
+    <div class="alert alert-warning text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+        {{ session('warning') }}
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+        {{ session('error') }}
+    </div>
+    @endif
 
     {{-- Tiêu đề --}}
     <div class="app-title mb-4 d-flex align-items-center gap-2">
@@ -48,6 +66,7 @@
                         <th>Món ăn</th>
                         <th>Số lượng</th>
                         <th>Ghi chú</th>
+                        <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -57,6 +76,25 @@
                         <td>{{ $ct->monAn->ten_mon }}</td>
                         <td>{{ $ct->so_luong_hien_thi }}</td>
                         <td>{{ $ct->ghi_chu }}</td>
+                        <td>
+                            @switch($ct->trang_thai)
+                            @case('cho_bep')
+                            <span class="badge bg-secondary">Chờ bếp</span>
+                            @break
+                            @case('dang_che_bien')
+                            <span class="badge bg-primary">Đang chế biến</span>
+                            @break
+                            @case('da_len_mon')
+                            <span class="badge bg-success">Đã lên món</span>
+                            @break
+                            @case('huy_mon')
+                            <span class="badge bg-danger">Hủy món</span>
+                            @break
+                            @default
+                            <span class="badge bg-dark">{{ $ct->trang_thai }}</span>
+                            @endswitch
+                        </td>
+
                         <td>
                             <a href="{{ route('nhanVien.chi-tiet-order.edit', [$order->id, $ct->id]) }}"
                                 class="btn btn-sm btn-warning rounded-pill shadow-sm me-1 mb-1">Sửa</a>

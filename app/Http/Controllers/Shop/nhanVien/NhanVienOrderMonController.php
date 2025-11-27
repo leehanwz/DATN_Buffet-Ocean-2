@@ -55,75 +55,40 @@ class NhanVienOrderMonController extends Controller
         return view('Shop.nhanVien.order.index', compact('bans', 'orders', 'khuVucs'));
     }
 
-
-    // Hiển thị chi tiết 1 order
-    public function show($orderId)
-    {
-        $order = OrderMon::with(['chiTietOrders.monAn', 'banAn', 'datBan.comboBuffet'])
-            ->findOrFail($orderId);
-
-        $monAns = MonAn::where('trang_thai', 'dang_ban')->get();
-
-        // Lấy số lượng món combo (nếu có)
-        $comboId = $order->datBan->combo_id ?? null;
-        $soLuongMonTrongCombo = [];
-        if ($comboId) {
-            $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
-            $soLuongMonTrongCombo = $monTrongCombo->pluck('gioi_han_so_luong', 'mon_an_id')->toArray();
-        }
-
-        // Gắn số lượng hiển thị cho từng chi tiết order
-        $order->chiTietOrders->transform(function ($ct) use ($soLuongMonTrongCombo) {
-            $ct->so_luong_hien_thi = $ct->loai_mon === 'combo'
-                ? ($soLuongMonTrongCombo[$ct->mon_an_id] ?? $ct->so_luong)
-                : $ct->so_luong;
-            return $ct;
-        });
-
-        return view('Shop.nhanVien.chi-tiet-order.show', compact('order', 'monAns'));
-    }
-
-    // Mở order cho bàn đang hoạt động
+    // Mở order mới cho bàn
     public function moOrder(Request $request)
     {
-        $banId = $request->input('ban_id');
+        $ban_id = $request->ban_id;
 
-        // Kiểm tra xem bàn này đã có order chưa hoàn tất chưa
-        $existingOrder = OrderMon::where('ban_id', $banId)
-            ->whereIn('trang_thai', ['dang_xu_li', 'dang_phuc_vu']) // chỉ coi order chưa hoàn tất
-            ->latest() // lấy order mới nhất
-            ->first();
-
-        if ($existingOrder) {
-            return redirect()->route('nhanVien.order.page', $existingOrder->id)
-                ->with('warning', 'Bàn này đã có order đang phục vụ!');
-        }
-
-        // Tìm đặt bàn hợp lệ: chỉ 2 trạng thái được mở order
-        $datBan = DatBan::where('ban_id', $banId)
+        // Tìm đặt bàn theo ban_id
+        $datBan = DatBan::where('ban_id', $ban_id)
             ->whereIn('trang_thai', ['da_xac_nhan', 'khach_da_den'])
             ->latest()
             ->first();
 
         if (!$datBan) {
-            return redirect()->back()->with('warning', 'Bàn này chưa có đặt bàn hợp lệ!');
+            return back()->with('error', 'Bàn này chưa được đặt hoặc chưa xác nhận!');
         }
 
-        // Cập nhật trạng thái đặt bàn thành khách đã đến
-        if ($datBan->trang_thai != 'khach_da_den') {
-            $datBan->update(['trang_thai' => 'khach_da_den']);
+        // ❗ Chỉ mở order nếu khách đã đến
+        if ($datBan->trang_thai !== 'khach_da_den') {
+            return back()->with('error', 'Khách chưa đến — không thể mở Order!');
         }
 
-        // Tạo order
+        // Tạo order mới KHÔNG kiểm tra order cũ
         $order = OrderMon::create([
-            'ban_id'     => $banId,
             'dat_ban_id' => $datBan->id,
+            'ban_id'     => $ban_id,
+            'trang_thai' => 'dang_xu_li',
             'tong_mon'   => 0,
             'tong_tien'  => 0,
-            'trang_thai' => 'dang_xu_li',
         ]);
 
-        // Redirect sang trang order mới tạo
+        // Cập nhật trạng thái bàn → đang phục vụ
+        $ban = BanAn::find($ban_id);
+        $ban->trang_thai = 'dang_phuc_vu';
+        $ban->save();
+
         return redirect()->route('nhanVien.order.page', $order->id)
             ->with('success', 'Mở order thành công!');
     }
@@ -211,7 +176,7 @@ class NhanVienOrderMonController extends Controller
             'ghi_chu' => $request->ghi_chu
         ]);
 
-        return redirect()->route('nhanVien.chi-tiet-order.show', $ct->order_id)
+        return redirect()->route('nhanVien.order.page', $ct->order_id)
             ->with('success', 'Cập nhật thành công!');
     }
 

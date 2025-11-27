@@ -49,9 +49,9 @@
                         <h5 class="mb-1"><i class="bi {{ $icon }}"></i> Bàn {{ $ban->so_ban }}</h5>
                         <small class="opacity-75">
                             @if($order)
-                            Đang phục vụ
+                            ID: {{ $order->id }} | {{ $order->tong_mon }} món
                             @elseif($ban->trang_thai == 'san_sang')
-                            Đã đặt bàn • Chưa mở Order
+                            Đã đặt bàn
                             @else
                             Trống
                             @endif
@@ -61,7 +61,7 @@
                     {{-- Thân card --}}
                     <div class="card-body d-flex flex-column align-items-center justify-content-center p-3">
                         @if($order)
-                        <p class="mb-1 text-truncate"><i class="bi bi-receipt"></i> <b>Order #{{ $order->id }}</b></p>
+                        <p class="mb-1 text-truncate"><i class="bi bi-receipt"></i> <b>Order số: {{ $order->id }}</b></p>
                         @if($order && $order->datBan)
                         <p class="mb-1"><i class="bi bi-person-fill"></i> Khách: <b>{{ $order->datBan->ten_khach }}</b></p>
                         <p class="mb-1"><i class="bi bi-telephone-fill"></i> SĐT: <b>{{ $order->datBan->sdt_khach }}</b></p>
