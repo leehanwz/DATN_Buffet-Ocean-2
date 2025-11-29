@@ -29,6 +29,8 @@
             @php
             $order = $orders->has($ban->id) ? $orders[$ban->id] : null;
 
+            $datBanMoiNhat = \App\Models\DatBan::where('ban_id', $ban->id)->latest()->first();
+
             if($ban->trang_thai == 'trong') {
             $bgHeader = 'linear-gradient(135deg, #28a745, #7be495)';
             $icon = 'bi-person-check';
@@ -47,6 +49,38 @@
                     <div class="table-card-header text-center text-white fw-bold py-2 rounded-top"
                         style="background: {{ $bgHeader }};">
                         <h5 class="mb-1"><i class="bi {{ $icon }}"></i> Bàn {{ $ban->so_ban }}</h5>
+                        <div class="mt-2 w-100 text-center">
+                            @php
+                            $trangThaiText = 'Trống';
+                            $trangThaiClass = 'bg-secondary';
+
+                            if(isset($datBanMoiNhat)) {
+                            switch($datBanMoiNhat->trang_thai) {
+                            case 'da_xac_nhan':
+                            $trangThaiText = 'Đã đặt';
+                            $trangThaiClass = 'bg-warning text-dark';
+                            break;
+                            case 'khach_da_den':
+                            if(isset($order)) {
+                            $trangThaiText = 'Đang phục vụ';
+                            $trangThaiClass = 'bg-success text-white';
+                            } else {
+                            $trangThaiText = 'Khách đã đến (chưa mở order)';
+                            $trangThaiClass = 'bg-info text-white';
+                            }
+                            break;
+                            default:
+                            $trangThaiText = 'Trống';
+                            $trangThaiClass = 'bg-secondary';
+                            break;
+                            }
+                            }
+                            @endphp
+                            <span class="badge {{ $trangThaiClass }}">
+                                {{ $trangThaiText }}
+                            </span>
+                        </div>
+
                         <small class="opacity-75">
                             @if($order)
                             ID: {{ $order->id }} | {{ $order->tong_mon }} món

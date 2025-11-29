@@ -2,8 +2,7 @@
 
 @section('title', 'Chọn Combo Buffet')
 
-@section('content')
-    {{-- 1. IMPORT FONTS --}}
+{{-- 1. IMPORT FONTS --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 
@@ -122,87 +121,89 @@
 
     </style>
 
-    <div class="container py-4">
+@section('content')
 
-        {{-- HEADER --}}
-        <div class="page-header">
-            <div>
-                <a href="{{ route('nhanVien.order.index') }}" class="btn-back mb-2">
-                    <i class="fa-solid fa-arrow-left"></i> Quay lại
-                </a>
-                <h2 class="header-title">Chọn Combo Buffet</h2>
-            </div>
-            <span class="text-muted fw-bold">{{ date('d/m/Y') }}</span>
+<div class="container py-4">
+
+    {{-- HEADER --}}
+    <div class="page-header">
+        <div>
+            <a href="{{ route('nhanVien.order.index') }}" class="btn-back mb-2">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </a>
+            <h2 class="header-title">Chọn Combo Buffet</h2>
         </div>
+        <span class="text-muted fw-bold">{{ date('d/m/Y') }}</span>
+    </div>
 
-        {{-- CONTEXT INFO (Bàn nào, Order nào) --}}
-        <div class="context-box">
-            <div class="context-item">
-                <span class="context-label">Mã Order</span>
-                <span class="context-value">#{{ $order->id }}</span>
-            </div>
-            <div style="width: 1px; height: 30px; background: #e2e8f0;"></div>
-            <div class="context-item">
-                <span class="context-label">Bàn Phục Vụ</span>
-                <span class="context-value">
-                    @if($order->banAn)
-                        Bàn {{ $order->banAn->so_ban }}
-                    @else
-                        <span class="text-danger">Chưa xếp</span>
-                    @endif
-                </span>
-            </div>
+    {{-- CONTEXT INFO (Bàn nào, Order nào) --}}
+    <div class="context-box">
+        <div class="context-item">
+            <span class="context-label">Mã Order</span>
+            <span class="context-value">#{{ $order->id }}</span>
         </div>
+        <div style="width: 1px; height: 30px; background: #e2e8f0;"></div>
+        <div class="context-item">
+            <span class="context-label">Bàn Phục Vụ</span>
+            <span class="context-value">
+                @if($order->banAn)
+                Bàn {{ $order->banAn->so_ban }}
+                @else
+                <span class="text-danger">Chưa xếp</span>
+                @endif
+            </span>
+        </div>
+    </div>
 
-        {{-- COMBO GRID --}}
-        <div class="row">
-            @foreach ($combos as $combo)
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="combo-card">
-                    {{-- Hình ảnh & Giá --}}
-                    <div class="img-wrapper">
-                        @php $imgPath = 'uploads/combo_buffet/' . $combo->anh; @endphp
-                        <img src="{{ file_exists(public_path($imgPath)) ? asset($imgPath) : 'https://placehold.co/600x400?text=No+Image' }}"
-                             class="combo-img" alt="{{ $combo->ten_combo }}">
+    {{-- COMBO GRID --}}
+    <div class="row">
+        @foreach ($combos as $combo)
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="combo-card">
+                {{-- Hình ảnh & Giá --}}
+                <div class="img-wrapper">
+                    @php $imgPath = 'uploads/combo_buffet/' . $combo->anh; @endphp
+                    <img src="{{ file_exists(public_path($imgPath)) ? asset($imgPath) : 'https://placehold.co/600x400?text=No+Image' }}"
+                        class="combo-img" alt="{{ $combo->ten_combo }}">
 
-                        <div class="price-badge">
-                            {{ number_format($combo->gia_co_ban) }} <span style="font-size: 0.7em; font-weight: 600;">đ</span>
-                        </div>
-                    </div>
-
-                    <div class="card-body-custom">
-                        <h5 class="combo-title">{{ $combo->ten_combo }}</h5>
-
-                        <span class="combo-desc-label"><i class="fa-solid fa-list-ul"></i> Menu bao gồm:</span>
-
-                        <ul class="menu-list">
-                            @foreach ($combo->monTrongCombo as $ct)
-                                @php $monImgPath = 'uploads/mon_an/' . $ct->monAn->anh; @endphp
-                                <li class="menu-item">
-                                    <img src="{{ file_exists(public_path($monImgPath)) ? asset($monImgPath) : 'https://placehold.co/100?text=Mon' }}"
-                                         class="item-thumb" alt="mon">
-                                    <span class="item-name">{{ $ct->monAn->ten_mon }}</span>
-                                    <span class="item-qty">x{{ $ct->gioi_han_so_luong }}</span>
-                                </li>
-                            @endforeach
-                            @if($combo->monTrongCombo->isEmpty())
-                                <li class="text-muted small fst-italic">Đang cập nhật món...</li>
-                            @endif
-                        </ul>
-
-                        {{-- Form Submit --}}
-                        <form method="POST" action="{{ route('nhanVien.order.luu-combo', $order->id) }}">
-                            @csrf
-                            <input type="hidden" name="combo_id" value="{{ $combo->id }}">
-                            <button type="submit" class="btn-select">
-                                <i class="fa-solid fa-check-circle"></i> CHỌN COMBO NÀY
-                            </button>
-                        </form>
+                    <div class="price-badge">
+                        {{ number_format($combo->gia_co_ban) }} <span style="font-size: 0.7em; font-weight: 600;">đ</span>
                     </div>
                 </div>
-            </div>
-            @endforeach
-        </div>
 
+                <div class="card-body-custom">
+                    <h5 class="combo-title">{{ $combo->ten_combo }}</h5>
+
+                    <span class="combo-desc-label"><i class="fa-solid fa-list-ul"></i> Menu bao gồm:</span>
+
+                    <ul class="menu-list">
+                        @foreach ($combo->monTrongCombo as $ct)
+                        @php $monImgPath = 'uploads/mon_an/' . $ct->monAn->anh; @endphp
+                        <li class="menu-item">
+                            <img src="{{ file_exists(public_path($monImgPath)) ? asset($monImgPath) : 'https://placehold.co/100?text=Mon' }}"
+                                class="item-thumb" alt="mon">
+                            <span class="item-name">{{ $ct->monAn->ten_mon }}</span>
+                            <span class="item-qty">x{{ $ct->gioi_han_so_luong }}</span>
+                        </li>
+                        @endforeach
+                        @if($combo->monTrongCombo->isEmpty())
+                        <li class="text-muted small fst-italic">Đang cập nhật món...</li>
+                        @endif
+                    </ul>
+
+                    {{-- Form Submit --}}
+                    <form method="POST" action="{{ route('nhanVien.order.luu-combo', $order->id) }}">
+                        @csrf
+                        <input type="hidden" name="combo_id" value="{{ $combo->id }}">
+                        <button type="submit" class="btn-select">
+                            <i class="fa-solid fa-check-circle"></i> CHỌN COMBO NÀY
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @endforeach
     </div>
+
+</div>
 @endsection

@@ -2,6 +2,102 @@
 
 @section('title', 'Thêm món vào Order')
 
+{{-- 1. IMPORT FONTS --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+
+{{-- 2. CSS STYLING (Design System) --}}
+<style>
+    :root {
+        --primary: #fea116; --primary-dark: #d98a12;
+        --dark: #0f172b; --white: #ffffff;
+        --text-main: #1e293b; --text-sub: #64748b;
+        --bg-light: #f8f9fa;
+        --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+        --shadow-hover: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+        --radius: 8px;
+        --anim-fast: 0.2s ease;
+    }
+
+    body { font-family: 'Nunito', sans-serif; background-color: var(--bg-light); color: var(--text-main); }
+    h3, h5, h6, strong, .font-heading { font-family: 'Heebo', sans-serif; }
+
+    /* --- HEADER CONTEXT --- */
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .header-title { color: var(--dark); font-weight: 800; font-size: 1.8rem; text-transform: uppercase; }
+
+    /* --- CONTEXT BOX --- */
+    .context-box { background: var(--white); border-radius: var(--radius); padding: 15px 20px;
+        border-left: 4px solid var(--primary); box-shadow: var(--shadow-card);
+        margin-bottom: 30px; display: flex; align-items: center; gap: 20px; }
+    .context-item { display: flex; flex-direction: column; }
+    .context-label { font-size: 0.75rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
+    .context-value { font-size: 1.1rem; font-weight: 800; color: var(--dark); font-family: 'Heebo'; }
+
+    /* --- MENU GRID --- */
+    .dish-card {
+        background: var(--white); border-radius: var(--radius); padding: 10px;
+        border: 1px solid #f1f5f9; box-shadow: var(--shadow-card);
+        transition: var(--anim-fast); display: flex; align-items: center; gap: 15px;
+        cursor: pointer; position: relative; overflow: hidden;
+    }
+    .dish-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: rgba(254, 161, 22, 0.4); }
+    .dish-thumb { width: 70px; height: 70px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+    .dish-info { flex: 1; }
+    .dish-name { font-size: 0.95rem; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+    .dish-meta { font-size: 0.75rem; color: var(--text-sub); margin-bottom: 4px; }
+    .dish-price { color: var(--primary); font-weight: 800; font-family: 'Heebo'; font-size: 0.9rem; }
+    .btn-add-quick {
+        width: 35px; height: 35px; border-radius: 50%; background: #f1f8ff;
+        color: var(--primary); border: 1px solid var(--primary);
+        display: flex; align-items: center; justify-content: center;
+        transition: var(--anim-fast); font-size: 1.1rem;
+    }
+    .dish-card:hover .btn-add-quick { background: var(--primary); color: var(--white); }
+
+    /* --- CART SIDEBAR --- */
+    .cart-panel { position: sticky; top: 20px; background: var(--white);
+        border-radius: var(--radius); box-shadow: var(--shadow-card);
+        border: 1px solid #f1f5f9; overflow: hidden;
+        display: flex; flex-direction: column; max-height: calc(100vh - 40px); }
+    .cart-header { background: var(--dark); color: var(--white); padding: 15px;
+        font-family: 'Heebo'; font-weight: 700; text-transform: uppercase;
+        display: flex; align-items: center; gap: 8px;
+        background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.1) 1px, transparent 0);
+        background-size: 20px 20px; }
+    .cart-body { flex: 1; overflow-y: auto; padding: 15px; }
+    .cart-item { display: flex; justify-content: space-between; align-items: flex-start;
+        padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px dashed #e2e8f0;
+        animation: slideIn 0.2s ease; }
+    .cart-item:last-child { border-bottom: none; margin-bottom: 0; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+    .item-name { font-size: 0.9rem; font-weight: 700; color: var(--dark); line-height: 1.2; }
+    .item-qty { color: var(--primary); font-weight: 800; font-family: 'Heebo'; margin-left: 4px; }
+    .item-note { font-size: 0.75rem; color: var(--text-sub); font-style: italic; display: block; margin-top: 2px; }
+    .btn-icon { width: 24px; height: 24px; border-radius: 4px; border: none;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
+    .btn-edit-note { background: #e2e8f0; color: var(--text-sub); margin-right: 4px; }
+    .btn-edit-note:hover { background: #cbd5e1; color: var(--dark); }
+    .btn-remove { background: #fee2e2; color: #dc2626; }
+    .btn-remove:hover { background: #ef4444; color: white; }
+    .cart-footer { padding: 15px; border-top: 1px solid #f1f5f9; background: #f8fafc; }
+    .btn-submit {
+        width: 100%; border: none; padding: 12px; border-radius: 6px;
+        font-weight: 800; text-transform: uppercase; font-family: 'Heebo', sans-serif;
+        font-size: 0.9rem; cursor: pointer; transition: var(--anim-fast);
+        background: var(--primary); color: var(--white);
+        box-shadow: 0 4px 10px rgba(254, 161, 22, 0.3);
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { background: var(--primary-dark); transform: translateY(-2px); }
+    .btn-back { background: #e2e8f0; color: var(--text-sub); text-decoration: none;
+        padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;
+        display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
+    .btn-back:hover { background: #cbd5e1; color: var(--dark); }
+</style>
+
+
 @section('content')
 <main class="app-content">{{-- Flash message --}}
     @if(session('success'))
@@ -25,130 +121,6 @@
     <h3 class="fw-bold mb-3">Thêm món vào Order số:{{ $order->id }}</h3>
     <p class="mb-3"><b>Bàn:</b> {{ $order->banAn->so_ban ?? 'Không xác định' }}</p>
     <hr>
-    {{-- 1. IMPORT FONTS --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-
-    {{-- 2. CSS STYLING (Design System) --}}
-    <style>
-        :root {
-            --primary: #fea116; --primary-dark: #d98a12;
-            --dark: #0f172b; --white: #ffffff;
-            --text-main: #1e293b; --text-sub: #64748b;
-            --bg-light: #f8f9fa;
-            --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
-            --shadow-hover: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
-            --radius: 8px;
-            --anim-fast: 0.2s ease;
-        }
-
-        body { font-family: 'Nunito', sans-serif; background-color: var(--bg-light); color: var(--text-main); }
-        h3, h5, h6, strong, .font-heading { font-family: 'Heebo', sans-serif; }
-
-        /* --- HEADER CONTEXT --- */
-        .page-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-        }
-        .header-title { color: var(--dark); font-weight: 800; font-size: 1.8rem; text-transform: uppercase; }
-
-        /* --- CONTEXT BOX --- */
-        .context-box {
-            background: var(--white); border-radius: var(--radius); padding: 15px 20px;
-            border-left: 4px solid var(--primary); box-shadow: var(--shadow-card);
-            margin-bottom: 30px; display: flex; align-items: center; gap: 20px;
-        }
-        .context-item { display: flex; flex-direction: column; }
-        .context-label { font-size: 0.75rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
-        .context-value { font-size: 1.1rem; font-weight: 800; color: var(--dark); font-family: 'Heebo'; }
-
-        /* --- MENU GRID --- */
-        .dish-card {
-            background: var(--white); border-radius: var(--radius); padding: 10px;
-            border: 1px solid #f1f5f9; box-shadow: var(--shadow-card);
-            transition: var(--anim-fast); display: flex; align-items: center; gap: 15px;
-            cursor: pointer; position: relative; overflow: hidden;
-        }
-        .dish-card:hover {
-            transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: rgba(254, 161, 22, 0.4);
-        }
-
-        .dish-thumb {
-            width: 70px; height: 70px; border-radius: 6px; object-fit: cover; flex-shrink: 0;
-        }
-
-        .dish-info { flex: 1; }
-        .dish-name { font-size: 0.95rem; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
-        .dish-meta { font-size: 0.75rem; color: var(--text-sub); margin-bottom: 4px; }
-        .dish-price { color: var(--primary); font-weight: 800; font-family: 'Heebo'; font-size: 0.9rem; }
-
-        .btn-add-quick {
-            width: 35px; height: 35px; border-radius: 50%; background: #f1f8ff;
-            color: var(--primary); border: 1px solid var(--primary);
-            display: flex; align-items: center; justify-content: center;
-            transition: var(--anim-fast); font-size: 1.1rem;
-        }
-        .dish-card:hover .btn-add-quick { background: var(--primary); color: var(--white); }
-
-        /* --- CART SIDEBAR (STICKY) --- */
-        .cart-panel {
-            position: sticky; top: 20px; background: var(--white);
-            border-radius: var(--radius); box-shadow: var(--shadow-card);
-            border: 1px solid #f1f5f9; overflow: hidden;
-            display: flex; flex-direction: column; max-height: calc(100vh - 40px);
-        }
-
-        .cart-header {
-            background: var(--dark); color: var(--white); padding: 15px;
-            font-family: 'Heebo'; font-weight: 700; text-transform: uppercase;
-            display: flex; align-items: center; gap: 8px;
-            background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.1) 1px, transparent 0);
-            background-size: 20px 20px;
-        }
-
-        .cart-body { flex: 1; overflow-y: auto; padding: 15px; }
-
-        .cart-item {
-            display: flex; justify-content: space-between; align-items: flex-start;
-            padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px dashed #e2e8f0;
-            animation: slideIn 0.2s ease;
-        }
-        .cart-item:last-child { border-bottom: none; margin-bottom: 0; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
-
-        .item-name { font-size: 0.9rem; font-weight: 700; color: var(--dark); line-height: 1.2; }
-        .item-qty { color: var(--primary); font-weight: 800; font-family: 'Heebo'; margin-left: 4px; }
-        .item-note { font-size: 0.75rem; color: var(--text-sub); font-style: italic; display: block; margin-top: 2px; }
-
-        .btn-icon {
-            width: 24px; height: 24px; border-radius: 4px; border: none;
-            display: inline-flex; align-items: center; justify-content: center;
-            font-size: 0.7rem; cursor: pointer; transition: 0.2s;
-        }
-        .btn-edit-note { background: #e2e8f0; color: var(--text-sub); margin-right: 4px; }
-        .btn-edit-note:hover { background: #cbd5e1; color: var(--dark); }
-        .btn-remove { background: #fee2e2; color: #dc2626; }
-        .btn-remove:hover { background: #ef4444; color: white; }
-
-        .cart-footer { padding: 15px; border-top: 1px solid #f1f5f9; background: #f8fafc; }
-
-        .btn-submit {
-            width: 100%; border: none; padding: 12px; border-radius: 6px;
-            font-weight: 800; text-transform: uppercase; font-family: 'Heebo', sans-serif;
-            font-size: 0.9rem; cursor: pointer; transition: var(--anim-fast);
-            background: var(--primary); color: var(--white);
-            box-shadow: 0 4px 10px rgba(254, 161, 22, 0.3);
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-submit:hover { background: var(--primary-dark); transform: translateY(-2px); }
-
-        .btn-back {
-            background: #e2e8f0; color: var(--text-sub); text-decoration: none;
-            padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;
-            display: inline-flex; align-items: center; gap: 5px; transition: 0.2s;
-        }
-        .btn-back:hover { background: #cbd5e1; color: var(--dark); }
-
-    </style>
 
     <div class="container py-4">
         {{-- Flash Messages --}}
@@ -252,6 +224,7 @@
     {{-- SCRIPT --}}
     <script>
         const orderId = {{ $order->id }};
+        // chạy lỗi thì thay thành : const orderId = {{ $order->id }};
         let cart = [];
 
         // Render Cart UI
