@@ -14,6 +14,7 @@ class NhanVienBanAnController extends Controller
     /**
      * Hiển thị sơ đồ bàn theo khu vực + danh sách khách đặt trước trong ngày
      */
+
     public function index(Request $request)
     {
         $autoCancelAfter = 30; // phút
@@ -39,11 +40,11 @@ class NhanVienBanAnController extends Controller
         // Lấy khu vực + bàn
         $khuVucs = \App\Models\KhuVuc::with('banAns')->get();
     
-        $today = Carbon::today();
-        $tomorrow = Carbon::tomorrow();
+        $now = Carbon::now();
+        $thirtyMinutesLater = $now->copy()->addMinutes(30);
     
-        // Lấy các đơn trong ngày + khách đã check-in
-        $datBansQuery = DatBan::whereBetween('gio_den', [$today, $tomorrow])
+        // Lấy các đơn trong 30 phút tới
+        $datBansQuery = DatBan::whereBetween('gio_den', [$now, $thirtyMinutesLater])
             ->whereIn('trang_thai', ['da_xac_nhan', 'khach_da_den'])
             ->with('banAn')
             ->orderBy('gio_den', 'asc');
@@ -78,6 +79,7 @@ class NhanVienBanAnController extends Controller
     
         return view('shop.nhanVien.ban_khuvuc', compact('khuVucs', 'datBans'));
     }
+    
     
 
     /**
