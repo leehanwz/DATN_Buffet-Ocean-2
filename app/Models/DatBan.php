@@ -52,4 +52,5 @@ class DatBan extends Model
     {
         return $this->hasOne(HoaDon::class, 'dat_ban_id');
     }
+    
 }

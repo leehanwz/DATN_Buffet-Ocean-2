@@ -138,7 +138,7 @@ class NhanVienOrderMonController extends Controller
                 ChiTietOrder::create([
                     'order_id' => $data['order_id'],
                     'mon_an_id' => $item['mon_an_id'],
-                    'so_luong' => $item['so_luong'] ?? 1,
+                    'so_luong' =>  1,
                     'loai_mon' => 'goi_them',
                     'ghi_chu' => $item['ghi_chu'] ?? null,
                     'trang_thai' => 'cho_bep',

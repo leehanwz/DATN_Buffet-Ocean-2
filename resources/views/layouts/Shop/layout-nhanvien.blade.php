@@ -48,12 +48,24 @@
                         <span class="fa fa-bars"></span>
                     </button>
 
-                    <div class="collapse navbar-collapse" id="navbarCollapse">
-                        <div class="navbar-nav ms-auto py-0 pe-4">
-                            <a href="{{ route('nhanVien.order.index') }}" class="nav-item nav-link">Mở order gọi món</a>
-                        </div>
-                    </div>
-                </nav>
+
+<!-- Navbar & Hero Start -->
+<div class="container-xxl position-relative p-0">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
+        <a href="#" class="navbar-brand p-0">
+            <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Restoran</h1>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarCollapse">
+            <span class="fa fa-bars"></span>
+        </button>
+
+        <!-- Chỉ 1 collapse duy nhất -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0 pe-4">
+                <a href="{{ route('nhanVien.ban-an.index') }}" class="nav-item nav-link active">Bàn ăn</a>
+                <a href="{{ route('nhanVien.order.index') }}" class="nav-item nav-link">Mở order gọi món</a>
+                <a href="{{ route('nhanVien.datban.index') }}" class="nav-item nav-link">Xác nhận & tạo đặt bàn</a>
             </div>
         </div>
 
@@ -153,16 +165,20 @@
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/wow/wow.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/counterup/counterup.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/tempusdominus/js/moment.min.js"></script>
-    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{{-- PHẢI DÙNG asset() ĐỂ KHÔNG BỊ LỖI 404 --}}
+<script src="{{ asset('restaurant/lib/wow/wow.min.js') }}"></script>
+<script src="{{ asset('restaurant/lib/easing/easing.min.js') }}"></script>
+<script src="{{ asset('restaurant/lib/waypoints/waypoints.min.js') }}"></script>
+<script src="{{ asset('restaurant/lib/counterup/counterup.min.js') }}"></script>
+<script src="{{ asset('restaurant/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('restaurant/lib/tempusdominus/js/moment.min.js') }}"></script>
+<script src="{{ asset('restaurant/lib/tempusdominus/js/moment-timezone.min.js') }}"></script>
+<script src="{{ asset('restaurant/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js') }}"></script>
+<script src="{{ asset('restaurant/js/main.js') }}"></script>
 
     <script src="{{ asset('restaurant/js/main.js') }}"></script>
 </body>
