@@ -273,7 +273,7 @@ class NhanVienOrderMonController extends Controller
                     ChiTietOrder::create([
                         'order_id'   => $orderId,
                         'mon_an_id'  => $item->mon_an_id,
-                        'so_luong'   => $item->so,
+                        'so_luong'   => $item->so_luong,
                         'loai_mon'   => 'combo',
                         'trang_thai' => 'cho_bep',
                     ]);
@@ -283,11 +283,10 @@ class NhanVienOrderMonController extends Controller
             $order->load('chiTietOrders.monAn');
         }
 
-
-        $order->chiTietOrders->transform(function ($ct) use ($soLuongMonTrongCombo, $soKhach) {
+        $order->chiTietOrders->transform(function ($ct) use ($soKhach) {
             if ($ct->loai_mon === 'combo') {
-                $gioiHan = $soLuongMonTrongCombo[$ct->mon_an_id] ?? $ct->so_luong;
-                $ct->so_luong_hien_thi = min($soKhach, $gioiHan);
+                // Số lượng hiển thị = số khách, không giới hạn
+                $ct->so_luong_hien_thi = $soKhach;
             } else {
                 $ct->so_luong_hien_thi = $ct->so_luong;
             }

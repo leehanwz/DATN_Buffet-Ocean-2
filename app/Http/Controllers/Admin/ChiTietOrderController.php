@@ -42,15 +42,15 @@ class ChiTietOrderController extends Controller
             }
 
             // Gắn loại món hiển thị + số lượng hiển thị
+            $soKhach = $order->datBan->so_khach ?? 1;
+
             foreach ($order->chiTietOrders as $ct) {
-                if ($ct->loai_mon === 'combo') {
-                    $ct->loai_mon_hien_thi = 'Combo';
-                    $ct->so_luong_hien_thi = $order->datBan->so_khach ?? $ct->so_luong;
-                } else {
-                    $ct->loai_mon_hien_thi = 'Gọi thêm';
-                    $ct->so_luong_hien_thi = $ct->so_luong;
-                }
+                $ct->loai_mon_hien_thi = $ct->loai_mon === 'combo' ? 'Combo' : 'Gọi thêm';
+
+                // Nếu là combo → số lượng = số khách
+                $ct->so_luong_hien_thi = $ct->loai_mon === 'combo' ? $soKhach : $ct->so_luong;
             }
+
 
             return view('admins.chi-tiet-order.show', compact('order', 'monAns', 'soLuongMonTrongCombo'));
         }
@@ -176,10 +176,6 @@ class ChiTietOrderController extends Controller
         return redirect()->route('admin.chi-tiet-order.index', ['order_id' => $ct->order_id])
             ->with('success', 'Đã xóa món ăn khỏi đơn hàng!');
     }
-
-    /**
-     * Đồng bộ số lượng combo trực tiếp vào DB theo số khách
-     */
     private function capNhatSoLuongCombo(OrderMon $order)
     {
         $soKhach = $order->datBan->so_khach ?? 1;
@@ -187,26 +183,22 @@ class ChiTietOrderController extends Controller
 
         if (!$comboId) return;
 
+        // Lấy tất cả món trong combo
         $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
 
         foreach ($monTrongCombo as $m) {
-            $ct = ChiTietOrder::firstOrCreate(
+
+            ChiTietOrder::updateOrCreate(
                 [
                     'order_id' => $order->id,
                     'mon_an_id' => $m->mon_an_id,
                     'loai_mon' => 'combo',
                 ],
                 [
-                    'so_luong' => $m->gioi_han_so_luong * $soKhach,
-                    'trang_thai' => 'cho_bep',  
+                    'so_luong' => $soKhach,
+                    'trang_thai' => 'cho_bep',
                 ]
             );
-
-            // Nếu đã tồn tại nhưng số lượng chưa đúng thì cập nhật
-            $soLuongMoi = $m->gioi_han_so_luong * $soKhach;
-            if ($ct->so_luong != $soLuongMoi) {
-                $ct->update(['so_luong' => $soLuongMoi]);
-            }
         }
     }
 }
