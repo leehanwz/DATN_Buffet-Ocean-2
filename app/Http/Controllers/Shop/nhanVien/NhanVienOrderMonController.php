@@ -247,7 +247,7 @@ class NhanVienOrderMonController extends Controller
         return redirect()->back()->with('success', 'Đã xóa món!');
     }
 
-    public function orderPage($orderId)
+public function orderPage($orderId)
     {
         $order = OrderMon::with(['banAn', 'datBan.comboBuffet', 'chiTietOrders.monAn'])
             ->findOrFail($orderId);

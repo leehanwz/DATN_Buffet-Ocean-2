@@ -14,7 +14,7 @@ class ChiTietOrderController extends Controller
     /**
      * Hiển thị danh sách món trong 1 đơn hàng hoặc tất cả đơn
      */
-    public function index(Request $request)
+public function index(Request $request)
     {
         $orderId = $request->query('order_id');
 
@@ -34,6 +34,10 @@ class ChiTietOrderController extends Controller
 
             // Lấy combo_id của bàn để xác định món trong combo
             $comboId = $order->datBan->combo_id ?? null;
+
+            // ✅ MỚI: Lấy số người từ đặt bàn (mặc định 1 nếu không có)
+            $soNguoi = $order->datBan->so_nguoi ?? 1;
+
             $soLuongMonTrongCombo = [];
 
             if ($comboId) {

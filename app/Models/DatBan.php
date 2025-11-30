@@ -10,12 +10,14 @@ class DatBan extends Model
 
     protected $table = 'dat_ban';
 
+    // Đã sửa lại fillable khớp với DB
     protected $fillable = [
         'ma_dat_ban',
         'ten_khach',
         'email_khach',
         'sdt_khach',
-        'so_khach',
+        'nguoi_lon', 
+        'tre_em',    
         'ban_id',
         'combo_id',
         'nhan_vien_id',
@@ -52,5 +54,4 @@ class DatBan extends Model
     {
         return $this->hasOne(HoaDon::class, 'dat_ban_id');
     }
-    
 }

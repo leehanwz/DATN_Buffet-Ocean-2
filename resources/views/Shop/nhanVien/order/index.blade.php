@@ -128,11 +128,13 @@
 
                 @endforeach
             </div>
+            @endforeach
         </div>
-        @endforeach
     </div>
+    @endforeach
 </main>
 
+<<<<<<< HEAD
 <style>
     .table-card {
         transition: transform 0.2s, box-shadow 0.2s;
@@ -194,3 +196,53 @@
 </style>
 
 @endsection
+=======
+{{-- CSS --}}
+<style>
+    .table-card {
+        background: linear-gradient(145deg, #ffffff, #f0f2f5);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .table-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        /* giảm scale tránh lệch */
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-outline-primary {
+        transition: all 0.3s;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: #fff;
+    }
+
+    #flashMsg {
+        animation: fadeOut 5s forwards;
+    }
+
+    @keyframes fadeOut {
+
+        0%,
+        80% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0;
+        }
+    }
+
+    .table-card-header i {
+        margin-right: 5px;
+    }
+
+    .btn-lg i {
+        pointer-events: none;
+    }
+</style>
+
+@endsection
+>>>>>>> origin/Trung
