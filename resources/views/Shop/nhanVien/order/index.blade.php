@@ -12,7 +12,6 @@
             $dashboardItems = [
             ['label'=>'Tổng số bàn', 'count'=>$bans->count(), 'bg'=>'#28a74533', 'icon'=>'bi-grid-3x3-gap'],
             ['label'=>'Bàn trống', 'count'=>$bans->where('trang_thai', 'trong')->count(), 'bg'=>'#6c757d33', 'icon'=>'bi-person-check'],
-            ['label'=>'Bàn đã đặt', 'count'=>$bans->where('trang_thai', 'da_dat')->count(), 'bg'=>'#ffc10733', 'icon'=>'bi-calendar-check'],
             ['label'=>'Đang phục vụ', 'count'=>$bans->where('trang_thai', 'dang_phuc_vu')->count(), 'bg'=>'#dc354533', 'icon'=>'bi-people-fill'],
             ['label'=>'Khách đến & chưa chọn combo', 'count'=>$bans->filter(function($ban) use ($orders) {
             $datBanMoiNhat = \App\Models\DatBan::where('ban_id', $ban->id)->latest()->first();
@@ -23,8 +22,8 @@
             @endphp
 
             @foreach($dashboardItems as $item)
-            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
-                <div class="p-3 rounded-4 shadow-sm text-center" style="background: {{ $item['bg'] }}">
+            <div class="col d-flex">
+                <div class="p-3 rounded-4 shadow-sm text-center flex-fill" style="background: {{ $item['bg'] }}">
                     <h5 class="fw-bold mb-1">
                         <i class="bi {{ $item['icon'] }}"></i> {{ $item['count'] }}
                     </h5>
@@ -125,13 +124,10 @@
                         </div>
                     </div>
                 </div>
-
                 @endforeach
             </div>
-            @endforeach
         </div>
-    </div>
-    @endforeach
+        @endforeach
 </main>
 
 <style>
@@ -162,6 +158,11 @@
 
     .card-body .btn:hover {
         transform: scale(1.1);
+    }
+
+    .row.mb-4 > .col {
+        flex: 1;
+        min-width: 0;
     }
 
     /* Responsive 6 cột */

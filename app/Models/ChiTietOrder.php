@@ -177,4 +177,9 @@ class ChiTietOrder extends Model
             'tong_tien' => max(0, $tongTien),
         ]);
     }
+
+    public function getDeadlineAttribute()
+    {
+        return $this->created_at->addMinutes($this->monAn->thoi_gian_che_bien);
+    }
 }

@@ -223,6 +223,78 @@
     .btn-delete:hover {
         background: #fee2e2;
     }
+
+    .card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn {
+        transition: all 0.3s;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    table th,
+    table td {
+        vertical-align: middle !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f3f5;
+    }
+
+    .countdown {
+        font-size: 0.75rem;
+        font-weight: 800;
+        font-family: 'Heebo';
+        color: #475569;
+    }
+
+    .countdown.warning {
+        color: #f59e0b;
+    }
+
+    .countdown.danger {
+        color: #dc2626;
+    }
+
+    .delay-alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #dc2626;
+        color: #fff;
+        border-radius: 8px;
+        padding: 14px 18px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 14px;
+        z-index: 9999;
+
+        opacity: 0;
+        transform: translateX(50px);
+        pointer-events: none;
+        transition: 0.4s ease;
+    }
+
+    .delay-alert.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    tr.tre-mon {
+        background: rgba(220, 38, 38, 0.08) !important;
+    }
 </style>
 
 @section('content')
@@ -346,23 +418,45 @@
                                         <span class="text-muted opacity-50">-</span>
                                         @endif
                                     </td>
+
+                                    @php
+                                    $deadline = $ct->deadline->timestamp * 1000; // JS timestamp
+                                    @endphp
+
                                     <td class="text-center">
-                                        @switch($ct->trang_thai)
-                                        @case('cho_bep')
-                                        <span class="badge-pill st-cho-bep">Chờ bếp</span>
-                                        @break
-                                        @case('dang_che_bien')
-                                        <span class="badge-pill st-dang-lam">Đang làm</span>
-                                        @break
-                                        @case('da_len_mon')
-                                        <span class="badge-pill st-da-len">Đã lên</span>
-                                        @break
-                                        @case('huy_mon')
-                                        <span class="badge-pill st-huy">Đã hủy</span>
-                                        @break
-                                        @default
-                                        <span class="badge bg-secondary">{{ $ct->trang_thai }}</span>
-                                        @endswitch
+                                        <div class="d-flex flex-column align-items-center gap-1">
+                                            @switch($ct->trang_thai)
+
+                                            @case('cho_bep')
+                                            <span class="badge-pill st-cho-bep">Chờ bếp</span>
+                                            @break
+
+                                            @case('dang_che_bien')
+                                            <span class="badge-pill st-dang-lam">Đang làm</span>
+                                            @break
+
+                                            @case('da_len_mon')
+                                            <span class="badge-pill st-da-len">Đã lên</span>
+                                            @break
+
+                                            @case('huy_mon')
+                                            <span class="badge-pill st-huy">Đã hủy</span>
+                                            @break
+
+                                            @endswitch
+
+
+                                            {{-- COUNTDOWN --}}
+                                            @if(in_array($ct->trang_thai, ['cho_bep','dang_che_bien']))
+                                            <small
+                                                class="countdown"
+                                                data-deadline="{{ $deadline }}"
+                                                data-ten-mon="{{ $ct->monAn->ten_mon }}">
+                                                ⏳ --:--
+                                            </small>
+
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="text-end">
                                         <a href="{{ route('nhanVien.chi-tiet-order.edit', [$order->id, $ct->id]) }}"
@@ -390,33 +484,77 @@
         </div>
     </div>
 
+    <script>
+        function showDelayAlert(text) {
+            let box = document.getElementById("delayAlert");
+            let textBox = document.getElementById("delayText");
+            let sound = document.getElementById("delaySound");
+
+            if (!box) return;
+
+            textBox.innerHTML = text;
+            box.classList.add("show");
+
+            // 👉 PHÁT ÂM THANH
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(() => {});
+            }
+
+            setTimeout(() => {
+                box.classList.remove("show");
+            }, 4000);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            function updateCountdown() {
+                document.querySelectorAll(".countdown").forEach(el => {
+
+                    let deadline = parseInt(el.dataset.deadline);
+                    let now = new Date().getTime();
+                    let diff = deadline - now;
+
+                    if (diff <= 0) {
+
+                        if (!el.dataset.alerted) { // CHỈ 1 LẦN
+                            let tenMon = el.dataset.tenMon || "Không rõ";
+                            showDelayAlert("⚠ Trễ món: " + tenMon);
+                            el.dataset.alerted = "1";
+                        }
+
+                        el.innerHTML = "⚠ Trễ món";
+                        el.classList.add("danger");
+
+                        let row = el.closest("tr");
+                        if (row) row.classList.add("tre-mon");
+
+                        return;
+                    }
+
+                    let minutes = Math.floor(diff / 60000);
+                    let seconds = Math.floor((diff % 60000) / 1000);
+
+                    el.classList.remove("warning", "danger");
+
+                    if (minutes <= 2) el.classList.add("danger");
+                    else if (minutes <= 5) el.classList.add("warning");
+
+                    el.innerHTML = `⏳ ${minutes}:${seconds.toString().padStart(2,'0')}`;
+                });
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        });
+    </script>
+
+    <div id="delayAlert" class="delay-alert">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="delayText"></span>
+    </div>
+    <audio id="delaySound" preload="auto">
+        <source src="/sounds/alert.mp3" type="audio/mpeg">
+    </audio>
 </main>
-
-<style>
-    .card {
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn {
-        transition: all 0.3s;
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    table th,
-    table td {
-        vertical-align: middle !important;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: #f1f3f5;
-    }
-</style>
 @endsection
