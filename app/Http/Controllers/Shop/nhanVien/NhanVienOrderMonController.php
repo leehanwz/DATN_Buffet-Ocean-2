@@ -30,6 +30,11 @@ class NhanVienOrderMonController extends Controller
             ->keyBy('ban_id');
 
         foreach ($bans as $ban) {
+
+            // bàn bảo trì
+            if ($ban->trang_thai === 'khong_su_dung') {
+                continue;
+            }
             $datBanMoiNhat = DatBan::where('ban_id', $ban->id)->latest()->first();
 
             if (!$datBanMoiNhat) {
