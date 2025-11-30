@@ -187,7 +187,11 @@
 <script src="{{ asset('restaurant/lib/tempusdominus/js/moment-timezone.min.js') }}"></script>
 <script src="{{ asset('restaurant/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js') }}"></script>
 <script src="{{ asset('restaurant/js/main.js') }}"></script>
+<script src="https://unpkg.com/vue@3"></script>
+<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
 
+<script src="/admin/js/echo.js"></script>
+<script src="/admin/js/app.js"></script>
     <!-- Template Javascript -->
     <script src="{{ asset('restaurant/js/main.js') }}"></script>
     @stack('scripts')

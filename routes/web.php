@@ -30,6 +30,7 @@ use App\Http\Controllers\Shop\NhanVien\KhuVuc\NhanVienBanAnController;
 use App\Http\Controllers\Shop\NhanVien\NhanVienOrderMonController;
 use App\Http\Controllers\Shop\Bep\BepController;
 use App\Http\Controllers\Shop\NhanVien\NVDatBanController;
+use App\Http\Controllers\Shop\NhanVien\ThanhToanController;
 
 
 // ===== PHẦN THÊM MỚI 1: KHAI BÁO CONTROLLER =====
@@ -75,24 +76,13 @@ Route::prefix('/')->group(function () {
 
     // ==== Các phương thức thanh toán ====
     Route::get('booking/{booking_id}/pay-cash', [BookingController::class, 'payCash'])->name('booking.pay_cash');
-    Route::get('booking/{booking_id}/pay-bank', [BookingController::class, 'payBank'])->name('booking.pay_bank');
+    Route::get('booking/{booking_id}/pay-os', [BookingController::class, 'payOS'])->name('booking.pay_os'); // đúng với controller
     Route::get('booking/{booking_id}/pay-vnpay', [BookingController::class, 'payVNPay'])->name('booking.pay_vnpay');
     Route::get('booking/{booking_id}/pay-vietqr', [BookingController::class, 'payVietQR'])->name('booking.pay_vietqr');
-    Route::get('booking/{booking_id}/pay-momo', [BookingController::class, 'payMomo'])->name('booking.pay_momo');
 
-    Route::post('/booking/momo/{booking_id}', [MomoController::class, 'createPayment']);
-    Route::get('/booking/momo-return', [MomoController::class, 'handleReturn']);
-    Route::post('/booking/momo-notify', [MomoController::class, 'handleNotify']);
-
-    // Khi MoMo redirect khách về sau thanh toán
-    Route::get('booking/momo-return', [BookingController::class, 'momoReturn'])->name('booking.momo_return');
-
-    // Khi MoMo gửi callback (IPN) để thông báo kết quả thanh toán
-    Route::post('booking/momo-notify', [BookingController::class, 'momoNotify'])->name('booking.momo_notify');
-
-    // VNPAY
-    Route::get('booking/vnpay-return', [BookingController::class, 'vnpayReturn'])->name('booking.vnpay_return');
-    Route::post('booking/vnpay-notify', [BookingController::class, 'vnpayNotify'])->name('booking.vnpay_notify');
+    // Callback và cancel PayOS
+    Route::get('payment/cancel', [BookingController::class, 'cancel'])->name('booking.pay-os.cancel');
+    Route::get('payment/success', [BookingController::class, 'success'])->name('booking.pay-os.success');
 });
 
 
@@ -120,7 +110,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     //voucher
     Route::resource('voucher', VoucherController::class)->except(['show']);
-
+    // AJAX ROUTE CHO BÀN ĂN
+    Route::get('ban-an/ajax-list', [App\Http\Controllers\Admin\BanAnController::class, 'ajaxList'])
+        ->name('ban-an.ajax');
 
 
     // NHÂN VIÊN
@@ -216,15 +208,15 @@ Route::prefix('nhanVien')->name('nhanVien.')->group(function () {
     });
 
 
-// DatBan NhanVien
-Route::get('/dat-ban', [NVDatBanController::class, 'index'])->name('datban.index');
-Route::get('/dat-ban/create', [NVDatBanController::class, 'create'])->name('datban.create');
-Route::post('/dat-ban/store', [NVDatBanController::class, 'store'])->name('datban.store');
+    // DatBan NhanVien
+    Route::get('/dat-ban', [NVDatBanController::class, 'index'])->name('datban.index');
+    Route::get('/dat-ban/create', [NVDatBanController::class, 'create'])->name('datban.create');
+    Route::post('/dat-ban/store', [NVDatBanController::class, 'store'])->name('datban.store');
 
-// Đã sửa: Đồng bộ với tên phương thức Controller (thayDoiTrangThai) và sử dụng Model Binding ({datBan})
-Route::post('/dat-ban/{datBan}/thay-doi-trang-thai', [NVDatBanController::class, 'thayDoiTrangThai'])->name('datban.thaydoitrangthai');
+    // Đã sửa: Đồng bộ với tên phương thức Controller (thayDoiTrangThai) và sử dụng Model Binding ({datBan})
+    Route::post('/dat-ban/{datBan}/thay-doi-trang-thai', [NVDatBanController::class, 'thayDoiTrangThai'])->name('datban.thaydoitrangthai');
 
-Route::get('/dat-ban/check-ban-trong', [NVDatBanController::class, 'ajaxCheckBanTrong'])->name('datban.check_ban');
+    Route::get('/dat-ban/check-ban-trong', [NVDatBanController::class, 'ajaxCheckBanTrong'])->name('datban.check_ban');
 
 
 
@@ -246,6 +238,24 @@ Route::get('/dat-ban/check-ban-trong', [NVDatBanController::class, 'ajaxCheckBan
     Route::post('/chi-tiet-order', [NhanVienOrderMonController::class, 'store'])->name('chi-tiet-order.store');
     Route::put('chi-tiet-order/{ctId}', [NhanVienOrderMonController::class, 'update'])->name('chi-tiet-order.update');
     Route::delete('/chi-tiet-order/{id}', [NhanVienOrderMonController::class, 'destroy'])->name('chi-tiet-order.destroy');
+
+    // Thanh toán
+    Route::prefix('thanh-toan')->name('thanh-toan.')->controller(ThanhToanController::class)->group(function () {
+        // thanh toán từ danh sách bàn
+        Route::get('/ban/{banId}', 'thanhToanTuBan')->name('ban');
+        Route::post('/ban/{banId}', 'luuThanhToanTuBan')->name('luu-ban');
+        // thanh toán từ bên order món
+        Route::get('/order/{orderId}', 'thanhToan')->name('order');
+        Route::post('/order/{orderId}', 'luuThanhToan')->name('luu');
+        // hóa đơn và in
+        Route::get('/hoa-don/{hoaDonId}', 'hienThiHoaDon')->name('hien-thi-hoa-don');
+        Route::get('/hoa-don/{hoaDonId}/in', 'inHoaDon')->name('in-hoa-don');
+        // thanh toán vnpay
+        Route::get('/vnpay-payment/{banId}', 'vnpayPayment')->name('vnpay.payment');
+        Route::get('/vnpay/callback/{banId}', 'vnpayCallback')->name('vnpay.callback');
+
+
+    });
 });
 
 // ==========================================================

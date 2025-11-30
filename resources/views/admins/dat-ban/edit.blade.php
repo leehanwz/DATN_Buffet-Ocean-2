@@ -33,9 +33,7 @@
 
                         <form class="row" method="POST" action="{{ route('admin.dat-ban.update', $datBan->id) }}">
                             @csrf
-
-                            {{-- @method('PUT') --}}
-                            {{-- Lưu ý: Route update của bạn đang dùng POST hay PUT? Nếu resource thì cần @method('PUT') --}}
+                            {{-- 🔥 ĐÃ XÓA @method('PUT') ĐỂ KHỚP VỚI ROUTE POST --}}
 
                             {{-- THÔNG TIN KHÁCH HÀNG --}}
                             <div class="form-group col-md-3">
@@ -47,16 +45,22 @@
                                 <input class="form-control" type="text" name="sdt_khach" value="{{ old('sdt_khach', $datBan->sdt_khach) }}" required>
                             </div>
                             <div class="form-group col-md-3">
-                                <label class="control-label">Email (*)</label>
-                                <input class="form-control" type="text" name="email_khach" value="{{ old('email_khach', $datBan->email_khach) }}" required>
+                                <label class="control-label">Email</label>
+                                <input class="form-control" type="text" name="email_khach" value="{{ old('email_khach', $datBan->email_khach) }}">
                             </div>
-                            
+
+                            {{-- SỐ LƯỢNG KHÁCH --}}
                             <div class="form-group col-md-3">
-                                <label class="control-label">Số Lượng Khách (*)</label>
-                                <input class="form-control" type="number" name="so_khach" min="1" value="{{ old('so_khach', $datBan->so_khach) }}" required>
+                                <label class="control-label">Người lớn (>1m3) (*)</label>
+                                <input class="form-control" type="number" name="nguoi_lon" min="1" value="{{ old('nguoi_lon', $datBan->nguoi_lon) }}" required>
                             </div>
+                            <div class="form-group col-md-3">
+                                <label class="control-label">Trẻ em (<1m3)</label>
+                                <input class="form-control" type="number" name="tre_em" min="0" value="{{ old('tre_em', $datBan->tre_em) }}">
+                            </div>
+
                              <div class="form-group col-md-3">
-                                <label class="control-label">Tiền Cọc (Nếu có)</label>
+                                <label class="control-label">Tiền Cọc (VNĐ)</label>
                                 <input class="form-control" type="number" name="tien_coc" value="{{ old('tien_coc', $datBan->tien_coc) }}" min="0">
                             </div>
 
@@ -69,14 +73,12 @@
                                 <input class="form-control" type="datetime-local" name="gio_den" id="gio_den_input" value="{{ $gioDenVal }}" required>
                             </div>
 
+                            {{-- CHỌN BÀN --}}
                             <div class="form-group col-md-4">
-                                <label class="control-label">Chọn Bàn (*)</label>
-                                <select class="form-control" name="ban_id" id="ban_id_select" required>
-                                    <option value="">-- Vui lòng chọn Giờ đến trước --</option>
+                                <label class="control-label">Chọn Bàn (Nếu có)</label>
+                                <select class="form-control" name="ban_id" id="ban_id_select">
+                                    <option value="">-- Chưa xếp bàn / Mang về --</option>
 
-                                    {{-- Tải tất cả bàn (JS sẽ lọc), nhưng ưu tiên chọn bàn đã lưu --}}
-
-                                    {{-- Hiển thị danh sách ban đầu (Server render) --}}
                                     @foreach ($banAns as $ban)
                                         @php
                                             $isCurrent = ($ban->id == $datBan->ban_id);
@@ -94,7 +96,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted"><i>* Bàn đang chọn: Bàn {{ $datBan->banAn->so_ban ?? 'N/A' }}</i></small>
+                                <small class="text-muted"><i>* Bàn hiện tại: {{ $datBan->banAn->so_ban ?? 'Chưa xếp bàn' }}</i></small>
                             </div>
 
                             <div class="form-group col-md-4">
@@ -132,12 +134,7 @@
         const timeInput = document.getElementById('gio_den_input');
         const tableSelect = document.getElementById('ban_id_select');
 
-        // Lấy ID bàn hiện tại đang được chọn
-        const currentSelectedBanId = "{{ $datBan->ban_id }}";
-
-        // ID của đơn hàng hiện tại (để loại trừ khi check trùng)
         const currentBookingId = "{{ $datBan->id }}";
-        // ID bàn đang được chọn trong DB
         const currentBanId = "{{ $datBan->ban_id }}";
 
         function updateAvailableTables() {
@@ -149,12 +146,11 @@
             }
             if (!selectedTime) return;
 
-            tableSelect.innerHTML = '<option value="">Đang kiểm tra bàn trống...</option>';
+            const originalText = tableSelect.options[0] ? tableSelect.options[0].text : '-- Chưa xếp bàn / Mang về --';
+            if(tableSelect.options[0]) tableSelect.options[0].text = "Đang kiểm tra bàn trống...";
+
             tableSelect.disabled = true;
 
-            const url = `{{ route('admin.ajax.get-available-tables') }}?time=${selectedTime}`;
-
-            // Gọi API, truyền thêm exclude_booking_id để server biết mà bỏ qua đơn này
             const url = `{{ route('admin.ajax.get-available-tables') }}?time=${selectedTime}&exclude_booking_id=${currentBookingId}`;
 
             fetch(url)
@@ -163,6 +159,11 @@
                     tableSelect.innerHTML = '';
                     tableSelect.disabled = false;
 
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = "";
+                    defaultOption.textContent = "-- Chưa xếp bàn / Mang về --";
+                    tableSelect.appendChild(defaultOption);
+
                     let isCurrentBanAvailable = false;
 
                     if (data.length === 0) {
@@ -170,6 +171,7 @@
                     } else {
                         tableSelect.innerHTML = '<option value="">-- Chọn bàn --</option>';
 
+                    if (data.length > 0) {
                         data.forEach(ban => {
                             const option = document.createElement('option');
                             option.value = ban.id;
@@ -178,12 +180,11 @@
                             if (ban.id == currentSelectedBanId) {
 
                             let label = `Bàn ${ban.so_ban} - ${ban.so_ghe} ghế`;
-                            if(ban.khu_vuc) label += ` (${ban.khu_vuc})`;
+                            if(ban.khu_vuc) label += ` (${ban.khu_vuc.ten_khu_vuc})`;
 
                             option.textContent = label;
 
-                            // Nếu là bàn cũ thì select lại
-                            if (ban.id == currentBanId) {
+                            if (currentBanId && ban.id == currentBanId) {
                                 option.selected = true;
                                 isCurrentBanAvailable = true;
                             }
@@ -191,22 +192,18 @@
                         });
                     }
 
-                    // Nếu bàn hiện tại không còn trống (bị trùng)
-
-                    // Nếu bàn cũ không còn khả dụng (bị người khác chiếm trong giờ mới chọn)
-                    if (!isCurrentBanAvailable) {
+                    if (currentBanId && !isCurrentBanAvailable) {
                         const warningOption = document.createElement('option');
                         warningOption.textContent = `⚠️ Bàn hiện tại (${currentBanId}) bị trùng lịch`;
                         warningOption.value = currentBanId;
                         warningOption.selected = true;
-                        warningOption.disabled = true; // Chặn không cho chọn tiếp
                         warningOption.style.color = 'red';
-                        tableSelect.prepend(warningOption);
+                        tableSelect.insertBefore(warningOption, tableSelect.children[1]);
                     }
                 })
                 .catch(error => {
                     console.error('Lỗi khi tải bàn:', error);
-                    tableSelect.innerHTML = '<option value="">Lỗi kết nối server</option>';
+                    if(tableSelect.options[0]) tableSelect.options[0].text = "Lỗi tải dữ liệu";
                     tableSelect.disabled = false;
                 });
         }

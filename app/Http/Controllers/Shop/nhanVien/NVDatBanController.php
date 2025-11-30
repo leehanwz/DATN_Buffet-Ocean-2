@@ -7,185 +7,223 @@ use App\Models\DatBan;
 use App\Models\BanAn;
 use App\Models\ComboBuffet;
 use App\Models\NhanVien;
+use App\Models\OrderMon;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class NVDatBanController extends Controller
 {
     public function index(Request $r)
     {
-        $query = DatBan::with(['banAn', 'nhanVien', 'comboBuffet'])->select('dat_ban.*');
-         $ds = DatBan::with(['banAn', 'nhanVien', 'comboBuffet'])
-        ->orderByDesc('id')
-        ->get();
-        if ($r->ma_dat_ban) {
-            $query->where('ma_dat_ban', 'like', '%' . $r->ma_dat_ban . '%');
-        }
-
-        if ($r->ban) {
-            $query->whereHas('banAn', function ($q) use ($r) {
-                $q->where('so_ban', 'like', '%' . $r->ban . '%');
-            });
-        }
-
-        if ($r->ten_khach) {
-            $query->where('ten_khach', 'like', '%' . $r->ten_khach . '%');
-        }
-
-        if ($r->so_khach) {
-            $query->where('so_khach', $r->so_khach);
-        }
-
-        if ($r->nhan_vien) {
-            $query->whereHas('nhanVien', function ($q) use ($r) {
-                $q->where('ho_ten', 'like', '%' . $r->nhan_vien . '%');
-            });
-        }
-
-        if ($r->combo) {
-            $query->whereHas('comboBuffet', function ($q) use ($r) {
-                $q->where('ten_combo', 'like', '%' . $r->combo . '%');
-            });
-        }
-
-        if ($r->trang_thai) {
-            $query->where('trang_thai', $r->trang_thai);
-        }
-
-        $ds = $query->orderByDesc('id')->distinct()->get();
-
-        // Tính thời gian còn lại cho từng đặt bàn
-        $ds->transform(function ($d) {
-            $d->thoiGianConLaiPhut = null;
-            if ($d->gio_den && $d->thoi_luong_phut) {
-                $gioKetThuc = Carbon::parse($d->gio_den)->addMinutes($d->thoi_luong_phut);
-                $d->thoiGianConLaiPhut = $gioKetThuc->isFuture() ? $gioKetThuc->diffInMinutes(now()) : 0;
-            }
-            return $d;
-        });
-
+        $ds = DatBan::with(['banAn', 'nhanVien', 'comboBuffet'])->orderByDesc('id')->get();
         return view('shop.nhanvien.datban.index', compact('ds'));
     }
 
     public function create()
     {
-        $datBanChoXacNhan = DatBan::where('trang_thai', 'cho_xac_nhan')
+        $combos = ComboBuffet::where('trang_thai', 'dang_ban')->get();
+        $nhanViens = NhanVien::where('trang_thai', 1)
+            ->whereIn('vai_tro', ['le_tan', 'phuc_vu'])
+            ->get();
+        return view('shop.nhanvien.datban.create', compact('combos', 'nhanViens'));
+    }
+
+    public function ajaxCheckBanTrong(Request $request)
+    {
+        $selectedTime = $request->input('time');
+        $nguoiLon = (int) $request->input('nguoi_lon', 1);
+        $treEm = (int) $request->input('tre_em', 0);
+        $soKhach = $nguoiLon + $treEm;
+
+        if (!$selectedTime) {
+            return response()->json(['error' => 'Vui lòng chọn giờ.'], 400);
+        }
+
+        $duration = 120;
+        $newStart = Carbon::parse($selectedTime);
+        $newEnd = $newStart->copy()->addMinutes($duration);
+
+        $conflictingIds = DatBan::whereNotIn('trang_thai', ['huy', 'hoan_tat'])
+            ->where(function ($query) use ($newStart, $newEnd) {
+                $query->where('gio_den', '<', $newEnd)
+                    ->whereRaw("DATE_ADD(gio_den, INTERVAL thoi_luong_phut MINUTE) > ?", [$newStart]);
+            })
             ->pluck('ban_id')
             ->toArray();
 
-        $bans = BanAn::where('trang_thai', 'trong')
-            ->whereNotIn('id', $datBanChoXacNhan)
-            ->get();
+        $availableTables = BanAn::where('trang_thai', '!=', 'khong_su_dung')
+            ->whereNotIn('id', $conflictingIds)
+            ->where('so_ghe', '>=', $soKhach)
+            ->orderBy('so_ban')
+            ->get(['id', 'so_ban', 'so_ghe']);
 
-        $combos = ComboBuffet::all();
-        $nhanViens = NhanVien::where('trang_thai', 1)
-            ->where('vai_tro', 'le_tan')
-            ->get();
-
-        return view('shop.nhanvien.datban.create', compact('bans', 'combos', 'nhanViens'));
+        return response()->json($availableTables);
     }
 
-    public function store(Request $r)
+    public function store(Request $request)
     {
-        $data = $r->validate([
-            'ban_an_id' => 'required',
-            'ten_khach' => 'required',
-            'so_dien_thoai' => 'nullable',
-            'so_luong' => 'required',
-            'thoi_gian_den' => 'required',
-            'combo_id' => 'nullable|integer',
-            'ghi_chu' => 'nullable|string|max:500',
+        $now = Carbon::now();
+
+        $request->validate([
+            'ten_khach' => 'required|string|max:255',
+            'sdt_khach' => 'nullable|string|max:20',
+            'email_khach' => 'nullable|email|max:255',
+            'nguoi_lon' => 'required|integer|min:1',
+            'tre_em' => 'nullable|integer|min:0',
+            'ban_id' => [
+                'required',
+                'exists:ban_an,id',
+                Rule::exists('ban_an', 'id')->where(fn($query) => $query->where('trang_thai', '!=', 'khong_su_dung')),
+            ],
+            'combo_id' => 'nullable|exists:combo_buffet,id',
+            'gio_den' => 'required|date',
+            'ghi_chu' => 'nullable|string',
+            'nhan_vien_id' => 'nullable|exists:nhan_vien,id',
+        ], [
+            'ban_id.exists' => 'Bàn được chọn không hợp lệ hoặc đang bảo trì.',
         ]);
+        $totalGuests = $request->nguoi_lon + ($request->tre_em ?? 0);
+        $banAn = BanAn::find($request->ban_id);
 
-        do {
-            $maDatBan = 'DB-' . Str::upper(substr(uniqid(), -6));
-        } while (DatBan::where('ma_dat_ban', $maDatBan)->exists());
-
-        $data['ma_dat_ban'] = $maDatBan;
-        $data['sdt_khach'] = $r->so_dien_thoai ?? '';
-        $data['nhan_vien_id'] = $r->nhan_vien_id ?? auth()->id();
-        $data['ban_id'] = $data['ban_an_id'];
-        $data['so_khach'] = $data['so_luong'];
-        $data['gio_den'] = $data['thoi_gian_den'];
-
-        // Thời lượng phút theo combo hoặc mặc định 120 phút
-        $data['trang_thai'] = 'khach_da_den';
-        unset($data['ban_an_id'], $data['so_luong'], $data['thoi_gian_den']);
-        if ($data['combo_id']) {
-            $combo = ComboBuffet::find($data['combo_id']);
-            $data['thoi_luong_phut'] = $combo ? $combo->thoi_luong_phut : 120;
-        } else {
-            $data['thoi_luong_phut'] = 120;
-        }
-        DatBan::create($data);
-
-        BanAn::find($data['ban_id'])->update(['trang_thai' => 'da_dat']);
-
-        return redirect()->route('NhanVien.datban.index')->with('success', 'Tạo đặt bàn thành công!');
-    }
-    public function xacNhan($id)
-    {
-        $datBan = DatBan::findOrFail($id);
-        $datBan->trang_thai = 'da_xac_nhan';
-        $datBan->save();
-
-        $datBan->banAn->update(['trang_thai' => 'da_dat']);
-
-        return back()->with('success', 'Đã xác nhận bàn thành công!');
-    }
-
-    public function khachDaDen($id)
-    {
-        $datBan = DatBan::findOrFail($id);
-        $datBan->trang_thai = 'khach_da_den';
-        $datBan->save();
-
-        $datBan->banAn->update(['trang_thai' => 'da_dat']);
-
-        return back()->with('success', 'Khách đã đến và được nhận bàn!');
-    }
-    public function huy($id)
-    {
-        $db = DatBan::findOrFail($id);
-        $db->trang_thai = 'huy';
-        $db->save();
-
-        $ban = $db->banAn;
-        $ban->trang_thai = 'trong';
-        $ban->save();
-
-        return back()->with('success', 'Đã hủy bàn!');
-    }
-    public function thayDoiTrangThai(Request $request, $id)
-{
-    $datBan = DatBan::findOrFail($id);
-
-    if ($request->has('trang_thai')) {
-        $datBan->trang_thai = $request->trang_thai;
-        $datBan->save();
-
-        // Cập nhật trạng thái bàn
-        if ($datBan->banAn) {
-            $datBan->banAn->update(['trang_thai' => 'da_dat']);
+        if ($banAn->so_ghe < $totalGuests) {
+            return back()->with('error', "Bàn này chỉ có {$banAn->so_ghe} ghế, không đủ cho {$totalGuests} khách.");
         }
 
-        return back()->with('success', 'Cập nhật trạng thái thành công!');
+        // Kiểm tra xung đột giờ đặt bàn
+        $conflict = DatBan::where('ban_id', $request->ban_id)
+            ->whereNotIn('trang_thai', ['huy', 'hoan_tat'])
+            ->where('gio_den', '<', $request->gio_den)
+            ->first();
+
+        if ($conflict) {
+            $gio = Carbon::parse($conflict->gio_den)->format('H:i');
+            return back()->withInput()->with('error', "Bàn {$banAn->so_ban} đã bị đặt lúc {$gio} với Mã {$conflict->ma_dat_ban}.");
+        }
+
+        DB::beginTransaction();
+        try {
+            $maDatBan = 'DB-' . $now->format('YmdHis') . '-' . strtoupper(Str::random(3));
+            $datBan = DatBan::create([
+                'ma_dat_ban' => $maDatBan,
+                'ten_khach' => $request->ten_khach,
+                'email_khach' => $request->email_khach,
+                'sdt_khach' => $request->sdt_khach,
+                'nguoi_lon' => $request->nguoi_lon,
+                'tre_em' => $request->tre_em ?? 0,
+                'ban_id' => $request->ban_id,
+                'combo_id' => $request->combo_id,
+                'gio_den' => Carbon::parse($request->gio_den),
+                'ghi_chu' => $request->ghi_chu,
+                'trang_thai' => 'cho_xac_nhan', // chỉ tạo chờ xác nhận
+                'nhan_vien_id' => $request->nhan_vien_id ?? Auth::id(),
+                'tien_coc' => 0,
+                'la_dat_online' => 0,
+            ]);
+
+            // Cập nhật trạng thái bàn
+            if (in_array($banAn->trang_thai, ['trong', 'da_dat'])) {
+                $banAn->update(['trang_thai' => 'da_dat']);
+            }
+
+            DB::commit();
+
+            return redirect()->route('nhanVien.datban.index')
+                ->with('success', 'Tạo đặt bàn thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Lỗi lưu Đặt bàn NV: " . $e->getMessage());
+            return back()->withInput()->with('error', 'Lỗi hệ thống: ' . $e->getMessage());
+        }
     }
 
-    return back()->with('error', 'Không có trạng thái để cập nhật!');
-}
-public function khachDaDenAjax(Request $request, $id)
-{
-    $datBan = DatBan::findOrFail($id);
 
-    // Cập nhật trạng thái trực tiếp, không cần start_time
-    $datBan->trang_thai = 'khach_da_den';
-    $datBan->save();
+    public function thayDoiTrangThai(Request $request, DatBan $datBan)
+    {
+        $trangThaiMoi = $request->input('trang_thai');
+        $message = '';
 
-    return response()->json([
-        'success' => true,
-        'minutes' => $datBan->comboBuffet ? $datBan->comboBuffet->thoi_luong_phut : 120
-    ]);
-}
+        $trangThaiHopLe = ['da_xac_nhan', 'huy', 'khach_da_den', 'hoan_tat'];
+        if (!in_array($trangThaiMoi, $trangThaiHopLe)) {
+            return redirect()->back()->with('error', 'Trạng thái không hợp lệ.');
+        }
+
+        $banAn = $datBan->banAn;
+        if (!$banAn) {
+            return redirect()->back()->with('error', 'Không tìm thấy thông tin bàn ăn.');
+        }
+
+        DB::beginTransaction();
+        try {
+            switch ($trangThaiMoi) {
+                case 'da_xac_nhan':
+                    if ($datBan->getOriginal('trang_thai') !== 'cho_xac_nhan') {
+                        DB::rollBack();
+                        return redirect()->back()->with('error', 'Không thể xác nhận đơn đặt bàn này.');
+                    }
+                    $banAn->trang_thai = 'da_dat';
+                    $banAn->save();
+                    if (empty($datBan->nhan_vien_id)) {
+                        $datBan->nhan_vien_id = Auth::id();
+                    }
+                    $message = 'Đã xác nhận đặt bàn thành công.';
+                    break;
+
+                case 'khach_da_den':
+                    if ($datBan->getOriginal('trang_thai') !== 'da_xac_nhan') {
+                        DB::rollBack();
+                        return redirect()->back()->with('error', 'Chỉ có thể Check-in khi đơn đã được xác nhận.');
+                    }
+
+                    // Cập nhật trạng thái bàn
+                    $banAn->trang_thai = 'dang_phuc_vu';
+                    $banAn->save();
+
+                    // ✅ Không tạo OrderMon ở đây
+                    $message = 'Khách đã đến, bắt đầu phục vụ.';
+                    break;
+
+
+                case 'huy':
+                    $isTableStillInUse = DatBan::where('ban_id', $datBan->ban_id)
+                        ->where('id', '!=', $datBan->id)
+                        ->whereIn('trang_thai', ['da_xac_nhan', 'khach_da_den'])
+                        ->exists();
+                    if (!$isTableStillInUse && $banAn->trang_thai !== 'khong_su_dung') {
+                        $banAn->trang_thai = 'trong';
+                        $banAn->save();
+                    }
+                    $message = 'Đã hủy đơn đặt bàn.';
+                    break;
+
+                case 'hoan_tat':
+                    if ($datBan->getOriginal('trang_thai') !== 'khach_da_den') {
+                        DB::rollBack();
+                        return redirect()->back()->with('error', 'Chỉ có thể Hoàn tất khi khách đang được phục vụ.');
+                    }
+                    if ($banAn->trang_thai !== 'khong_su_dung') {
+                        $banAn->trang_thai = 'trong';
+                        $banAn->save();
+                    }
+                    $datBan->save();
+                    DB::commit();
+                    return redirect()->route('nhanVien.hoadon.create', ['dat_ban_id' => $datBan->id])
+                        ->with('success', 'Kết thúc phục vụ. Chuyển sang thanh toán và lập hóa đơn.');
+            }
+
+            $datBan->trang_thai = $trangThaiMoi;
+            $datBan->save();
+            DB::commit();
+
+            return redirect()->back()->with('success', $message);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Lỗi thay đổi trạng thái Đặt bàn: ID={$datBan->id}, Trạng thái mới={$trangThaiMoi}. Error: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Lỗi hệ thống khi cập nhật trạng thái: ' . $e->getMessage());
+        }
+    }
 }

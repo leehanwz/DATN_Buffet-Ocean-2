@@ -1,7 +1,13 @@
 @extends('layouts.Shop.layout-nhanvien')
 @section('title','Sơ đồ Bàn')
 
-
+Echo.channel("datban-channel")
+    .listen("KhachDatBanEvent", (data) => {
+        this.notifications.push({
+            name: data.ten_khach,
+            phone: data.sdt
+        });
+    });
 @section('content')
 <div class="row">
 <div class="col-md-3">
