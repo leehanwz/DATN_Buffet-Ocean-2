@@ -85,11 +85,26 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label">Loại món</label>
+
+                                            @php
+                                            $loaiMonDB = [
+                                            'Sống',
+                                            'Chín',
+                                            'Nướng',
+                                            'Xào / Luộc',
+                                            'Bánh ngọt',
+                                            'Trái cây',
+                                            'Nước có ga',
+                                            'Nước không ga',
+                                            'Trà / Cà phê',
+                                            ];
+                                            @endphp
+
                                             <select name="loai_mon" class="form-control">
-                                                <option value="">-- Chọn loại món --</option>
-                                                @foreach(['Khai vị','Món chính','Tráng miệng','Đồ uống'] as $loai)
+                                                <option value="">— Chọn loại món —</option>
+                                                @foreach($loaiMonDB as $loai)
                                                 <option value="{{ $loai }}"
-                                                    {{ old('loai_mon', $san_pham->loai_mon) == $loai ? 'selected' : '' }}>
+                                                    {{ old('loai_mon', $mon_an->loai_mon ?? '') == $loai ? 'selected' : '' }}>
                                                     {{ $loai }}
                                                 </option>
                                                 @endforeach
@@ -153,18 +168,18 @@
 
                                     {{-- Vòng lặp hiển thị ảnh cũ --}}
                                     @forelse ($san_pham->thuVienAnh as $anh)
-                                        <div class="position-relative border p-1" id="anh_cu_{{ $anh->id }}">
-                                            <img src="{{ asset($anh->duong_dan_anh) }}" style="width: 80px; height: 80px; object-fit: cover;" class="img-thumbnail">
+                                    <div class="position-relative border p-1" id="anh_cu_{{ $anh->id }}">
+                                        <img src="{{ asset($anh->duong_dan_anh) }}" style="width: 80px; height: 80px; object-fit: cover;" class="img-thumbnail">
 
-                                            {{-- Nút xóa ảnh cũ --}}
-                                            <button type="button"
-                                                    class="btn-close position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger p-2"
-                                                    aria-label="Close"
-                                                    onclick="removeCurrentImage({{ $anh->id }})">
-                                            </button>
-                                        </div>
+                                        {{-- Nút xóa ảnh cũ --}}
+                                        <button type="button"
+                                            class="btn-close position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger p-2"
+                                            aria-label="Close"
+                                            onclick="removeCurrentImage({{ $anh->id }})">
+                                        </button>
+                                    </div>
                                     @empty
-                                        <span class="text-muted small">Chưa có ảnh phụ nào.</span>
+                                    <span class="text-muted small">Chưa có ảnh phụ nào.</span>
                                     @endforelse
                                 </div>
 

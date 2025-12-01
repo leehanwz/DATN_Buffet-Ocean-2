@@ -83,12 +83,29 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label">Loại món</label>
+
+                                            @php
+                                            $loaiMonDB = [
+                                            'Sống',
+                                            'Chín',
+                                            'Nướng',
+                                            'Xào / Luộc',
+                                            'Bánh ngọt',
+                                            'Trái cây',
+                                            'Nước có ga',
+                                            'Nước không ga',
+                                            'Trà / Cà phê',
+                                            ];
+                                            @endphp
+
                                             <select name="loai_mon" class="form-control">
-                                                <option value="">-- Chọn loại món --</option>
-                                                <option value="Khai vị" {{ old('loai_mon') == 'Khai vị' ? 'selected' : '' }}>Khai vị</option>
-                                                <option value="Món chính" {{ old('loai_mon') == 'Món chính' ? 'selected' : '' }}>Món chính</option>
-                                                <option value="Tráng miệng" {{ old('loai_mon') == 'Tráng miệng' ? 'selected' : '' }}>Tráng miệng</option>
-                                                <option value="Đồ uống" {{ old('loai_mon') == 'Đồ uống' ? 'selected' : '' }}>Đồ uống</option>
+                                                <option value="">— Chọn loại món —</option>
+                                                @foreach($loaiMonDB as $loai)
+                                                <option value="{{ $loai }}"
+                                                    {{ old('loai_mon', $mon_an->loai_mon ?? '') == $loai ? 'selected' : '' }}>
+                                                    {{ $loai }}
+                                                </option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>

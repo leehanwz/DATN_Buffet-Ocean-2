@@ -27,7 +27,17 @@ class MonAnController extends Controller
     {
         $data = $request->validated();
         $validTrangThai = ['con', 'het', 'an'];
-        $validLoaiMon = ['Khai vị', 'Món chính', 'Tráng miệng', 'Đồ uống'];
+        $validLoaiMon = [
+            'Sống',
+            'Chín',
+            'Nướng',
+            'Xào / Luộc',
+            'Bánh ngọt',
+            'Trái cây',
+            'Nước có ga',
+            'Nước không ga',
+            'Trà / Cà phê',
+        ];
 
         if (!in_array($data['trang_thai'], $validTrangThai)) {
             $data['trang_thai'] = 'con';
@@ -62,8 +72,17 @@ class MonAnController extends Controller
     {
         $data = $request->validated();
         $validTrangThai = ['con', 'het', 'an'];
-        $validLoaiMon = ['Khai vị', 'Món chính', 'Tráng miệng', 'Đồ uống'];
-
+        $validLoaiMon = [
+            'Sống',
+            'Chín',
+            'Nướng',
+            'Xào / Luộc',
+            'Bánh ngọt',
+            'Trái cây',
+            'Nước có ga',
+            'Nước không ga',
+            'Trà / Cà phê',
+        ];
         if (!in_array($data['trang_thai'], $validTrangThai)) {
             $data['trang_thai'] = 'con';
         }
