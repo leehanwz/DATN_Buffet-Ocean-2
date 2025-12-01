@@ -3,123 +3,259 @@
 @section('title', 'Chọn Combo Buffet')
 
 {{-- 1. IMPORT FONTS --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 
-    {{-- 2. CSS STYLING (Design System) --}}
-    <style>
-        :root {
-            --primary: #fea116;       /* Cam vàng */
-            --primary-dark: #d98a12;  /* Cam đậm */
-            --dark: #0f172b;          /* Xanh đen */
-            --white: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --bg-light: #f8f9fa;
+{{-- 2. CSS STYLING (Design System) --}}
+<style>
+    :root {
+        --primary: #fea116;
+        /* Cam vàng */
+        --primary-dark: #d98a12;
+        /* Cam đậm */
+        --dark: #0f172b;
+        /* Xanh đen */
+        --white: #ffffff;
+        --text-main: #1e293b;
+        --text-sub: #64748b;
+        --bg-light: #f8f9fa;
 
-            --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
-            --shadow-hover: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
-            --radius: 8px;
-            --anim-fast: 0.2s ease;
-        }
+        --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+        --shadow-hover: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+        --radius: 8px;
+        --anim-fast: 0.2s ease;
+    }
 
-        body { font-family: 'Nunito', sans-serif; background-color: var(--bg-light); color: var(--text-main); }
-        h2, h3, h4, h5, strong, .font-heading { font-family: 'Heebo', sans-serif; }
+    body {
+        font-family: 'Nunito', sans-serif;
+        background-color: var(--bg-light);
+        color: var(--text-main);
+    }
 
-        /* --- HEADER SECTION --- */
-        .page-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-        }
-        .header-title { color: var(--dark); font-weight: 800; font-size: 1.8rem; text-transform: uppercase; }
+    h2,
+    h3,
+    h4,
+    h5,
+    strong,
+    .font-heading {
+        font-family: 'Heebo', sans-serif;
+    }
 
-        /* --- INFO BOX (Context Order) --- */
-        .context-box {
-            background: var(--white); border-radius: var(--radius); padding: 15px 20px;
-            border-left: 4px solid var(--primary); box-shadow: var(--shadow-card);
-            margin-bottom: 30px; display: flex; align-items: center; gap: 20px;
-        }
-        .context-item { display: flex; flex-direction: column; }
-        .context-label { font-size: 0.75rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
-        .context-value { font-size: 1.1rem; font-weight: 800; color: var(--dark); font-family: 'Heebo'; }
+    /* --- HEADER SECTION --- */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
 
-        /* --- COMBO CARD --- */
-        .combo-card {
-            background: var(--white); border-radius: var(--radius); overflow: hidden;
-            border: 1px solid #f1f5f9; box-shadow: var(--shadow-card);
-            transition: var(--anim-fast); height: 100%; display: flex; flex-direction: column;
-        }
-        .combo-card:hover {
-            transform: translateY(-5px); box-shadow: var(--shadow-hover);
-            border-color: rgba(254, 161, 22, 0.4);
-        }
+    .header-title {
+        color: var(--dark);
+        font-weight: 800;
+        font-size: 1.8rem;
+        text-transform: uppercase;
+    }
 
-        /* Image Area */
-        .img-wrapper { position: relative; height: 200px; overflow: hidden; }
-        .combo-img {
-            width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;
-        }
-        .combo-card:hover .combo-img { transform: scale(1.05); }
+    /* --- INFO BOX (Context Order) --- */
+    .context-box {
+        background: var(--white);
+        border-radius: var(--radius);
+        padding: 15px 20px;
+        border-left: 4px solid var(--primary);
+        box-shadow: var(--shadow-card);
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
 
-        .price-badge {
-            position: absolute; bottom: 10px; right: 10px;
-            background: rgba(15, 23, 43, 0.9); /* Dark background */
-            color: var(--primary); padding: 5px 12px; border-radius: 4px;
-            font-family: 'Heebo'; font-weight: 800; font-size: 1.1rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
+    .context-item {
+        display: flex;
+        flex-direction: column;
+    }
 
-        /* Card Body */
-        .card-body-custom { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .context-label {
+        font-size: 0.75rem;
+        color: var(--text-sub);
+        font-weight: 700;
+        text-transform: uppercase;
+    }
 
-        .combo-title {
-            font-size: 1.25rem; font-weight: 800; color: var(--dark); margin-bottom: 10px;
-            font-family: 'Heebo'; line-height: 1.2;
-        }
+    .context-value {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--dark);
+        font-family: 'Heebo';
+    }
 
-        .combo-desc-label {
-            font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
-            color: var(--text-sub); margin-bottom: 8px; display: block;
-        }
+    /* --- COMBO CARD --- */
+    .combo-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid #f1f5f9;
+        box-shadow: var(--shadow-card);
+        transition: var(--anim-fast);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
 
-        /* List Items */
-        .menu-list { list-style: none; padding: 0; margin: 0 0 20px 0; flex: 1; }
-        .menu-item {
-            display: flex; align-items: center; padding: 8px 0;
-            border-bottom: 1px dashed #f1f5f9;
-        }
-        .menu-item:last-child { border-bottom: none; }
+    .combo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+        border-color: rgba(254, 161, 22, 0.4);
+    }
 
-        .item-thumb {
-            width: 40px; height: 40px; border-radius: 6px; object-fit: cover;
-            border: 1px solid #e2e8f0; margin-right: 10px; flex-shrink: 0;
-        }
-        .item-name { font-size: 0.9rem; font-weight: 600; color: var(--text-main); flex: 1; }
-        .item-qty {
-            background: #f1f5f9; color: var(--text-sub); padding: 2px 8px;
-            border-radius: 4px; font-size: 0.75rem; font-weight: 700;
-        }
+    /* Image Area */
+    .img-wrapper {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
 
-        /* Button */
-        .btn-select {
-            width: 100%; border: none; padding: 12px; border-radius: 6px;
-            font-weight: 800; text-transform: uppercase; font-family: 'Heebo', sans-serif;
-            font-size: 0.9rem; cursor: pointer; transition: var(--anim-fast);
-            background: var(--primary); color: var(--white);
-            box-shadow: 0 4px 10px rgba(254, 161, 22, 0.3);
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-select:hover {
-            background: var(--primary-dark); transform: translateY(-2px);
-        }
+    .combo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
 
-        .btn-back {
-            background: #e2e8f0; color: var(--text-sub); text-decoration: none;
-            padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;
-            display: inline-flex; align-items: center; gap: 5px; transition: 0.2s;
-        }
-        .btn-back:hover { background: #cbd5e1; color: var(--dark); }
+    .combo-card:hover .combo-img {
+        transform: scale(1.05);
+    }
 
-    </style>
+    .price-badge {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(15, 23, 43, 0.9);
+        /* Dark background */
+        color: var(--primary);
+        padding: 5px 12px;
+        border-radius: 4px;
+        font-family: 'Heebo';
+        font-weight: 800;
+        font-size: 1.1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Card Body */
+    .card-body-custom {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .combo-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--dark);
+        margin-bottom: 10px;
+        font-family: 'Heebo';
+        line-height: 1.2;
+    }
+
+    .combo-desc-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-sub);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* List Items */
+    .menu-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+        flex: 1;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px dashed #f1f5f9;
+    }
+
+    .menu-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-thumb {
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        object-fit: cover;
+        border: 1px solid #e2e8f0;
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+
+    .item-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-main);
+        flex: 1;
+    }
+
+    .item-qty {
+        background: #f1f5f9;
+        color: var(--text-sub);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    /* Button */
+    .btn-select {
+        width: 100%;
+        border: none;
+        padding: 12px;
+        border-radius: 6px;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-family: 'Heebo', sans-serif;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: var(--anim-fast);
+        background: var(--primary);
+        color: var(--white);
+        box-shadow: 0 4px 10px rgba(254, 161, 22, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-select:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .btn-back {
+        background: #e2e8f0;
+        color: var(--text-sub);
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: 0.2s;
+    }
+
+    .btn-back:hover {
+        background: #cbd5e1;
+        color: var(--dark);
+    }
+</style>
 
 @section('content')
 
@@ -136,7 +272,7 @@
         <span class="text-muted fw-bold">{{ date('d/m/Y') }}</span>
     </div>
 
-    {{-- CONTEXT INFO (Bàn nào, Order nào) --}}
+    {{-- CONTEXT INFO --}}
     <div class="context-box">
         <div class="context-item">
             <span class="context-label">Mã Order</span>
@@ -155,55 +291,124 @@
         </div>
     </div>
 
-    {{-- COMBO GRID --}}
-    <div class="row">
-        @foreach ($combos as $combo)
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="combo-card">
-                {{-- Hình ảnh & Giá --}}
-                <div class="img-wrapper">
-                    @php $imgPath = 'uploads/combo_buffet/' . $combo->anh; @endphp
-                    <img src="{{ file_exists(public_path($imgPath)) ? asset($imgPath) : 'https://placehold.co/600x400?text=No+Image' }}"
-                        class="combo-img" alt="{{ $combo->ten_combo }}">
+    {{-- COMBO GRID FORM --}}
+    <form method="POST" action="{{ route('nhanVien.order.luu-combo', $order->id) }}">
+        @csrf
+        <div class="row">
+            @foreach ($combos as $combo)
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="combo-card">
+                    {{-- Hình ảnh & Giá --}}
+                    <div class="img-wrapper">
+                        @php $imgPath = 'uploads/combo_buffet/' . $combo->anh; @endphp
+                        <img src="{{ file_exists(public_path($imgPath)) ? asset($imgPath) : 'https://placehold.co/600x400?text=No+Image' }}"
+                            class="combo-img" alt="{{ $combo->ten_combo }}">
 
-                    <div class="price-badge">
-                        {{ number_format($combo->gia_co_ban) }} <span style="font-size: 0.7em; font-weight: 600;">đ</span>
+                        <div class="price-badge">
+                            {{ number_format($combo->gia_co_ban) }}
+                            <span style="font-size: 0.7em; font-weight: 600;">đ</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body-custom">
+                        <h5 class="combo-title">{{ $combo->ten_combo }}</h5>
+
+                        <span class="combo-desc-label"><i class="fa-solid fa-list-ul"></i> Menu bao gồm:</span>
+                        <div class="combo-card">
+
+
+                            <div class="card-body-custom">
+                                <h5 class="combo-title">{{ $combo->ten_combo }}</h5>
+
+                                <span class="combo-desc-label"><i class="fa-solid fa-list-ul"></i> Menu bao gồm:</span>
+
+                                <ul class="menu-list">
+                                    @foreach ($combo->monTrongCombo as $ct)
+                                    @php $monImgPath = 'uploads/mon_an/' . $ct->monAn->anh; @endphp
+                                    <li class="menu-item">
+                                        <img src="{{ file_exists(public_path($monImgPath)) ? asset($monImgPath) : 'https://placehold.co/100?text=Mon' }}"
+                                            class="item-thumb" alt="mon">
+                                        <span class="item-name">{{ $ct->monAn->ten_mon }}</span>
+                                        <span class="item-qty">x{{ $ct->gioi_han_so_luong }}</span>
+                                    </li>
+                                    @endforeach
+                                    @if($combo->monTrongCombo->isEmpty())
+                                    <li class="text-muted small fst-italic">Đang cập nhật món...</li>
+                                    @endif
+                                </ul>
+
+                                {{-- Số lượng combo --}}
+                                <div class="input-group mb-2" style="max-width: 130px;">
+                                    <button type="button" class="btn btn-outline-secondary btn-decrease">-</button>
+                                    <input type="number" min="0" value="0" class="form-control combo-qty"
+                                        name="combos[{{ $combo->id }}]"
+                                        data-price="{{ $combo->gia_co_ban }}">
+                                    <button type="button" class="btn btn-outline-secondary btn-increase">+</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+            @endforeach
+        </div>
 
-                <div class="card-body-custom">
-                    <h5 class="combo-title">{{ $combo->ten_combo }}</h5>
-
-                    <span class="combo-desc-label"><i class="fa-solid fa-list-ul"></i> Menu bao gồm:</span>
-
-                    <ul class="menu-list">
-                        @foreach ($combo->monTrongCombo as $ct)
-                        @php $monImgPath = 'uploads/mon_an/' . $ct->monAn->anh; @endphp
-                        <li class="menu-item">
-                            <img src="{{ file_exists(public_path($monImgPath)) ? asset($monImgPath) : 'https://placehold.co/100?text=Mon' }}"
-                                class="item-thumb" alt="mon">
-                            <span class="item-name">{{ $ct->monAn->ten_mon }}</span>
-                            <span class="item-qty">x{{ $ct->gioi_han_so_luong }}</span>
-                        </li>
-                        @endforeach
-                        @if($combo->monTrongCombo->isEmpty())
-                        <li class="text-muted small fst-italic">Đang cập nhật món...</li>
-                        @endif
-                    </ul>
-
-                    {{-- Form Submit --}}
-                    <form method="POST" action="{{ route('nhanVien.order.luu-combo', $order->id) }}">
-                        @csrf
-                        <input type="hidden" name="combo_id" value="{{ $combo->id }}">
-                        <button type="submit" class="btn-select">
-                            <i class="fa-solid fa-check-circle"></i> CHỌN COMBO NÀY
-                        </button>
-                    </form>
-                </div>
+        {{-- Giỏ hàng tạm tính --}}
+        <div class="context-box mt-4">
+            <div class="context-item flex-grow-1">
+                <span class="context-label">Giỏ hàng tạm tính</span>
+                <span class="context-value" id="cart-summary">Chưa chọn combo nào</span>
             </div>
         </div>
-        @endforeach
-    </div>
 
+        {{-- Submit --}}
+        <button type="submit" class="btn-select mt-3"><i class="fa-solid fa-check"></i> Xác nhận chọn combo</button>
+    </form>
 </div>
+
+{{-- JS cập nhật giỏ hàng tạm tính --}}
+<script>
+    const qtyInputs = document.querySelectorAll('.combo-qty');
+    const cartSummary = document.getElementById('cart-summary');
+
+    // Nút tăng giảm
+    document.querySelectorAll('.btn-increase').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = btn.previousElementSibling;
+            input.value = parseInt(input.value || 0) + 1;
+            updateCart();
+        });
+    });
+
+    document.querySelectorAll('.btn-decrease').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = btn.nextElementSibling;
+            input.value = Math.max(0, parseInt(input.value || 0) - 1);
+            updateCart();
+        });
+    });
+
+    function updateCart() {
+        let total = 0;
+        let lines = [];
+
+        qtyInputs.forEach(input => {
+            const qty = parseInt(input.value) || 0;
+            if (qty > 0) {
+                const comboName = input.closest('.combo-card').querySelector('.combo-title').innerText;
+                const price = parseInt(input.dataset.price) || 0;
+                const subtotal = qty * price;
+                total += subtotal;
+                lines.push(`${comboName} x${qty} = ${subtotal.toLocaleString()} đ`);
+            }
+        });
+
+        cartSummary.innerText = lines.length ? lines.join(' | ') + ' | Tổng: ' + total.toLocaleString() + ' đ' : 'Chưa chọn combo nào';
+    }
+
+    // Event listener input trực tiếp
+    qtyInputs.forEach(input => input.addEventListener('input', updateCart));
+
+    updateCart(); // initial
+</script>
 @endsection

@@ -48,7 +48,7 @@ class OrderMonController extends Controller
     }
     public function create()
     {
-        $datBans = DatBan::with(['banAn', 'comboBuffet.monTrongCombo.monAn'])
+        $datBans = DatBan::with(['banAn', 'combos.monTrongCombo.monAn'])
             ->where('trang_thai', 'khach_da_den') // chỉ lấy những đơn đã xác nhận
             ->orderByDesc('id')
             ->get();
@@ -61,9 +61,10 @@ class OrderMonController extends Controller
         $request->validate([
             'dat_ban_id' => 'required|exists:dat_ban,id',
         ]);
+        $datBan = DatBan::with('combos.monTrongCombo.monAn')->findOrFail($request->dat_ban_id);
 
-        $datBan = DatBan::with('comboBuffet.monTrongCombo.monAn')->findOrFail($request->dat_ban_id);
-        $giaCombo = $datBan->comboBuffet?->gia_co_ban ?? 0;
+        $giaCombo = $datBan->combos->sum(fn($combo) => $combo->gia_co_ban);
+
         $soKhach  = $datBan->so_khach ?? 0;
         $giamGia  = $datBan->giam_gia ?? 0;
 
@@ -80,23 +81,29 @@ class OrderMonController extends Controller
         $tongPhuPhiVuot = 0;
 
         // Thêm món trong combo
-        if ($datBan->comboBuffet && $datBan->comboBuffet->monTrongCombo->isNotEmpty()) {
-            foreach ($datBan->comboBuffet->monTrongCombo as $monCombo) {
-                $monAnModel = $monCombo->monAn;
-                if (!$monAnModel) continue;
+        // Thêm món trong combo
+        if ($datBan->combos->isNotEmpty()) {
+            foreach ($datBan->combos as $combo) {
+                if ($combo->monTrongCombo->isNotEmpty()) {
+                    foreach ($combo->monTrongCombo as $monCombo) {
+                        $monAnModel = $monCombo->monAn;
+                        if (!$monAnModel) continue;
 
-                $soLuongCombo = $monCombo->gioi_han_so_luong ?? 1;
-                $tongMon += $soLuongCombo;
+                        $soLuongCombo = $monCombo->gioi_han_so_luong ?? 1;
+                        $tongMon += $soLuongCombo;
 
-                ChiTietOrder::create([
-                    'order_id'   => $order->id,
-                    'mon_an_id'  => $monAnModel->id,
-                    'so_luong'   => $soLuongCombo,
-                    'loai_mon'   => 'combo',
-                    'trang_thai' => 'cho_bep',
-                ]);
+                        ChiTietOrder::create([
+                            'order_id'   => $order->id,
+                            'mon_an_id'  => $monAnModel->id,
+                            'so_luong'   => $soLuongCombo,
+                            'loai_mon'   => 'combo',
+                            'trang_thai' => 'cho_bep',
+                        ]);
+                    }
+                }
             }
         }
+
 
         // Thêm món gọi thêm
         if ($request->filled('mon') && is_array($request->mon)) {

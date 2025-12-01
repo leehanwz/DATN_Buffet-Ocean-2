@@ -102,20 +102,24 @@ class ComboBuffet extends Model
             ? $this->thoi_gian_ket_thuc->format('d/m/Y H:i')
             : '—';
     }
-public function danhSachMon()
-{
-    return $this->belongsToMany(
-        MonAn::class,         // Model món ăn
-        'mon_trong_combo',    // Bảng pivot
-        'combo_id',           // FK ở pivot trỏ về combo
-        'mon_an_id'           // FK ở pivot trỏ về món ăn
-    )->withPivot(['gioi_han_so_luong', 'phu_phi_goi_them']); // nếu có thêm thông tin
-}
+    public function danhSachMon()
+    {
+        return $this->belongsToMany(
+            MonAn::class,         // Model món ăn
+            'mon_trong_combo',    // Bảng pivot
+            'combo_id',           // FK ở pivot trỏ về combo
+            'mon_an_id'           // FK ở pivot trỏ về món ăn
+        )->withPivot(['gioi_han_so_luong', 'phu_phi_goi_them']); // nếu có thêm thông tin
+    }
 
-public function chiTietDatBan()
+    public function chiTietDatBan()
     {
         return $this->hasMany(ChiTietDatBan::class, 'combo_id', 'id');
     }
-
-    
+    public function datBans()
+    {
+        return $this->belongsToMany(DatBan::class, 'datbancombo', 'combo_id', 'dat_ban_id')
+            ->withPivot('so_luong')
+            ->withTimestamps();
+    }
 }

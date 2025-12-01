@@ -15,10 +15,9 @@ class DatBan extends Model
         'ten_khach',
         'email_khach',
         'sdt_khach',
-        'nguoi_lon', 
-        'tre_em',    
+        'nguoi_lon',
+        'tre_em',
         'ban_id',
-        // 'combo_id', // Đã xóa vì chuyển sang bảng dat_ban_combo
         'nhan_vien_id',
         'gio_den',
         'thoi_luong_phut',
@@ -50,7 +49,7 @@ class DatBan extends Model
     public function combos()
     {
         return $this->belongsToMany(ComboBuffet::class, 'dat_ban_combo', 'dat_ban_id', 'combo_id')
-                    ->withPivot('so_luong', 'don_gia', 'thanh_tien')
+                    ->withPivot('so_luong')
                     ->withTimestamps();
     }
 

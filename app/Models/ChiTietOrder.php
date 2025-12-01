@@ -60,7 +60,7 @@ class ChiTietOrder extends Model
         // 1️⃣ Món combo
         if ($this->loai_mon === 'combo') {
             $order = $this->orderMon;
-            $combo = $order?->datBan?->comboBuffet;
+            $combo = $order?->datBan?->combos;
             $giaCombo = $combo?->gia_co_ban ?? 0;
             return $soLuong * $giaCombo;
         }
@@ -111,13 +111,13 @@ class ChiTietOrder extends Model
      */
     public static function capNhatTongOrder($orderId)
     {
-        $order = OrderMon::with(['datBan.comboBuffet.monTrongCombo', 'chiTietOrders.monAn'])->find($orderId);
+        $order = OrderMon::with(['datBan.combos.monTrongCombo', 'chiTietOrders.monAn'])->find($orderId);
         if (!$order) return;
 
         $datBan = $order->datBan;
-        $combo = $datBan?->comboBuffet;
+        $combo = $datBan?->combos;
         $soKhach = $datBan->so_khach ?? 0;
-        $giaCombo = $combo?->gia_co_ban ?? 0;
+        $giaCombo = $combos?->gia_co_ban ?? 0;
 
         $chiTietList = self::where('order_id', $orderId)->with('monAn')->get();
 

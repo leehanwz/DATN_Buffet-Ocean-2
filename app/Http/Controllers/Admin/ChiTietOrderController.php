@@ -11,56 +11,37 @@ use Illuminate\Http\Request;
 
 class ChiTietOrderController extends Controller
 {
-    /**
-     * Hiển thị danh sách món trong 1 đơn hàng hoặc tất cả đơn
-     */
-public function index(Request $request)
+    public function index(Request $request)
     {
         $orderId = $request->query('order_id');
 
         if ($orderId) {
-            $order = OrderMon::with(['chiTietOrders.monAn', 'datBan.comboBuffet'])->find($orderId);
+            $order = OrderMon::with(['chiTietOrders.monAn', 'datBan.combos'])->find($orderId);
 
             if (!$order) {
                 return redirect()->route('admin.chi-tiet-order.index')
                     ->with('error', 'Đơn hàng không tồn tại.');
             }
 
-            // Cập nhật số lượng combo trực tiếp trong DB
+            // ✅ Đồng bộ tất cả món từ tất cả combo của bàn
             $this->capNhatSoLuongCombo($order);
 
-            // Lấy danh sách món đang bán
+            // Lấy danh sách món đang bán (gọi thêm)
             $monAns = MonAn::where('trang_thai', 'dang_ban')->get();
 
-            // Lấy combo_id của bàn để xác định món trong combo
-            $comboId = $order->datBan->combo_id ?? null;
-
-            // ✅ MỚI: Lấy số người từ đặt bàn (mặc định 1 nếu không có)
-            $soNguoi = $order->datBan->so_nguoi ?? 1;
-
-            $soLuongMonTrongCombo = [];
-
-            if ($comboId) {
-                $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
-                $soLuongMonTrongCombo = $monTrongCombo->pluck('gioi_han_so_luong', 'mon_an_id')->toArray();
-            }
-
-            // Gắn loại món hiển thị + số lượng hiển thị
             $soKhach = $order->datBan->so_khach ?? 1;
 
+            // Gán loại món và số lượng hiển thị
             foreach ($order->chiTietOrders as $ct) {
                 $ct->loai_mon_hien_thi = $ct->loai_mon === 'combo' ? 'Combo' : 'Gọi thêm';
-
-                // Nếu là combo → số lượng = số khách
                 $ct->so_luong_hien_thi = $ct->loai_mon === 'combo' ? $soKhach : $ct->so_luong;
             }
 
-
-            return view('admins.chi-tiet-order.show', compact('order', 'monAns', 'soLuongMonTrongCombo'));
+            return view('admins.chi-tiet-order.show', compact('order', 'monAns'));
         }
 
         // Nếu không có order_id → hiển thị tất cả đơn
-        $orders = OrderMon::with(['datBan.comboBuffet'])->latest()->paginate(10);
+        $orders = OrderMon::with(['datBan.combos'])->latest()->paginate(10);
         $monAns = MonAn::where('trang_thai', 'dang_ban')->get();
 
         return view('admins.chi-tiet-order.index', compact('orders', 'monAns'));
@@ -73,7 +54,7 @@ public function index(Request $request)
     {
         $orderId = $request->query('order_id');
 
-        $order = OrderMon::with(['datBan.comboBuffet'])->find($orderId);
+        $order = OrderMon::with(['datBan.combos'])->find($orderId);
         if (!$order) {
             return redirect()->route('admin.chi-tiet-order.index')
                 ->with('error', 'Không tìm thấy đơn hàng.');
@@ -183,26 +164,28 @@ public function index(Request $request)
     private function capNhatSoLuongCombo(OrderMon $order)
     {
         $soKhach = $order->datBan->so_khach ?? 1;
-        $comboId = $order->datBan->combo_id ?? null;
 
-        if (!$comboId) return;
+        if (!$order->datBan->combos) return;
 
-        // Lấy tất cả món trong combo
-        $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
+        foreach ($order->datBan->combos as $datBanCombo) {
+            $comboId = $datBanCombo->combo_id;
+            if (!$comboId) continue;
 
-        foreach ($monTrongCombo as $m) {
+            $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
 
-            ChiTietOrder::updateOrCreate(
-                [
-                    'order_id' => $order->id,
-                    'mon_an_id' => $m->mon_an_id,
-                    'loai_mon' => 'combo',
-                ],
-                [
-                    'so_luong' => $soKhach,
-                    'trang_thai' => 'cho_bep',
-                ]
-            );
+            foreach ($monTrongCombo as $m) {
+                ChiTietOrder::updateOrCreate(
+                    [
+                        'order_id' => $order->id,
+                        'mon_an_id' => $m->mon_an_id,
+                        'loai_mon' => 'combo',
+                    ],
+                    [
+                        'so_luong' => $soKhach,
+                        'trang_thai' => 'cho_bep',
+                    ]
+                );
+            }
         }
     }
 }
