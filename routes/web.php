@@ -198,27 +198,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // });
 
 Route::prefix('nhanVien')->name('nhanVien.')->group(function () {
+    Route::prefix('ban-an')->name('ban-an.')->group(function () {
+        Route::get('/', [NhanVienBanAnController::class, 'index'])->name('index');
+        // Check-in Walk-in (Khách vãng lai) - Giữ nguyên
+        Route::post('/check-in-walkin', [NhanVienBanAnController::class, 'checkInWalkIn'])->name('check-in-walkin');
 
-    // Check-in Walk-in (Khách vãng lai) - Giữ nguyên
-    Route::post('/check-in-walkin', [NhanVienBanAnController::class, 'checkInWalkIn'])->name('check-in-walkin');
+        // --- SỬA ĐOẠN NÀY ---
+        // 1. Route hiển thị Form chọn bàn cho khách đặt trước (GET)
+        Route::get('/check-in-dattruoc/{id}', [NhanVienBanAnController::class, 'showCheckInForm'])->name('show-checkin-dattruoc');
 
-    // --- SỬA ĐOẠN NÀY ---
-    // 1. Route hiển thị Form chọn bàn cho khách đặt trước (GET)
-    Route::get('/check-in-dattruoc/{id}', [NhanVienBanAnController::class, 'showCheckInForm'])->name('show-checkin-dattruoc');
+        // 2. Route Xử lý Check-in sau khi chọn bàn (POST)
+        Route::post('/process-check-in', [NhanVienBanAnController::class, 'processCheckIn'])->name('process-checkin');
+        // --------------------
+        Route::post('/reset/{id}', [NhanVienBanAnController::class, 'resetBan'])->name('reset-ban');
 
-    // 2. Route Xử lý Check-in sau khi chọn bàn (POST)
-    Route::post('/process-check-in', [NhanVienBanAnController::class, 'processCheckIn'])->name('process-checkin');
-    // --------------------
-    Route::post('/reset/{id}', [NhanVienBanAnController::class, 'resetBan'])->name('reset-ban');
+        // 1. Route check thông báo (Sửa tên thành check_notif để khớp với JS)
+        Route::get('check-notifications', [App\Http\Controllers\Shop\NhanVien\KhuVuc\NhanVienBanAnController::class, 'checkNotifications'])
+            ->name('check_notif');
 
-    // 1. Route check thông báo (Sửa tên thành check_notif để khớp với JS)
-    Route::get('check-notifications', [App\Http\Controllers\Shop\NhanVien\KhuVuc\NhanVienBanAnController::class, 'checkNotifications'])
-        ->name('check_notif');
-
-    // 2. Route xác nhận (Sửa tên thành complete_support)
-    Route::post('complete-support', [App\Http\Controllers\Shop\NhanVien\KhuVuc\NhanVienBanAnController::class, 'completeSupport'])
-        ->name('complete_support');
-
+        // 2. Route xác nhận (Sửa tên thành complete_support)
+        Route::post('complete-support', [App\Http\Controllers\Shop\NhanVien\KhuVuc\NhanVienBanAnController::class, 'completeSupport'])
+            ->name('complete_support');
+    });
 
 
     // DatBan NhanVien
