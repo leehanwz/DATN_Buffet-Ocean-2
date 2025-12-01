@@ -15,36 +15,42 @@
         <div class="fw-bold text-dark">{{ $d->ten_khach }}</div>
         <div class="small text-muted"><i class="fa-solid fa-phone me-1" style="font-size: 0.7rem;"></i>{{ $d->sdt_khach }}</div>
     </td>
-    <td>{{ $d->nguoi_lon }}</td>
-    <td>{{ $d->tre_em }}</td>
+    <td class="text-center fw-bold">
+        {{ $d->nguoi_lon + $d->tre_em }}
+        @if($d->tre_em > 0)
+        <span class="small text-muted">(T: {{ $d->tre_em }})</span>
+        @endif
+    </td>
     <td class="text-center small">
         @if($d->gio_den)
         <div class="fw-bold">{{ \Carbon\Carbon::parse($d->gio_den)->format('H:i') }}</div>
         <div class="text-muted">{{ \Carbon\Carbon::parse($d->gio_den)->format('d/m') }}</div>
         @else - @endif
     </td>
-    <td>
-        @if ($d->comboBuffet)
-        <span class="fw-bold text-dark">{{ $d->comboBuffet->ten_combo }}</span>
-        <span class="text-muted small">({{ $d->thoi_luong_phut ?? $d->comboBuffet->thoi_luong_phut }}p)</span>
-        @else
-        <span class="text-muted small fst-italic">Chưa chọn</span>
-        @endif
+    <td class="text-start">
+        @forelse($d->combos as $combo)
+        <span class="tag-combo">
+            {{ $combo->ten_combo }} (x{{ $combo->pivot->so_luong }})
+        </span>
+        @empty
+        <span class="text-muted small fst-italic">Chưa chọn Combo</span>
+        @endforelse
+        <div class="small text-muted mt-1">TTL: {{ $d->thoi_luong_phut ?? 120 }}p</div>
     </td>
     <td class="text-center small">
-        @if ($d->trang_thai == 'khach_da_den' && $d->comboBuffet)
+        @if ($d->trang_thai == 'khach_da_den')
         @php
-        $orderDau = \App\Models\OrderMon::where('dat_ban_id', $d->id)->orderBy('created_at', 'asc')->first();
-        $thoiLuong = $d->comboBuffet->thoi_luong_phut ?? 120;
+        $thoiLuong = $d->thoi_luong_phut ?? 120;
+        $orderDau = $d->orderMon->sortBy('created_at')->first();
         $endTime = $orderDau ? \Carbon\Carbon::parse($orderDau->created_at)->addMinutes($thoiLuong)->timestamp * 1000 : null;
         @endphp
         @if ($endTime)
         <span class="countdown-timer text-primary" data-endtime="{{ $endTime }}">...</span>
         @else
-        <span class="text-muted">Chưa gọi món</span>
+        <span class="text-muted">Chờ gọi món</span>
         @endif
         @elseif(in_array($d->trang_thai, ['cho_xac_nhan', 'da_xac_nhan']))
-        <span class="text-muted">Chưa đến</span>
+        <span class="text-muted">Chưa check-in</span>
         @else
         -
         @endif
@@ -63,8 +69,38 @@
         <span class="badge-pill {{ $badgeClass }}">{{ $badgeText }}</span>
     </td>
     <td class="text-center">
-        {{-- Bạn giữ nguyên phần action buttons --}}
-        ...
+        <div class="d-flex justify-content-center flex-wrap gap-1">
+            @if ($d->trang_thai == 'cho_xac_nhan')
+            <form method="post" action="{{ route('nhanVien.datban.thaydoitrangthai', $d->id) }}">@csrf
+                <input type="hidden" name="trang_thai" value="da_xac_nhan">
+                <button class="action-btn btn-accept" onclick="return confirm('Xác nhận đơn này?')">
+                    <i class="fa-solid fa-check"></i> Xác nhận
+                </button>
+            </form>
+            <form method="post" action="{{ route('nhanVien.datban.thaydoitrangthai', $d->id) }}">@csrf
+                <input type="hidden" name="trang_thai" value="huy">
+                <button class="action-btn btn-reject" onclick="return confirm('Hủy đơn này?')">
+                    <i class="fa-solid fa-xmark"></i> Hủy
+                </button>
+            </form>
+            @elseif($d->trang_thai == 'da_xac_nhan')
+            <form method="post" action="{{ route('nhanVien.datban.thaydoitrangthai', $d->id) }}">@csrf
+                <input type="hidden" name="trang_thai" value="khach_da_den">
+                <button class="action-btn btn-arrived" onclick="return confirm('Khách đã đến?')">
+                    <i class="fa-solid fa-person-walking"></i> Check-in
+                </button>
+            </form>
+            @elseif($d->trang_thai == 'khach_da_den')
+            <form method="post" action="{{ route('nhanVien.datban.thaydoitrangthai', $d->id) }}">@csrf
+                <input type="hidden" name="trang_thai" value="hoan_tat">
+                <button class="action-btn btn-finish" onclick="return confirm('Kết thúc bàn này?')">
+                    <i class="fa-solid fa-flag-checkered"></i> Kết thúc
+                </button>
+            </form>
+            @else
+            <span class="text-muted">-</span>
+            @endif
+        </div>
     </td>
 </tr>
 @empty

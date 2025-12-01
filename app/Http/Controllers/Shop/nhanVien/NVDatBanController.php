@@ -23,8 +23,8 @@ class NVDatBanController extends Controller
      */
     public function index(Request $r)
     {
-        // Khắc phục lỗi: Đã sửa 'comboBuffet' thành 'combos'
-        $query = DatBan::with(['banAn', 'nhanVien', 'combos']);
+        // Eager loading các mối quan hệ cần thiết, bao gồm cả orderMon cho tính toán thời gian
+        $query = DatBan::with(['banAn', 'nhanVien', 'combos', 'orderMon']);
 
         // Lọc trạng thái
         if ($r->trang_thai) {
@@ -53,7 +53,9 @@ class NVDatBanController extends Controller
 
         // Thực thi truy vấn và sắp xếp
         $ds = $query->orderByDesc('id')->get();
-
+        if ($r->ajax()) {
+        return view('shop.nhanvien.datban.tbody', compact('ds'));
+    }
         return view('shop.nhanvien.datban.index', compact('ds'));
     }
 
@@ -179,7 +181,7 @@ class NVDatBanController extends Controller
                 'gio_den' => Carbon::parse($request->gio_den),
                 'thoi_luong_phut' => $thoiLuongPhut, // Lưu thời lượng
                 'ghi_chu' => $request->ghi_chu,
-                'trang_thai' => 'da_xac_nhan',
+                'trang_thai' => 'khach_da_den',
                 'nhan_vien_id' => $request->nhan_vien_id ?? Auth::id(),
                 'tien_coc' => 0,
                 'la_dat_online' => 0,
@@ -228,9 +230,10 @@ class NVDatBanController extends Controller
 
         $banAn = $datBan->banAn;
         if (!$banAn) {
-            return redirect()->back()->with('error', 'Không tìm thấy thông tin bàn ăn.');
+return redirect()->back()->with('error', 'Không tìm thấy thông tin bàn ăn.');
         }
-DB::beginTransaction();
+
+        DB::beginTransaction();
         try {
             switch ($trangThaiMoi) {
                 case 'da_xac_nhan':
@@ -256,8 +259,7 @@ DB::beginTransaction();
                     $banAn->trang_thai = 'dang_phuc_vu';
                     $banAn->save();
 
-                    // Cập nhật giờ vào thực tế
-                    $datBan->gio_vao = Carbon::now();
+                    // ĐÃ LOẠI BỎ LOGIC GÁN GIỜ VÀO. Chỉ Check-in trạng thái.
                     $message = 'Khách đã đến, bắt đầu phục vụ.';
                     break;
 
@@ -284,16 +286,14 @@ DB::beginTransaction();
                     $banAn->trang_thai = 'trong';
                     $banAn->save();
 
-                    // Lưu giờ ra
-                    $datBan->gio_ra = Carbon::now();
+                    // ĐÃ LOẠI BỎ LOGIC GÁN GIỜ RA. Chỉ Hoàn tất trạng thái và chuyển hướng.
 
                     $datBan->trang_thai = $trangThaiMoi;
                     $datBan->save();
 
                     DB::commit();
-
-                    // Chuyển sang trang thanh toán
-return redirect()->route('nhanVien.hoadon.create', ['dat_ban_id' => $datBan->id])
+// Chuyển sang trang thanh toán
+                    return redirect()->route('nhanVien.hoadon.create', ['dat_ban_id' => $datBan->id])
                                      ->with('success', 'Kết thúc phục vụ. Chuyển sang thanh toán và lập hóa đơn.');
             }
 
@@ -308,6 +308,7 @@ return redirect()->route('nhanVien.hoadon.create', ['dat_ban_id' => $datBan->id]
 
         } catch (\Exception $e) {
             DB::rollBack();
+            // Lỗi ở đây có thể là do Model DatBan vẫn có 'gio_vao'/'gio_ra' trong $fillable mà DB không có
             Log::error("Lỗi thay đổi trạng thái Đặt bàn: ID={$datBan->id}, Trạng thái mới={$trangThaiMoi}. Error: " . $e->getMessage());
             return redirect()->back()->with('error', 'Lỗi hệ thống khi cập nhật trạng thái: ' . $e->getMessage());
         }
