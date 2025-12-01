@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 
 class NVDatBanController extends Controller
 {
+<<<<<<< HEAD
     public function index(Request $r)
     {
         $query = DatBan::with(['banAn', 'nhanVien', 'comboBuffet'])->select('dat_ban.*');
@@ -66,7 +67,43 @@ class NVDatBanController extends Controller
         });
 
         return view('shop.nhanvien.datban.index', compact('ds'));
+=======
+public function index(Request $r)
+{
+    // Bắt đầu query builder, chưa gọi get()
+    $query = DatBan::with(['banAn', 'nhanVien', 'comboBuffet']);
+
+    // Lọc trạng thái
+    if ($r->trang_thai) {
+        $query->where('trang_thai', $r->trang_thai);
+>>>>>>> origin/trung
     }
+
+    // Lọc theo bàn
+    if ($r->ban) {
+        $query->whereHas('banAn', function ($q) use ($r) {
+            $q->where('so_ban', 'like', "%{$r->ban}%");
+        });
+    }
+
+    // Lọc theo khách
+    if ($r->khach) {
+        $query->where(function($q) use ($r) {
+            $q->where('ten_khach', 'like', "%{$r->khach}%")
+              ->orWhere('sdt_khach', 'like', "%{$r->khach}%");
+        });
+    }
+
+    // Lọc theo mã đặt bàn (thay ngày)
+    if ($r->ma) {
+        $query->where('ma_dat_ban', 'like', '%' . $r->ma . '%');
+    }
+
+    // Chỉ gọi orderByDesc trước khi get
+    $ds = $query->orderByDesc('id')->get();
+
+    return view('shop.nhanvien.datban.index', compact('ds'));
+}
 
     public function create()
     {
@@ -74,9 +111,17 @@ class NVDatBanController extends Controller
             ->pluck('ban_id')
             ->toArray();
 
+<<<<<<< HEAD
         $bans = BanAn::where('trang_thai', 'trong')
             ->whereNotIn('id', $datBanChoXacNhan)
             ->get();
+=======
+        $availableTables = BanAn::where('trang_thai', 'trong')
+            ->whereNotIn('id', $conflictingIds)
+            ->where('so_ghe', '>=', $soKhach)
+            ->orderBy('so_ban')
+            ->get(['id', 'so_ban', 'so_ghe']);
+>>>>>>> origin/trung
 
         $combos = ComboBuffet::all();
         $nhanViens = NhanVien::where('trang_thai', 1)
@@ -145,6 +190,7 @@ class NVDatBanController extends Controller
 
         return back()->with('success', 'Khách đã đến và được nhận bàn!');
     }
+<<<<<<< HEAD
     public function huy($id)
     {
         $db = DatBan::findOrFail($id);
@@ -189,3 +235,6 @@ public function khachDaDenAjax(Request $request, $id)
     ]);
 }
 }
+=======
+}
+>>>>>>> origin/trung
