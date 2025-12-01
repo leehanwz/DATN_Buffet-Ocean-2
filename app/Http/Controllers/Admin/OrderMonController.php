@@ -48,91 +48,94 @@ class OrderMonController extends Controller
     }
     public function create()
     {
-        $datBans = DatBan::with(['banAn', 'comboBuffet.monTrongCombo.monAn'])
+        $datBans = DatBan::with(['banAn', 'combos.monTrongCombo.monAn'])
             ->where('trang_thai', 'khach_da_den') // chỉ lấy những đơn đã xác nhận
             ->orderByDesc('id')
             ->get();
         $banAns = BanAn::all();
         return view('admins.order-mon.create', compact('datBans', 'banAns'));
     }
+public function store(Request $request)
+{
+    $request->validate([
+        'dat_ban_id' => 'required|exists:dat_ban,id',
+    ]);
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'dat_ban_id' => 'required|exists:dat_ban,id',
-        ]);
+    $datBan = DatBan::with('combos.monTrongCombo.monAn')->findOrFail($request->dat_ban_id);
 
-        $datBan = DatBan::with('comboBuffet.monTrongCombo.monAn')->findOrFail($request->dat_ban_id);
-        $giaCombo = $datBan->comboBuffet?->gia_co_ban ?? 0;
-        $soKhach  = $datBan->so_khach ?? 0;
-        $giamGia  = $datBan->giam_gia ?? 0;
+    // lấy combo đầu tiên
+    $combo = $datBan->combos->first();
+    $giaCombo = $combo?->gia_co_ban ?? 0;
+    $soKhach = $datBan->so_khach ?? 0;
+    $giamGia = $datBan->giam_gia ?? 0;
 
-        $order = OrderMon::create([
-            'dat_ban_id' => $datBan->id,
-            'ban_id'     => $datBan->ban_id,
-            'tong_mon'   => 0,
-            'tong_tien'  => 0,
-            'trang_thai' => 'dang_xu_li',
-        ]);
+    $order = OrderMon::create([
+        'dat_ban_id' => $datBan->id,
+        'ban_id'     => $datBan->ban_id,
+        'tong_mon'   => 0,
+        'tong_tien'  => 0,
+        'trang_thai' => 'dang_xu_li',
+    ]);
 
-        $tongMon = 0;
-        $tongTienGoiThem = 0;
-        $tongPhuPhiVuot = 0;
+    $tongMon = 0;
+    $tongTienGoiThem = 0;
+    $tongPhuPhiVuot = 0;
 
-        // Thêm món trong combo
-        if ($datBan->comboBuffet && $datBan->comboBuffet->monTrongCombo->isNotEmpty()) {
-            foreach ($datBan->comboBuffet->monTrongCombo as $monCombo) {
-                $monAnModel = $monCombo->monAn;
-                if (!$monAnModel) continue;
+    // Thêm món trong combo
+    if ($combo && $combo->monTrongCombo->isNotEmpty()) {
+        foreach ($combo->monTrongCombo as $monCombo) {
+            $monAnModel = $monCombo->monAn;
+            if (!$monAnModel) continue;
 
-                $soLuongCombo = $monCombo->gioi_han_so_luong ?? 1;
-                $tongMon += $soLuongCombo;
+            $soLuongCombo = $monCombo->gioi_han_so_luong ?? 1;
+            $tongMon += $soLuongCombo;
 
-                ChiTietOrder::create([
-                    'order_id'   => $order->id,
-                    'mon_an_id'  => $monAnModel->id,
-                    'so_luong'   => $soLuongCombo,
-                    'loai_mon'   => 'combo',
-                    'trang_thai' => 'cho_bep',
-                ]);
-            }
+            ChiTietOrder::create([
+                'order_id'   => $order->id,
+                'mon_an_id'  => $monAnModel->id,
+                'so_luong'   => $soLuongCombo,
+                'loai_mon'   => 'combo',
+                'trang_thai' => 'cho_bep',
+            ]);
         }
-
-        // Thêm món gọi thêm
-        if ($request->filled('mon') && is_array($request->mon)) {
-            foreach ($request->mon as $mon) {
-                $monAn = MonAn::find($mon['mon_an_id']);
-                if (!$monAn) continue;
-
-                $soLuong = (int) $mon['so_luong'];
-                $loaiMon = $mon['loai_mon'] ?? 'goi_them';
-                $tongMon += $soLuong;
-
-                ChiTietOrder::create([
-                    'order_id'   => $order->id,
-                    'mon_an_id'  => $monAn->id,
-                    'so_luong'   => $soLuong,
-                    'loai_mon'   => $loaiMon,
-                    'trang_thai' => 'cho_bep',
-                ]);
-
-                if ($loaiMon === 'goi_them') $tongTienGoiThem += $monAn->gia * $soLuong;
-                if ($loaiMon === 'combo') {
-                    $gioiHan = $monAn->gioi_han ?? 0;
-                    $phuPhi  = $monAn->phu_phi ?? 0;
-                    if ($soLuong > $gioiHan) $tongPhuPhiVuot += ($soLuong - $gioiHan) * $phuPhi;
-                }
-            }
-        }
-        $tongTien = ($giaCombo * $soKhach) + $tongTienGoiThem + $tongPhuPhiVuot - $giamGia;
-
-        $order->update([
-            'tong_mon'  => $tongMon,
-            'tong_tien' => $tongTien,
-        ]);
-
-        return redirect()->route('admin.order-mon.index')->with('success', 'Tạo order món thành công!');
     }
+
+    // Thêm món gọi thêm
+    if ($request->filled('mon') && is_array($request->mon)) {
+        foreach ($request->mon as $mon) {
+            $monAn = MonAn::find($mon['mon_an_id']);
+            if (!$monAn) continue;
+
+            $soLuong = (int) $mon['so_luong'];
+            $loaiMon = $mon['loai_mon'] ?? 'goi_them';
+            $tongMon += $soLuong;
+
+            ChiTietOrder::create([
+                'order_id'   => $order->id,
+                'mon_an_id'  => $monAn->id,
+                'so_luong'   => $soLuong,
+                'loai_mon'   => $loaiMon,
+                'trang_thai' => 'cho_bep',
+            ]);
+
+            if ($loaiMon === 'goi_them') $tongTienGoiThem += $monAn->gia * $soLuong;
+            if ($loaiMon === 'combo') {
+                $gioiHan = $monAn->gioi_han ?? 0;
+                $phuPhi  = $monAn->phu_phi ?? 0;
+                if ($soLuong > $gioiHan) $tongPhuPhiVuot += ($soLuong - $gioiHan) * $phuPhi;
+            }
+        }
+    }
+
+    $tongTien = ($giaCombo * $soKhach) + $tongTienGoiThem + $tongPhuPhiVuot - $giamGia;
+
+    $order->update([
+        'tong_mon'  => $tongMon,
+        'tong_tien' => $tongTien,
+    ]);
+
+    return redirect()->route('admin.order-mon.index')->with('success', 'Tạo order món thành công!');
+}
 
     public function edit(OrderMon $orderMon)
     {
