@@ -29,12 +29,10 @@ class ChiTietOrderController extends Controller
             // Lấy danh sách món đang bán (gọi thêm)
             $monAns = MonAn::where('trang_thai', 'dang_ban')->get();
 
-            $soKhach = $order->datBan->so_khach ?? 1;
-
-            // Gán loại món và số lượng hiển thị
             foreach ($order->chiTietOrders as $ct) {
                 $ct->loai_mon_hien_thi = $ct->loai_mon === 'combo' ? 'Combo' : 'Gọi thêm';
-                $ct->so_luong_hien_thi = $ct->loai_mon === 'combo' ? $soKhach : $ct->so_luong;
+
+                $ct->so_luong_hien_thi = $ct->so_luong;
             }
 
             return view('admins.chi-tiet-order.show', compact('order', 'monAns'));
@@ -163,28 +161,33 @@ class ChiTietOrderController extends Controller
     }
     private function capNhatSoLuongCombo(OrderMon $order)
     {
-        $soKhach = $order->datBan->so_khach ?? 1;
-
-        if (!$order->datBan->combos) return;
+        if (!$order->datBan || !$order->datBan->combos) return;
 
         foreach ($order->datBan->combos as $datBanCombo) {
+
             $comboId = $datBanCombo->combo_id;
-            if (!$comboId) continue;
+            $soLuongCombo = $datBanCombo->pivot->so_luong;
 
             $monTrongCombo = MonTrongCombo::where('combo_id', $comboId)->get();
 
             foreach ($monTrongCombo as $m) {
-                ChiTietOrder::updateOrCreate(
-                    [
-                        'order_id' => $order->id,
-                        'mon_an_id' => $m->mon_an_id,
-                        'loai_mon' => 'combo',
-                    ],
-                    [
-                        'so_luong' => $soKhach,
-                        'trang_thai' => 'cho_bep',
-                    ]
-                );
+
+                // ✅ MỖI MÓN = SỐ COMBO, KHÔNG NHÂN GIỚI HẠN
+                $soLuong = $soLuongCombo;
+
+                ChiTietOrder::where([
+                    'order_id' => $order->id,
+                    'mon_an_id' => $m->mon_an_id,
+                    'loai_mon'  => 'combo',
+                ])->delete();
+
+                ChiTietOrder::create([
+                    'order_id'  => $order->id,
+                    'mon_an_id' => $m->mon_an_id,
+                    'loai_mon'  => 'combo',
+                    'so_luong'  => $soLuong,
+                    'trang_thai' => 'cho_bep',
+                ]);
             }
         }
     }

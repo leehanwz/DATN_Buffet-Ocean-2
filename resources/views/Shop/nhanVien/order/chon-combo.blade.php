@@ -255,6 +255,45 @@
         background: #cbd5e1;
         color: var(--dark);
     }
+
+    /* Button ± tròn */
+    .btn-increase,
+    .btn-decrease {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid #e2e8f0;
+        background-color: #f8f9fa;
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .btn-increase:hover,
+    .btn-decrease:hover {
+        background-color: var(--primary);
+        color: var(--white);
+        transform: scale(1.1);
+    }
+
+    /* Input số lượng */
+    .combo-qty {
+        text-align: center;
+        font-weight: 700;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        transition: transform 0.15s ease;
+    }
+
+    /* Animation khi thay đổi số lượng */
+    .combo-qty.animate {
+        transform: scale(1.2);
+    }
 </style>
 
 @section('content')
@@ -291,61 +330,53 @@
         </div>
     </div>
 
-    {{-- COMBO GRID FORM --}}
+    {{-- COMBO GRID --}}
     <form method="POST" action="{{ route('nhanVien.order.luu-combo', $order->id) }}">
         @csrf
         <div class="row">
             @foreach ($combos as $combo)
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="combo-card">
+
                     {{-- Hình ảnh & Giá --}}
                     <div class="img-wrapper">
-                        @php $imgPath = 'uploads/combo_buffet/' . $combo->anh; @endphp
+                        @php $imgPath = 'uploads/' . $combo->anh; @endphp
                         <img src="{{ file_exists(public_path($imgPath)) ? asset($imgPath) : 'https://placehold.co/600x400?text=No+Image' }}"
                             class="combo-img" alt="{{ $combo->ten_combo }}">
-
                         <div class="price-badge">
-                            {{ number_format($combo->gia_co_ban) }}
-                            <span style="font-size: 0.7em; font-weight: 600;">đ</span>
+                            {{ number_format($combo->gia_co_ban) }} <span style="font-size:0.7em;font-weight:600;">đ</span>
                         </div>
                     </div>
 
+                    {{-- Body --}}
                     <div class="card-body-custom">
                         <h5 class="combo-title">{{ $combo->ten_combo }}</h5>
-
                         <span class="combo-desc-label"><i class="fa-solid fa-list-ul"></i> Menu bao gồm:</span>
-                        <div class="combo-card">
 
+                        <ul class="menu-list">
+                            @foreach ($combo->monTrongCombo as $ct)
+                            @if($ct->monAn)
+                            @php $monImgPath = $ct->monAn->hinh_anh; @endphp
+                            <li class="menu-item">
+                                <img src="{{ file_exists(public_path($monImgPath)) ? asset($monImgPath) : 'https://placehold.co/100?text=Mon' }}"
+                                    class="item-thumb" alt="{{ $ct->monAn->ten_mon }}">
+                                <span class="item-name">{{ $ct->monAn->ten_mon }}</span>
+                                <span class="item-qty">x{{ $ct->gioi_han_so_luong }}</span>
+                            </li>
+                            @endif
+                            @endforeach
+                            @if($combo->monTrongCombo->isEmpty())
+                            <li class="text-muted small fst-italic">Đang cập nhật món...</li>
+                            @endif
+                        </ul>
 
-                            <div class="card-body-custom">
-                                <h5 class="combo-title">{{ $combo->ten_combo }}</h5>
-
-                                <span class="combo-desc-label"><i class="fa-solid fa-list-ul"></i> Menu bao gồm:</span>
-
-                                <ul class="menu-list">
-                                    @foreach ($combo->monTrongCombo as $ct)
-                                    @php $monImgPath = 'uploads/mon_an/' . $ct->monAn->anh; @endphp
-                                    <li class="menu-item">
-                                        <img src="{{ file_exists(public_path($monImgPath)) ? asset($monImgPath) : 'https://placehold.co/100?text=Mon' }}"
-                                            class="item-thumb" alt="mon">
-                                        <span class="item-name">{{ $ct->monAn->ten_mon }}</span>
-                                        <span class="item-qty">x{{ $ct->gioi_han_so_luong }}</span>
-                                    </li>
-                                    @endforeach
-                                    @if($combo->monTrongCombo->isEmpty())
-                                    <li class="text-muted small fst-italic">Đang cập nhật món...</li>
-                                    @endif
-                                </ul>
-
-                                {{-- Số lượng combo --}}
-                                <div class="input-group mb-2" style="max-width: 130px;">
-                                    <button type="button" class="btn btn-outline-secondary btn-decrease">-</button>
-                                    <input type="number" min="0" value="0" class="form-control combo-qty"
-                                        name="combos[{{ $combo->id }}]"
-                                        data-price="{{ $combo->gia_co_ban }}">
-                                    <button type="button" class="btn btn-outline-secondary btn-increase">+</button>
-                                </div>
-                            </div>
+                        {{-- Số lượng combo --}}
+                        <div class="input-group mb-2" style="max-width: 130px;">
+                            <button type="button" class="btn-decrease">-</button>
+                            <input type="number" min="0" value="0" class="form-control combo-qty"
+                                name="combos[{{ $combo->id }}]"
+                                data-price="{{ $combo->gia_co_ban }}">
+                            <button type="button" class="btn-increase">+</button>
                         </div>
                     </div>
                 </div>
@@ -366,38 +397,26 @@
     </form>
 </div>
 
-{{-- JS cập nhật giỏ hàng tạm tính --}}
+{{-- JS --}}
 <script>
-    const qtyInputs = document.querySelectorAll('.combo-qty');
     const cartSummary = document.getElementById('cart-summary');
-
-    // Nút tăng giảm
-    document.querySelectorAll('.btn-increase').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const input = btn.previousElementSibling;
-            input.value = parseInt(input.value || 0) + 1;
-            updateCart();
-        });
-    });
-
-    document.querySelectorAll('.btn-decrease').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const input = btn.nextElementSibling;
-            input.value = Math.max(0, parseInt(input.value || 0) - 1);
-            updateCart();
-        });
-    });
 
     function updateCart() {
         let total = 0;
         let lines = [];
 
-        qtyInputs.forEach(input => {
+        document.querySelectorAll('.combo-qty').forEach(input => {
             const qty = parseInt(input.value) || 0;
+            const comboCard = input.closest('.combo-card');
+            const comboName = comboCard.querySelector('.combo-title').innerText;
+            const price = parseInt(input.dataset.price) || 0;
+            const subtotal = qty * price;
+
+            // Cập nhật giá trên card
+            const priceBadge = comboCard.querySelector('.price-badge');
+            priceBadge.innerHTML = `${subtotal > 0 ? subtotal.toLocaleString() : price.toLocaleString()} <span style="font-size:0.7em;font-weight:600;">đ</span>`;
+
             if (qty > 0) {
-                const comboName = input.closest('.combo-card').querySelector('.combo-title').innerText;
-                const price = parseInt(input.dataset.price) || 0;
-                const subtotal = qty * price;
                 total += subtotal;
                 lines.push(`${comboName} x${qty} = ${subtotal.toLocaleString()} đ`);
             }
@@ -406,9 +425,40 @@
         cartSummary.innerText = lines.length ? lines.join(' | ') + ' | Tổng: ' + total.toLocaleString() + ' đ' : 'Chưa chọn combo nào';
     }
 
-    // Event listener input trực tiếp
-    qtyInputs.forEach(input => input.addEventListener('input', updateCart));
+    function animateInput(input) {
+        input.classList.add('animate');
+        setTimeout(() => input.classList.remove('animate'), 150);
+    }
 
-    updateCart(); // initial
+    // Nút +
+    document.querySelectorAll('.btn-increase').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = btn.closest('.input-group').querySelector('.combo-qty');
+            input.value = parseInt(input.value || 0) + 1;
+            animateInput(input);
+            updateCart();
+        });
+    });
+
+    // Nút -
+    document.querySelectorAll('.btn-decrease').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = btn.closest('.input-group').querySelector('.combo-qty');
+            input.value = Math.max(0, parseInt(input.value || 0) - 1);
+            animateInput(input);
+            updateCart();
+        });
+    });
+
+    // Input trực tiếp
+    document.querySelectorAll('.combo-qty').forEach(input => {
+        input.addEventListener('input', () => {
+            animateInput(input);
+            updateCart();
+        });
+    });
+
+    updateCart(); // Initial
 </script>
+
 @endsection

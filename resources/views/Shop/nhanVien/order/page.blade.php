@@ -363,16 +363,52 @@
                         </div>
                         <div class="info-row">
                             <span class="info-label">Combo:</span>
-                            <span class="info-value text-primary">{{ $order->datBan->comboBuffet->ten_combo ?? 'Gọi món lẻ' }}</span>
+                            <span class="info-value text-primary">
+                                @if($order->datBan->combos->isEmpty())
+                                Gọi món lẻ
+                                @else
+                                {{ $order->datBan->combos->pluck('ten_combo')->join(' , ') }}
+                                @endif
+                            </span>
                         </div>
                         <hr style="border-color: #f1f5f9;">
+                        @php
+                        // Tổng số lượng món lẻ
+                        $tongMonLe = $order->chiTietOrders->sum('so_luong');
+
+                        // Tổng số suất combo
+                        $tongMonCombo = $order->datBan->combos->sum('so_luong');
+
+                        // Tổng món = món lẻ + suất combo
+                        $tongMon = $tongMonLe + $tongMonCombo;
+                        @endphp
+
                         <div class="info-row">
                             <span class="info-label">Tổng món:</span>
-                            <span class="info-value">{{ $order->tong_mon }}</span>
+                            <span class="info-value">{{ $tongMon }}</span>
                         </div>
+                        @php
+                        // 1. Tổng giá combo
+                        $tongGiaCombo = 0;
+                        if($order->datBan->combos) {
+                        foreach($order->datBan->combos as $datBanCombo) {
+                        // Chỉ nhân số lượng combo với giá combo
+                        $tongGiaCombo += ($datBanCombo->so_luong ?? 0) * ($datBanCombo->comboBuffet->gia ?? 0);
+                        }
+                        }
+
+                        // 2. Tổng giá món lẻ gọi thêm (không tính trong combo)
+                        $tongGiaMonLe = $order->chiTietOrders->sum(function($ct){
+                        return ($ct->so_luong ?? 0) * ($ct->monAn->gia ?? 0);
+                        });
+
+                        // 3. Tạm tính = combo + món gọi thêm
+                        $tamTinh = $tongGiaCombo + $tongGiaMonLe;
+                        @endphp
+
                         <div class="info-row">
                             <span class="info-label">Tạm tính:</span>
-                            <span class="total-money">{{ number_format($order->tong_tien) }} đ</span>
+                            <span class="total-money">{{ number_format($tamTinh) }} đ</span>
                         </div>
                     </div>
                 </div>
@@ -409,7 +445,9 @@
                                         <div style="font-weight: 700; color: var(--dark);">{{ $ct->monAn->ten_mon }}</div>
                                     </td>
                                     <td class="text-center">
-                                        <span style="font-family:'Heebo'; font-weight:800; font-size:1rem; color: var(--primary);">x{{ $ct->so_luong_hien_thi }}</span>
+                                        <span style="font-family:'Heebo'; font-weight:800; font-size:1rem; color: var(--primary);">
+                                            x{{ $ct->so_luong_hien_thi ?? ($ct->so_luong ?? 0) }}
+                                        </span>
                                     </td>
                                     <td>
                                         @if($ct->ghi_chu)
