@@ -199,14 +199,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 Route::prefix('nhanVien')->name('nhanVien.')->group(function () {
 
-        // POST cho walk-in
+        // Check-in Walk-in (Khách vãng lai) - Giữ nguyên
         Route::post('/check-in-walkin', [NhanVienBanAnController::class, 'checkInWalkIn'])->name('check-in-walkin');
 
-        // POST cho khách đặt trước
-        Route::post('/check-in-dattruoc', [NhanVienBanAnController::class, 'checkInDatTruoc'])->name('check-in-dattruoc');
+        // --- SỬA ĐOẠN NÀY ---
+        // 1. Route hiển thị Form chọn bàn cho khách đặt trước (GET)
+        Route::get('/check-in-dattruoc/{id}', [NhanVienBanAnController::class, 'showCheckInForm'])->name('show-checkin-dattruoc');
 
-        // GET nút reset bàn (tất cả bàn quá hạn)
+        // 2. Route Xử lý Check-in sau khi chọn bàn (POST)
+        Route::post('/process-check-in', [NhanVienBanAnController::class, 'processCheckIn'])->name('process-checkin');
+        // --------------------
         Route::post('/reset/{id}', [NhanVienBanAnController::class, 'resetBan'])->name('reset-ban');
+
+        // 1. Route check thông báo (Sửa tên thành check_notif để khớp với JS)
+        Route::get('check-notifications', [App\Http\Controllers\Shop\NhanVien\KhuVuc\NhanVienBanAnController::class, 'checkNotifications'])
+            ->name('check_notif');
+
+        // 2. Route xác nhận (Sửa tên thành complete_support)
+        Route::post('complete-support', [App\Http\Controllers\Shop\NhanVien\KhuVuc\NhanVienBanAnController::class, 'completeSupport'])
+            ->name('complete_support');
+    });
+
 
 
     // DatBan NhanVien
@@ -309,6 +322,17 @@ Route::prefix('oderqr')->group(function () {
     Route::get('order/status/{datBanId}', [OrderController::class, 'getOrderStatus']);
 
     Route::get('list', [OrderController::class, 'showQrListPage'])->name('oderqr.list');
+
+    /**
+     * [MỚI - QUAN TRỌNG] API Hủy món (Chỉ hủy được khi bếp chưa làm)
+     * URL: /oderqr/order/cancel-item
+     */
+    Route::post('order/cancel-item', [OrderController::class, 'cancelItem'])
+        ->name('oderqr.cancel_item');
+
+    // API Khách gọi nhân viên
+    Route::post('call-staff', [App\Http\Controllers\Shop\Oderqr\OrderController::class, 'callStaff'])
+        ->name('oderqr.call_staff');
 });
 
 
