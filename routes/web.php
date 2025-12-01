@@ -174,7 +174,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/store', 'store')->name('store');
         Route::get('/{id}', 'show')->name('show');
         Route::get('/{id}/edit', 'edit')->name('edit');
-        Route::post('/{id}/update', 'update')->name('update');
+        Route::put('/{id}', 'update')->name('update');
         Route::post('/{id}/delete', 'destroy')->name('destroy');
         Route::post('/{id}/update-status', 'updateStatus')->name('updateStatus');
     });
@@ -253,8 +253,6 @@ Route::prefix('nhanVien')->name('nhanVien.')->group(function () {
         // thanh toán vnpay
         Route::get('/vnpay-payment/{banId}', 'vnpayPayment')->name('vnpay.payment');
         Route::get('/vnpay/callback/{banId}', 'vnpayCallback')->name('vnpay.callback');
-
-
     });
 });
 
