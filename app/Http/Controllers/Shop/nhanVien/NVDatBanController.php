@@ -40,9 +40,9 @@ class NVDatBanController extends Controller
 
         // Lọc theo khách
         if ($r->khach) {
-            $query->where(function($q) use ($r) {
+            $query->where(function ($q) use ($r) {
                 $q->where('ten_khach', 'like', "%{$r->khach}%")
-                  ->orWhere('sdt_khach', 'like', "%{$r->khach}%");
+                    ->orWhere('sdt_khach', 'like', "%{$r->khach}%");
             });
         }
 
@@ -54,8 +54,8 @@ class NVDatBanController extends Controller
         // Thực thi truy vấn và sắp xếp
         $ds = $query->orderByDesc('id')->get();
         if ($r->ajax()) {
-        return view('shop.nhanvien.datban.tbody', compact('ds'));
-    }
+            return view('shop.nhanvien.datban.tbody', compact('ds'));
+        }
         return view('shop.nhanvien.datban.index', compact('ds'));
     }
 
@@ -66,7 +66,7 @@ class NVDatBanController extends Controller
     {
         $combos = ComboBuffet::where('trang_thai', 'dang_ban')->get();
         $nhanViens = NhanVien::where('trang_thai', 1)
-            ->whereIn('vai_tro', ['le_tan', 'phuc_vu'])
+            ->whereIn('vai_tro', ['le_tan'])
             ->get();
         return view('shop.nhanvien.datban.create', compact('combos', 'nhanViens'));
     }
@@ -91,8 +91,10 @@ class NVDatBanController extends Controller
             ->where(function ($query) use ($newStart, $newEnd, $defaultDuration) {
                 // Logic kiểm tra xung đột thời gian, sử dụng IFNULL cho thoi_luong_phut
                 $query->where('gio_den', '<', $newEnd)
-->whereRaw("DATE_ADD(gio_den, INTERVAL IFNULL(thoi_luong_phut, ?) MINUTE) > ?",
-                                 [$defaultDuration, $newStart]);
+                    ->whereRaw(
+                        "DATE_ADD(gio_den, INTERVAL IFNULL(thoi_luong_phut, ?) MINUTE) > ?",
+                        [$defaultDuration, $newStart]
+                    );
             })
             ->pluck('ban_id')
             ->toArray();
@@ -138,6 +140,16 @@ class NVDatBanController extends Controller
         ]);
 
         $tongKhach = $request->nguoi_lon + $request->tre_em;
+
+        $tongCombo = collect($request->input('combos', []))->sum('so_luong');
+
+        // Kiểm tra: tổng combo phải >= tổng khách
+        if ($tongCombo < $tongKhach) {
+            return back()->withInput()->with(
+                'error',
+                "Bạn có {$tongKhach} khách nhưng chỉ chọn tổng cộng {$tongCombo} phần combo. Vui lòng chọn ít nhất {$tongKhach} combo."
+            );
+        }
         $banAn = BanAn::find($request->ban_id);
 
         if ($banAn->so_ghe < $tongKhach) {
@@ -146,7 +158,7 @@ class NVDatBanController extends Controller
 
         // Lấy thời lượng từ combo có thời lượng dài nhất hoặc mặc định 120 phút
         $thoiLuongPhut = ComboBuffet::whereIn('id', collect($request->combos)->pluck('id'))
-                            ->max('thoi_luong_phut') ?? 120;
+            ->max('thoi_luong_phut') ?? 120;
 
         // Kiểm tra xung đột giờ đặt bàn
         $conflict = DatBan::where('ban_id', $request->ban_id)
@@ -156,8 +168,10 @@ class NVDatBanController extends Controller
                 $newEnd = $newStart->copy()->addMinutes($thoiLuongPhut);
 
                 $query->where('gio_den', '<', $newEnd)
-                      ->whereRaw("DATE_ADD(gio_den, INTERVAL IFNULL(thoi_luong_phut, ?) MINUTE) > ?",
-[$thoiLuongPhut, $newStart]);
+                    ->whereRaw(
+                        "DATE_ADD(gio_den, INTERVAL IFNULL(thoi_luong_phut, ?) MINUTE) > ?",
+                        [$thoiLuongPhut, $newStart]
+                    );
             })
             ->first();
 
@@ -205,8 +219,7 @@ class NVDatBanController extends Controller
             DB::commit();
 
             return redirect()->route('nhanVien.datban.index')
-                            ->with('success', 'Tạo đặt bàn thành công! Mã: ' . $maDatBan);
-
+                ->with('success', 'Tạo đặt bàn thành công! Mã: ' . $maDatBan);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Lỗi lưu Đặt bàn NV: " . $e->getMessage());
@@ -230,7 +243,7 @@ class NVDatBanController extends Controller
 
         $banAn = $datBan->banAn;
         if (!$banAn) {
-return redirect()->back()->with('error', 'Không tìm thấy thông tin bàn ăn.');
+            return redirect()->back()->with('error', 'Không tìm thấy thông tin bàn ăn.');
         }
 
         DB::beginTransaction();
@@ -292,20 +305,19 @@ return redirect()->back()->with('error', 'Không tìm thấy thông tin bàn ăn
                     $datBan->save();
 
                     DB::commit();
-// Chuyển sang trang thanh toán
+                    // Chuyển sang trang thanh toán
                     return redirect()->route('nhanVien.hoadon.create', ['dat_ban_id' => $datBan->id])
-                                     ->with('success', 'Kết thúc phục vụ. Chuyển sang thanh toán và lập hóa đơn.');
+                        ->with('success', 'Kết thúc phục vụ. Chuyển sang thanh toán và lập hóa đơn.');
             }
 
             // Lưu trạng thái và commit cho các case không chuyển hướng (Xác nhận, Hủy, Check-in)
             if ($trangThaiMoi !== 'hoan_tat') {
-                 $datBan->trang_thai = $trangThaiMoi;
-                 $datBan->save();
-                 DB::commit();
+                $datBan->trang_thai = $trangThaiMoi;
+                $datBan->save();
+                DB::commit();
             }
 
             return redirect()->back()->with('success', $message);
-
         } catch (\Exception $e) {
             DB::rollBack();
             // Lỗi ở đây có thể là do Model DatBan vẫn có 'gio_vao'/'gio_ra' trong $fillable mà DB không có

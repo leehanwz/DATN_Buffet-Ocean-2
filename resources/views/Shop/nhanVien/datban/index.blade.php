@@ -285,7 +285,60 @@
         transition: .2s;
         white-space: nowrap;
     }
+    /* --- TOAST NOTIFICATION --- */
+/* Overlay thông báo */
+#booking-toast-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
 
+#booking-toast-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Hộp thông báo */
+#booking-toast {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    max-width: 400px;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+}
+
+#booking-toast h4 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+#booking-toast button {
+    margin-top: 15px;
+    padding: 8px 20px;
+    background: #fea116;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#booking-toast button:hover {
+    background: #d98a12;
+}
     /* Xác nhận (Chờ xác nhận → Đã xác nhận) */
     .btn-accept {
         background: #fffbeb;
@@ -344,7 +397,12 @@
 </style>
 
 <div class="container py-4">
-
+<div id="booking-toast-overlay">
+    <div id="booking-toast">
+        <h4 id="booking-toast-message">Đặt bàn mới!</h4>
+        <button id="booking-toast-ok">Đã hiểu</button>
+    </div>
+</div>
     {{-- HEADER --}}
     <div class="page-header">
         <h4 class="page-title"><i class="fa-solid fa-clipboard-list text-primary"></i> Danh sách đặt bàn</h4>
@@ -431,7 +489,12 @@
                 </thead>
                 <tbody>
                     @forelse($ds as $index => $d)
-                    <tr style="{{ $d->trang_thai == 'huy' ? 'opacity: 0.6;' : '' }}">
+                    <tr
+                        data-id="{{ $d->id }}"
+                        data-la-dat-online="{{ $d->la_dat_online }}"
+                        data-ten="{{ $d->ten_khach }}"
+                        data-sdt="{{ $d->sdt_khach }}"
+                        style="{{ $d->trang_thai == 'huy' ? 'opacity: 0.6;' : '' }}">
                         <td class="text-center text-muted fw-bold">{{ $index + 1 }}</td>
                         <td class="text-center font-heading text-primary fw-bold">{{ $d->ma_dat_ban }}</td>
                         <td class="text-center">
@@ -591,7 +654,8 @@
 
 {{-- Script đồng hồ --}}
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+
     function updateCountdowns() {
         const timers = document.querySelectorAll('.countdown-timer');
         const now = new Date().getTime();
@@ -628,8 +692,8 @@
     setInterval(updateCountdowns, 1000);
     updateCountdowns();
 
+    // AUTO REFRESH TABLE
     setInterval(() => {
-        // Xây dựng URL đúng
         const url = new URL(window.location.href);
         url.searchParams.set('ajax', '1');
 
@@ -643,12 +707,43 @@
                 if (!newTbody || !oldTbody) return;
 
                 oldTbody.innerHTML = newTbody.innerHTML;
-
                 updateCountdowns();
             })
             .catch(err => console.error('Auto refresh error:', err));
-    }, 5000); // 5s
-});
+    }, 5000);
 
+    // THÔNG BÁO BOOKING MỚI (TOAST) với localStorage
+    const overlay = document.getElementById('booking-toast-overlay');
+    const messageEl = document.getElementById('booking-toast-message');
+    const okBtn = document.getElementById('booking-toast-ok');
+
+    okBtn.addEventListener('click', () => {
+        overlay.classList.remove('show');
+    });
+
+    function showBookingToast(ten, sdt, id) {
+        const shownBookings = JSON.parse(localStorage.getItem('shownBookings') || '[]');
+        if (shownBookings.includes(id)) return; // đã thông báo → không lặp
+
+        messageEl.textContent = `Đặt bàn mới: ${ten} - ${sdt}`;
+        overlay.classList.add('show');
+
+        shownBookings.push(id);
+        localStorage.setItem('shownBookings', JSON.stringify(shownBookings));
+    }
+
+    setInterval(() => {
+        const bookingRows = document.querySelectorAll('tr[data-la-dat-online="1"]');
+        bookingRows.forEach(row => {
+            const id = row.getAttribute('data-id');
+            const ten = row.getAttribute('data-ten');
+            const sdt = row.getAttribute('data-sdt');
+
+            showBookingToast(ten, sdt, id);
+        });
+    }, 3000);
+
+});
 </script>
+
 @endsection
