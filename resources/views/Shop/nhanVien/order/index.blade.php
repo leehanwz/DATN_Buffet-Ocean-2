@@ -5,6 +5,24 @@
 @section('content')
 <main class="app-content">
     <div class="container-xxl px-4">
+        {{-- Flash message --}}
+        @if(session('success'))
+        <div class="alert alert-success text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+            {{ session('success') }}
+        </div>
+        @endif
+
+        @if(session('warning'))
+        <div class="alert alert-warning text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+            {{ session('warning') }}
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert alert-danger text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+            {{ session('error') }}
+        </div>
+        @endif
 
         {{-- Mini Dashboard --}}
         <div class="row mb-4 g-3">
@@ -160,7 +178,7 @@
         transform: scale(1.1);
     }
 
-    .row.mb-4 > .col {
+    .row.mb-4>.col {
         flex: 1;
         min-width: 0;
     }
@@ -191,6 +209,24 @@
         .col-sm-6 {
             flex: 0 0 50%;
             max-width: 50%;
+        }
+    }
+
+    .table-card.new-order {
+        animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+        0% {
+            box-shadow: 0 0 0 rgba(255, 193, 7, 0.8);
+        }
+
+        50% {
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.9);
+        }
+
+        100% {
+            box-shadow: 0 0 0 rgba(255, 193, 7, 0.8);
         }
     }
 </style>

@@ -61,10 +61,20 @@
                 <!-- Chỉ 1 collapse duy nhất -->
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0 pe-4">
-                        <a href="{{ route('nhanVien.ban-an.index') }}" class="nav-item nav-link active">Bàn ăn</a>
-                        <a href="{{ route('nhanVien.order.index') }}" class="nav-item nav-link">Mở order gọi món</a>
-                        <a href="{{ route('nhanVien.datban.index') }}" class="nav-item nav-link">Xác nhận & tạo đặt bàn</a>
+                        <a href="{{ route('nhanVien.ban-an.index') }}"
+                            class="nav-item nav-link {{ request()->routeIs('nhanVien.ban-an.index') ? 'active' : '' }}">
+                            Bàn ăn
+                        </a>
+                        <a href="{{ route('nhanVien.order.index') }}"
+                            class="nav-item nav-link {{ request()->routeIs('nhanVien.order.*') ? 'active' : '' }}">
+                            Mở order gọi món
+                        </a>
+                        <a href="{{ route('nhanVien.datban.index') }}"
+                            class="nav-item nav-link {{ request()->routeIs('nhanVien.datban.index') ? 'active' : '' }}">
+                            Xác nhận & tạo đặt bàn
+                        </a>
                     </div>
+
                 </div>
             </nav>
         </div>

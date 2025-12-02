@@ -84,7 +84,7 @@
 
         /* --- SIDEBAR LIST --- */
         .incoming-item { background: var(--white); border-bottom: 1px dashed #e2e8f0; padding: 12px 0; }
-        
+
         /* Tag nhỏ bên trái (chỉ dùng cho SẮP ĐẾN) */
         .status-tag { font-size: 0.65rem; font-weight: 800; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; }
         .tag-waiting { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
@@ -100,11 +100,11 @@
             background: #dcfce7; /* Nền xanh nhạt */
             color: #15803d;      /* Chữ xanh đậm */
             border: 1px solid #15803d;
-            font-size: 0.75rem; 
-            font-weight: 800; 
+            font-size: 0.75rem;
+            font-weight: 800;
             padding: 6px 12px;   /* Padding giống nút check-in */
-            border-radius: 4px; 
-            text-transform: uppercase; 
+            border-radius: 4px;
+            text-transform: uppercase;
             display: inline-block;
             white-space: nowrap;
         }
@@ -116,8 +116,8 @@
     @if (session('success')) <div class="alert alert-success mb-3 border-0 bg-success-subtle text-success-emphasis"><i class="fa-solid fa-check-circle"></i> {{ session('success') }}</div> @endif
     @if (session('error')) <div class="alert alert-danger mb-3 border-0 bg-danger-subtle text-danger-emphasis"><i class="fa-solid fa-exclamation-circle"></i> {{ session('error') }}</div> @endif
 
-    <div class="container-fluid py-4 px-4">
-        
+    <div class="container-xxl py-4 px-4">
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="m-0 text-uppercase fw-bold text-dark"><i class="fa-solid fa-layer-group text-primary"></i> Quản lý bàn ăn</h4>
             <a href="{{ route('nhanVien.ban-an.index') }}" class="btn btn-light border fw-bold"><i class="fa-solid fa-rotate"></i> Làm mới</a>
@@ -137,7 +137,7 @@
                             @php
                                 $khachDangNgoi = $datBans->where('ban_id', $ban->id)->where('trang_thai', 'khach_da_den')->first();
                                 $donDatTruoc = $datBans->where('ban_id', $ban->id)->where('trang_thai', 'da_xac_nhan')->first();
-                                
+
                                 $cardClass = '';
                                 if ($khachDangNgoi) $cardClass = 'card-active';
                                 elseif ($donDatTruoc) $cardClass = 'card-reserved';
@@ -167,9 +167,9 @@
                                         <div class="active-info-box">
                                             <div class="customer-name" title="{{ $khachDangNgoi->ten_khach }}">{{ $khachDangNgoi->ten_khach }}</div>
                                             <div class="time-in"><i class="fa-regular fa-clock"></i> Vào: {{ \Carbon\Carbon::parse($khachDangNgoi->gio_den)->format('H:i') }}</div>
-                                            
+
                                             <div class="mt-1 pt-1 border-top border-secondary-subtle small text-muted d-flex align-items-center gap-1">
-                                                 <i class="fa-solid fa-user-tie text-primary"></i> 
+                                                 <i class="fa-solid fa-user-tie text-primary"></i>
                                                  @if($khachDangNgoi->nhanVien)
                                                      <span class="fw-bold text-dark">{{ $khachDangNgoi->nhanVien->ho_ten }}</span>
                                                  @else
@@ -209,14 +209,14 @@
                 </div>
                 @endforeach
             </div>
-            
+
             {{-- CỘT PHẢI: LIST KHÁCH --}}
             <div class="col-lg-3 col-md-4">
                 <div class="card sticky-top" style="top: 20px; z-index: 99;">
                     <div class="card-header">
                         <span><i class="fa-solid fa-users"></i> Khách sắp đến</span>
                     </div>
-                    
+
                     <div class="p-3 border-bottom bg-light">
                          <form method="get" action="{{ route('nhanVien.ban-an.index') }}" class="d-flex gap-2">
                             <input type="text" name="search" class="form-control-custom w-100" placeholder="Tìm tên/SĐT..." value="{{ request('search') }}">
@@ -231,7 +231,7 @@
                                 <div>
                                     <div class="fw-bold text-primary" style="font-family: 'Heebo'">
                                         {{ \Carbon\Carbon::parse($datban->gio_den)->format('H:i') }}
-                                        
+
                                         {{-- CHỈ HIỆN BADGE SẮP ĐẾN Ở ĐÂY (NẾU CẦN) --}}
                                         @if($datban->trang_thai === 'da_xac_nhan')
                                             <span class="status-tag tag-waiting ms-1">SẮP ĐẾN</span>
@@ -295,12 +295,12 @@
                     if(textSpan) textSpan.innerText = `${h}:${m}:${s}`;
 
                     if(diffHrs >= 2) {
-                        timer.style.background = '#ef4444'; 
+                        timer.style.background = '#ef4444';
                     }
                 }
             });
         }
-        setInterval(updateTimers, 1000); 
+        setInterval(updateTimers, 1000);
         updateTimers();
     });
     </script>
@@ -309,13 +309,13 @@
     <script>
         $(document).ready(function() {
             // Cấu hình: 5 giây check 1 lần
-            const CHECK_INTERVAL = 5000; 
+            const CHECK_INTERVAL = 5000;
 
             function checkNotifications() {
                 $.ajax({
-                    // Route này phải khớp với route ông đặt trong web.php 
+                    // Route này phải khớp với route ông đặt trong web.php
                     // (Ví dụ: Route::get('check-notifications', ...)->name('nhanVien.ban-an.check_notif'))
-                    url: "{{ route('nhanVien.ban-an.check_notif') }}", 
+                    url: "{{ route('nhanVien.ban-an.check_notif') }}",
                     type: "GET",
                     success: function(data) {
                         // data = [{id: 1, so_ban: "Bàn 1", nhan_vien_phu_trach: "Tên NV"}, ...]

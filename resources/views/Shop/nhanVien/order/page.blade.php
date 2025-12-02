@@ -295,30 +295,63 @@
     tr.tre-mon {
         background: rgba(220, 38, 38, 0.08) !important;
     }
+
+    .scrollable-table {
+        max-height: 800px;
+        overflow-y: auto;
+        display: block;
+    }
+
+    /* Optional: scroll mượt */
+    .scrollable-table::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .scrollable-table::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
+
+    .scrollable-table::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+
+    .table-scrollable {
+        max-height: 800px;
+        overflow-y: auto;
+        display: block;
+    }
+
+    .table-scrollable thead {
+        position: sticky;
+        top: 0;
+        background-color: #f1f5f9;
+        z-index: 10;
+    }
 </style>
 
 @section('content')
 <main class="app-content">
-    {{-- Flash message --}}
-    @if(session('success'))
-    <div class="alert alert-success text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
-        {{ session('success') }}
-    </div>
-    @endif
-
-    @if(session('warning'))
-    <div class="alert alert-warning text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
-        {{ session('warning') }}
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="alert alert-danger text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
-        {{ session('error') }}
-    </div>
-    @endif
-
     <div class="container py-4">
+        {{-- Flash message --}}
+        @if(session('success'))
+        <div class="alert alert-success text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+            {{ session('success') }}
+        </div>
+        @endif
+
+        @if(session('warning'))
+        <div class="alert alert-warning text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+            {{ session('warning') }}
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert alert-danger text-center fw-semibold rounded-3 shadow-sm mb-4" id="flashMsg">
+            {{ session('error') }}
+        </div>
+        @endif
+
 
         {{-- FLASH MESSAGES --}}
         @foreach (['success' => 'check-circle', 'warning' => 'exclamation-triangle', 'error' => 'times-circle'] as $msg => $icon)
@@ -355,7 +388,7 @@
                     <div class="card-body p-4">
                         <div class="info-row">
                             <span class="info-label">Mã Order:</span>
-                            <span class="info-value">#{{ $order->id }}</span>
+                            <span class="info-value">Số: {{ $order->id }}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Bàn:</span>
@@ -387,28 +420,9 @@
                             <span class="info-label">Tổng món:</span>
                             <span class="info-value">{{ $tongMon }}</span>
                         </div>
-                        @php
-                        // 1. Tổng giá combo
-                        $tongGiaCombo = 0;
-                        if($order->datBan->combos) {
-                        foreach($order->datBan->combos as $datBanCombo) {
-                        // Chỉ nhân số lượng combo với giá combo
-                        $tongGiaCombo += ($datBanCombo->so_luong ?? 0) * ($datBanCombo->comboBuffet->gia ?? 0);
-                        }
-                        }
-
-                        // 2. Tổng giá món lẻ gọi thêm (không tính trong combo)
-                        $tongGiaMonLe = $order->chiTietOrders->sum(function($ct){
-                        return ($ct->so_luong ?? 0) * ($ct->monAn->gia ?? 0);
-                        });
-
-                        // 3. Tạm tính = combo + món gọi thêm
-                        $tamTinh = $tongGiaCombo + $tongGiaMonLe;
-                        @endphp
-
                         <div class="info-row">
                             <span class="info-label">Tạm tính:</span>
-                            <span class="total-money">{{ number_format($tamTinh) }} đ</span>
+                            <span class="total-money">đ</span>
                         </div>
                     </div>
                 </div>
@@ -427,7 +441,7 @@
                         <p class="fw-bold">Chưa có món nào được gọi.</p>
                     </div>
                     @else
-                    <div class="table-responsive">
+                    <div class="table-scrollable">
                         <table class="table custom-table mb-0">
                             <thead>
                                 <tr>

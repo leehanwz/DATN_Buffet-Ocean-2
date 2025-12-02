@@ -10,7 +10,7 @@ class OrderMon extends Model
     use HasFactory;
 
     protected $table = 'order_mon';
-    
+
     protected $fillable = [
         'dat_ban_id',
         'ban_id',
@@ -33,4 +33,5 @@ class OrderMon extends Model
     {
         return $this->hasMany(ChiTietOrder::class, 'order_id', 'id');
     }
+
 }

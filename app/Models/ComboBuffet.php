@@ -118,7 +118,7 @@ class ComboBuffet extends Model
     }
     public function datBans()
     {
-        return $this->belongsToMany(DatBan::class, 'datbancombo', 'combo_id', 'dat_ban_id')
+        return $this->belongsToMany(DatBan::class, 'dat_ban_combo', 'combo_id', 'dat_ban_id')
             ->withPivot('so_luong')
             ->withTimestamps();
     }

@@ -463,36 +463,35 @@
         </div>
 
         <div class="row">
-            {{-- LEFT: MENU GRID --}}
-            <div class="filter-menu mb-4">
-                {{-- Row 1: Danh mục  --}}
-                <div class="filter-row" id="filter-category">
-                    <button class="filter-btn" data-type="category" data-value="6">Khai Vị (Appetizers)</button>
-                    <button class="filter-btn" data-type="category" data-value="7">Hải Sản Tươi Sống (Fresh Seafood)</button>
-                    <button class="filter-btn" data-type="category" data-value="8">Thịt (Meats)</button>
-                    <button class="filter-btn" data-type="category" data-value="9">Món Nóng / Quầy Line (Hot Dishes)</button>
-                    <button class="filter-btn" data-type="category" data-value="10">Rau & Nấm (Vegetables & Mushrooms)</button>
-                    <button class="filter-btn" data-type="category" data-value="11">Viên Thả Lẩu (Hotpot Balls)</button>
-                    <button class="filter-btn" data-type="category" data-value="12">Sashimi & Sushi</button>
-                    <button class="filter-btn" data-type="category" data-value="13">Tráng Miệng (Desserts)</button>
-                    <button class="filter-btn" data-type="category" data-value="14">Đồ Uống (Beverages)</button>
-                    <button class="filter-btn" data-type="category" data-value="15">Sốt Chấm & Gia Vị (Sauces)</button>
-                </div>
-
-                {{-- Row 2: Loại món  --}}
-                <div class="filter-row" id="filter-type">
-                    <button class="filter-btn" data-type="loai" data-value="Chín">Chín</button>
-                    <button class="filter-btn" data-type="loai" data-value="Sống">Sống</button>
-                    <button class="filter-btn" data-type="loai" data-value="Nướng">Nướng</button>
-                    <button class="filter-btn" data-type="loai" data-value="Xào/Luộc">Xào/Luộc</button>
-                    <button class="filter-btn" data-type="loai" data-value="Nước có ga">Nước có ga</button>
-                    <button class="filter-btn" data-type="loai" data-value="Nước không ga">Nước không ga</button>
-                    <button class="filter-btn" data-type="loai" data-value="Trà/Cà phê">Trà/Cà phê</button>
-                    <button class="filter-btn" data-type="loai" data-value="Trái cây">Trái cây</button>
-                    <button class="filter-btn" data-type="loai" data-value="Bánh ngọt">Bánh ngọt</button>
-                </div>
-            </div>
             <div class="col-md-8 mb-4">
+                <div class="filter-menu mb-4">
+                    {{-- Row 1: Danh mục  --}}
+                    <div class="filter-row" id="filter-category">
+                        <button class="filter-btn" data-type="category" data-value="6">Khai Vị (Appetizers)</button>
+                        <button class="filter-btn" data-type="category" data-value="7">Hải Sản Tươi Sống (Fresh Seafood)</button>
+                        <button class="filter-btn" data-type="category" data-value="8">Thịt (Meats)</button>
+                        <button class="filter-btn" data-type="category" data-value="9">Món Nóng / Quầy Line (Hot Dishes)</button>
+                        <button class="filter-btn" data-type="category" data-value="10">Rau & Nấm (Vegetables & Mushrooms)</button>
+                        <button class="filter-btn" data-type="category" data-value="11">Viên Thả Lẩu (Hotpot Balls)</button>
+                        <button class="filter-btn" data-type="category" data-value="12">Sashimi & Sushi</button>
+                        <button class="filter-btn" data-type="category" data-value="13">Tráng Miệng (Desserts)</button>
+                        <button class="filter-btn" data-type="category" data-value="14">Đồ Uống (Beverages)</button>
+                        <button class="filter-btn" data-type="category" data-value="15">Sốt Chấm & Gia Vị (Sauces)</button>
+                    </div>
+
+                    {{-- Row 2: Loại món  --}}
+                    <div class="filter-row" id="filter-type">
+                        <button class="filter-btn" data-type="loai" data-value="Chín">Chín</button>
+                        <button class="filter-btn" data-type="loai" data-value="Sống">Sống</button>
+                        <button class="filter-btn" data-type="loai" data-value="Nướng">Nướng</button>
+                        <button class="filter-btn" data-type="loai" data-value="Xào/Luộc">Xào/Luộc</button>
+                        <button class="filter-btn" data-type="loai" data-value="Nước có ga">Nước có ga</button>
+                        <button class="filter-btn" data-type="loai" data-value="Nước không ga">Nước không ga</button>
+                        <button class="filter-btn" data-type="loai" data-value="Trà/Cà phê">Trà/Cà phê</button>
+                        <button class="filter-btn" data-type="loai" data-value="Trái cây">Trái cây</button>
+                        <button class="filter-btn" data-type="loai" data-value="Bánh ngọt">Bánh ngọt</button>
+                    </div>
+                </div>
                 <div class="row g-3">
                     @foreach($monAns as $mon)
                     <div class="col-lg-6">
