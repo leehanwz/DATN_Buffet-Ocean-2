@@ -44,9 +44,15 @@
     /* --- HEADER SECTION --- */
     .page-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
+        flex-wrap: nowrap;
         margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    .page-header span.text-muted {
+        flex-shrink: 0;
     }
 
     .header-title {
@@ -54,7 +60,9 @@
         font-weight: 800;
         font-size: 1.8rem;
         text-transform: uppercase;
+        flex-shrink: 1;
     }
+
 
     /* --- INFO BOX (Context Order) --- */
     .context-box {
@@ -106,6 +114,13 @@
         box-shadow: var(--shadow-hover);
         border-color: rgba(254, 161, 22, 0.4);
     }
+
+    /* ẩn món */
+    .combo-card .combo-desc-label,
+    .combo-card .menu-list {
+        display: none !important;
+    }
+
 
     /* Image Area */
     .img-wrapper {
@@ -238,6 +253,7 @@
     }
 
     .btn-back {
+        flex-shrink: 0;
         background: #e2e8f0;
         color: var(--text-sub);
         text-decoration: none;
@@ -344,23 +360,49 @@
     }
 
     .modal-content {
-        background: #fff;
-        border-radius: 10px;
+        background: #ffffff;
+        border-radius: 12px;
         width: 90%;
-        max-width: 500px;
+        max-width: 520px;
+
+        max-height: calc(100vh - 40px);
+        /* luôn nằm trong khung nhìn */
+        display: flex;
+        flex-direction: column;
+
         position: relative;
-        padding: 20px;
+        overflow: hidden;
+    }
+
+    .modal-body {
+        overflow-y: auto;
+        padding-right: 10px;
     }
 
     .modal-close {
-        position: absolute;
+        position: sticky;
         top: 10px;
-        right: 10px;
-        background: none;
+        float: right;
+        align-self: flex-end;
+
+        background: rgba(0, 0, 0, 0.05);
         border: none;
-        font-size: 1.2rem;
+        padding: 6px 10px;
+        border-radius: 50%;
+        font-size: 18px;
         cursor: pointer;
+
+        z-index: 2;
     }
+
+    .modal-add {
+        position: sticky;
+        bottom: 0;
+
+        margin-top: 15px;
+        width: 100%;
+    }
+
 
     .modal-img {
         width: 100%;
@@ -398,159 +440,227 @@
         opacity: 0.5;
         pointer-events: none;
     }
+
+    @media (max-width: 768px) {
+        .header-title {
+            font-size: 1.4rem;
+        }
+    }
+
+    .modal-menu-list {
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .modal-menu-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-bottom: 1px dashed #e2e8f0;
+        font-size: 0.9rem;
+    }
+
+    .modal-menu-row:last-child {
+        border-bottom: none;
+    }
+
+    .modal-menu-name {
+        flex: 1;
+        font-weight: 600;
+        color: #0f172b;
+    }
+
+    .modal-menu-qty {
+        min-width: 80px;
+        text-align: right;
+        font-weight: 700;
+        color: #64748b;
+    }
+
+    .item-info {
+        flex: 1;
+    }
+
+    .item-desc {
+        display: block;
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-top: 2px;
+        line-height: 1.2;
+    }
 </style>
 
 @section('content')
-
-<div class="container py-4">
-
-    {{-- HEADER --}}
-    <div class="page-header">
-        <div>
-            <a href="{{ route('nhanVien.order.index') }}" class="btn-back mb-2">
-                <i class="fa-solid fa-arrow-left"></i> Quay lại
-            </a>
-            <h2 class="header-title">Chọn Combo Buffet</h2>
-        </div>
-        <span class="text-muted fw-bold">{{ date('d/m/Y') }}</span>
-    </div>
-
-    {{-- CONTEXT INFO --}}
-    <div class="context-box">
-        <div class="context-item">
-            <span class="context-label">Mã Order</span>
-            <span class="context-value">Số: {{ $order->id }}</span>
-        </div>
-        <div style="width: 1px; height: 30px; background: #e2e8f0;"></div>
-        <div class="context-item">
-            <span class="context-label">Bàn Phục Vụ</span>
-            <span class="context-value">
-                @if($order->banAn)
-                {{ $order->banAn->so_ban }}
-                @else
-                <span class="text-danger">Chưa xếp</span>
-                @endif
-            </span>
-        </div>
-    </div>
-
-    <div class="mb-4">
-        <h5 class="mb-2"></h5>
-        <div class="filter-menu">
-            <a href="{{ route('nhanVien.order.chon-combo', ['orderId' => $order->id]) }}"
-                class="{{ request('price') ? '' : 'active' }}">Tất cả combo</a>
-            @foreach ([99000, 199000, 299000, 399000, 499000] as $price)
-            <a href="{{ route('nhanVien.order.chon-combo', ['orderId' => $order->id, 'price' => $price]) }}"
-                class="{{ request('price') == $price ? 'active' : '' }}">
-                {{ number_format($price/1000, 0) }}k
-            </a>
-            @endforeach
+<main class="app-content">
+    <div class="container-xxl py-4">
+        <div class="page-header">
+            <div>
+                <a href="{{ route('nhanVien.order.index') }}" class="btn-back mb-2">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại
+                </a>
+                <h2 class="header-title">Chọn Combo Buffet</h2>
+            </div>
+            <span class="text-muted fw-bold">{{ date('d/m/Y') }}</span>
         </div>
 
-    </div>
+        {{-- CONTEXT INFO --}}
+        <div class="context-box mb-4">
+            <div class="context-item">
+                <span class="context-label">Mã Order</span>
+                <span class="context-value">Số: {{ $order->id }}</span>
+            </div>
+            <div style="width: 1px; height: 30px; background: #e2e8f0;"></div>
+            <div class="context-item">
+                <span class="context-label">Bàn Phục Vụ</span>
+                <span class="context-value">
+                    @if($order->banAn)
+                    {{ $order->banAn->so_ban }}
+                    @else
+                    <span class="text-danger">Chưa xếp</span>
+                    @endif
+                </span>
+            </div>
+        </div>
 
-    {{-- COMBO GRID --}}
-    <form method="POST" action="{{ route('nhanVien.order.luu-combo', $order->id) }}">
-        @csrf
-        <div class="row">
-            @foreach ($combos as $combo)
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="combo-card" data-price="{{ $combo->gia_co_ban }}">
-                    {{-- Hình ảnh & Giá --}}
-                    <div class="img-wrapper">
-                        @php $imgPath = 'uploads/' . $combo->anh; @endphp
-                        <img src="{{ file_exists(public_path($imgPath)) ? asset($imgPath) : 'https://placehold.co/600x400?text=No+Image' }}"
-                            class="combo-img" alt="{{ $combo->ten_combo }}">
-                        <div class="price-badge" id="price-badge-{{ $combo->id }}">
-                            Tạm tính: <span class="badge-amount">{{ number_format($combo->gia_co_ban) }}</span> <span style="font-size:0.7em;font-weight:600;">đ</span>
-                        </div>
-                        <div class="price-original" style="
-                            position: absolute;
-                            top: 10px;
-                            left: 10px;
-                            background: rgba(254, 161, 22, 0.8);
-                            color: #fff;
-                            padding: 3px 8px;
-                            border-radius: 4px;
-                            font-weight: 700;
-                            font-size: 0.85rem;
-                            ">
-                            {{ number_format($combo->gia_co_ban) }}đ
-                        </div>
-                    </div>
+        <div class="mb-4">
+            <h5 class="mb-2"></h5>
+            <div class="filter-menu">
+                <a href="{{ route('nhanVien.order.chon-combo', ['orderId' => $order->id]) }}"
+                    class="{{ request('price') ? '' : 'active' }}">Tất cả combo</a>
+                @foreach ([99000, 199000, 299000, 399000, 499000] as $price)
+                <a href="{{ route('nhanVien.order.chon-combo', ['orderId' => $order->id, 'price' => $price]) }}"
+                    class="{{ request('price') == $price ? 'active' : '' }}">
+                    {{ number_format($price/1000, 0) }}k
+                </a>
+                @endforeach
+            </div>
 
-                    {{-- Body --}}
-                    <div class="card-body-custom">
-                        <h5 class="combo-title">{{ $combo->ten_combo }}</h5>
-                        <span class="combo-desc-label"><i class="fa-solid fa-list-ul"></i> Menu bao gồm:</span>
+        </div>
 
-                        <ul class="menu-list">
-                            @foreach ($combo->monTrongCombo as $ct)
-                            @if($ct->monAn)
-                            @php $monImgPath = $ct->monAn->hinh_anh; @endphp
-                            <li class="menu-item">
-                                <img src="{{ file_exists(public_path($monImgPath)) ? asset($monImgPath) : 'https://placehold.co/100?text=Mon' }}"
-                                    class="item-thumb" alt="{{ $ct->monAn->ten_mon }}">
-                                <span class="item-name">{{ $ct->monAn->ten_mon }}</span>
-                                <span class="item-qty">x{{ $ct->gioi_han_so_luong }}</span>
-                            </li>
+        {{-- COMBO GRID --}}
+        <form method="POST" action="{{ route('nhanVien.order.luu-combo', $order->id) }}">
+            @csrf
+            <div class="row">
+                @foreach ($combos as $combo)
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="combo-card" data-price="{{ $combo->gia_co_ban }}">
+                        {{-- Hình ảnh & Giá --}}
+                        <div class="img-wrapper">
+                            @php
+                            $images = [];
+                            // Ảnh chính
+                            if($combo->anh && file_exists(public_path('uploads/'.$combo->anh))) {
+                            $images[] = asset('uploads/'.$combo->anh);
+                            } else {
+                            $images[] = 'https://placehold.co/600x400?text=No+Image';
+                            }
+
+                            // Ảnh phụ (nếu có)
+                            if(!empty($combo->anh_phu)) {
+                            foreach($combo->anh_phu as $img) {
+                            if(file_exists(public_path('uploads/'.$img))) {
+                            $images[] = asset('uploads/'.$img);
+                            }
+                            }
+                            }
+                            @endphp
+
+                            @if(count($images) > 1)
+                            <div class="combo-img-gallery" style="display:flex; overflow-x:auto; gap:5px; padding:5px;">
+                                @foreach($images as $img)
+                                <img src="{{ $img }}" class="combo-img" style="width:100px; height:80px; object-fit:cover; border-radius:6px;" alt="{{ $combo->ten_combo }}">
+                                @endforeach
+                            </div>
+                            @else
+                            <img src="{{ $images[0] }}" class="combo-img" alt="{{ $combo->ten_combo }}">
                             @endif
-                            @endforeach
-                            @if($combo->monTrongCombo->isEmpty())
-                            <li class="text-muted small fst-italic">Đang cập nhật món...</li>
-                            @endif
-                        </ul>
 
-                        {{-- Số lượng combo --}}
-                        @php
-                        $qtyInDb = $order->datBan->combos->where('id', $combo->id)->first()?->pivot->so_luong ?? 0;
-                        @endphp
-                        <div class="input-group mb-2" style="max-width: 130px;">
-                            <button type="button" class="btn-decrease">-</button>
-                            <input type="number" min="0" value="{{ $qtyInDb }}" class="form-control combo-qty"
-                                name="combos[{{ $combo->id }}]"
-                                data-price="{{ $combo->gia_co_ban }}">
-                            <button type="button" class="btn-increase">+</button>
+                            <div class="price-badge" id="price-badge-{{ $combo->id }}">
+                                Tạm tính: <span class="badge-amount">{{ number_format($combo->gia_co_ban) }}</span> <span style="font-size:0.7em;font-weight:600;">đ</span>
+                            </div>
+                        </div>
+
+                        {{-- Body --}}
+                        <div class="card-body-custom">
+                            <h5 class="combo-title">{{ $combo->ten_combo }}</h5>
+                            <span class="combo-desc-label"><i class="fa-solid fa-list-ul"></i> Menu bao gồm:</span>
+
+                            <ul class="menu-list">
+                                @foreach ($combo->monTrongCombo as $ct)
+                                @if($ct->monan)
+                                @php $monImgPath = $ct->monan->hinh_anh; @endphp
+                                <li class="menu-item">
+                                    <img src="{{ file_exists(public_path($monImgPath)) ? asset($monImgPath) : 'https://placehold.co/100?text=Mon' }}"
+                                        class="item-thumb" alt="{{ $ct->monAn->ten_mon }}">
+                                    <div class="item-info">
+                                        <span class="item-name">{{ $ct->monAn->ten_mon }}</span>
+                                        <small class="item-desc">
+                                            <i class="fa-solid fa-circle-info"></i> {{ $ct->monAn->mo_ta }}
+                                        </small>
+                                    </div>
+                                    <span class="item-qty">
+                                        {{ $ct->gioi_han_so_luong !== null ? $ct->gioi_han_so_luong : 'Không giới hạn' }}
+                                    </span>
+                                </li>
+                                @endif
+                                @endforeach
+                                @if($combo->monTrongCombo->isEmpty())
+                                <li class="text-muted small fst-italic">Đang cập nhật món...</li>
+                                @endif
+                            </ul>
+
+                            {{-- Số lượng combo --}}
+                            @php
+                            $qtyInDb = $order->datBan->combos->where('id', $combo->id)->first()?->pivot->so_luong ?? 0;
+                            @endphp
+                            <div class="input-group mb-2" style="max-width: 130px;">
+                                <button type="button" class="btn-decrease">-</button>
+                                <input type="number" min="0" value="{{ $qtyInDb }}" class="form-control combo-qty"
+                                    name="combos[{{ $combo->id }}]"
+                                    data-price="{{ $combo->gia_co_ban }}">
+                                <button type="button" class="btn-increase">+</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                @endforeach
             </div>
-            @endforeach
-        </div>
 
-        {{-- Giỏ hàng tạm tính --}}
-        <div class="context-box mt-4">
-            <div class="context-item flex-grow-1">
-                <span class="context-label">Giỏ hàng tạm tính</span>
-                <span class="context-value" id="cart-summary">Chưa chọn combo nào</span>
+            {{-- Giỏ hàng tạm tính --}}
+            <div class="context-box mt-4">
+                <div class="context-item flex-grow-1">
+                    <span class="context-label">Giỏ hàng tạm tính</span>
+                    <span class="context-value" id="cart-summary">Chưa chọn combo nào</span>
+                </div>
             </div>
-        </div>
 
-        {{-- Submit --}}
-        <button type="submit" class="btn-select mt-3"><i class="fa-solid fa-check"></i> Xác nhận chọn combo</button>
-    </form>
-</div>
-<div id="comboModal" class="modal-overlay" style="display:none;">
-    <div class="modal-content">
-        <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
-        <div class="modal-body">
-            <img src="" alt="" class="modal-img">
-            <h3 class="modal-title"></h3>
-            <p class="modal-price"></p>
-            <p class="modal-desc"></p>
-            <div class="modal-qty">
-                <button class="btn-decrease">-</button>
-                <input type="number" value="0" min="0" class="combo-qty">
-                <button class="btn-increase">+</button>
+            {{-- Submit --}}
+            <button type="submit" class="btn-select mt-3"><i class="fa-solid fa-check"></i> Xác nhận chọn combo</button>
+        </form>
+    </div>
+    <div id="comboModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-body">
+                <div class="modal-img-gallery" style="display:flex; gap:10px; overflow-x:auto; padding:5px 0;">
+                    <!-- ảnh sẽ được JS thêm vào -->
+                </div>
+                <h3 class="modal-title"></h3>
+                <p class="modal-price"></p>
+                <div class="modal-menu-title">Menu bao gồm:</div>
+                <div class="modal-desc modal-menu-list"></div>
+                <div class="modal-qty">
+                    <button class="btn-decrease">-</button>
+                    <input type="number" value="0" min="0" class="combo-qty">
+                    <button class="btn-increase">+</button>
+                </div>
+                <button class="btn-select modal-add">THÊM COMBO NGAY</button>
             </div>
-            <button class="btn-select modal-add">THÊM COMBO NGAY</button>
         </div>
     </div>
-</div>
-
-
+</main>
 {{-- JS --}}
-@push('scripts')
 <script>
     const cartSummary = document.getElementById('cart-summary');
 
@@ -558,7 +668,6 @@
         let total = 0;
         let lines = [];
 
-        // Chỉ lấy input combo trên card chính
         document.querySelectorAll('.combo-card > .card-body-custom > .input-group .combo-qty').forEach(input => {
             const qty = parseInt(input.value) || 0;
             const comboCard = input.closest('.combo-card');
@@ -566,7 +675,6 @@
             const price = parseInt(input.dataset.price) || 0;
             const subtotal = qty * price;
 
-            // Cập nhật giá trên card
             const priceBadge = comboCard.querySelector('.price-badge');
             priceBadge.innerHTML = `${subtotal > 0 ? subtotal.toLocaleString() : price.toLocaleString()} <span style="font-size:0.7em;font-weight:600;">đ</span>`;
 
@@ -640,20 +748,46 @@
     // Mở modal khi click vào combo card
     document.querySelectorAll('.combo-card').forEach(card => {
         card.addEventListener('click', e => {
-            if (e.target.closest('input') || e.target.closest('button')) return; // ko bật khi click input
-            const img = card.querySelector('.combo-img').src;
+            if (e.target.closest('input') || e.target.closest('button')) return;
+
+            // Lấy tất cả ảnh trong card
+            const galleryImgs = card.querySelectorAll('.combo-img-gallery img, .combo-img');
+            const images = Array.from(galleryImgs).map(img => img.src);
+
+            const modalGallery = modal.querySelector('.modal-img-gallery');
+            modalGallery.innerHTML = '';
+            images.forEach(src => {
+                const imgEl = document.createElement('img');
+                imgEl.src = src;
+                imgEl.className = 'modal-img';
+                modalGallery.appendChild(imgEl);
+            });
+
+            // Title, Price
             const title = card.querySelector('.combo-title').innerText;
             const price = card.dataset.price;
-            const descItems = Array.from(card.querySelectorAll('.menu-item')).map(li => {
-                return li.querySelector('.item-name').innerText + ' x' + li.querySelector('.item-qty').innerText.replace('x', '');
-            }).join('\n');
 
-            modalImg.src = img;
+            // Menu
+            const descItems = Array.from(card.querySelectorAll('.menu-item')).map(li => {
+                const name = li.querySelector('.item-name').innerText;
+                const qty = li.querySelector('.item-qty').innerText;
+                const imgSrc = li.querySelector('.item-thumb')?.src || 'https://placehold.co/60?text=Mon';
+                return `
+                <div class="modal-menu-row">
+                    <div style="flex-shrink:0;">
+                        <img src="${imgSrc}" alt="${name}" style="width:40px; height:40px; border-radius:6px; object-fit:cover; border:1px solid #e2e8f0;">
+                    </div>
+                    <div style="flex:1; font-weight:600; color:#0f172b;">${name}</div>
+                    <div style="min-width:80px; text-align:right; font-weight:700; color:#64748b;">${qty}</div>
+                </div>
+            `;
+            }).join('');
+
             modalTitle.innerText = title;
             modalPrice.innerText = parseInt(price).toLocaleString() + ' đ';
-            modalDesc.innerText = descItems || 'Đang cập nhật món...';
+            modalDesc.innerHTML = descItems || '<div class="text-muted">Đang cập nhật món...</div>';
 
-            // Lấy số lượng hiện tại từ card
+            // Đồng bộ số lượng
             const mainInput = card.querySelector('.combo-qty');
             modalQty.value = mainInput.value || 0;
 

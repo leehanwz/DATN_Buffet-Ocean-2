@@ -298,6 +298,32 @@ class NhanVienOrderMonController extends Controller
         $order = OrderMon::with('datBan')->findOrFail($orderId);
         $combos = ComboBuffet::with('monTrongCombo.monAn')->get();
 
+        foreach ($combos as $combo) {
+            $comboFolder = public_path('uploads/combo_buffet');
+            $images = [];
+
+            // Nếu combo có ảnh mặc định trong DB
+            if ($combo->anh && file_exists(public_path('uploads/' . $combo->anh))) {
+                $images[] = asset('uploads/' . $combo->anh);
+            }
+
+            // Lấy ảnh từ folder uploads/combo_buffet theo pattern combo_{id}_*.jpg/png
+            if (file_exists($comboFolder)) {
+                $pattern = $comboFolder . '/combo_' . $combo->id . '_*.{jpg,jpeg,png,gif}';
+                $files = glob($pattern, GLOB_BRACE);
+                foreach ($files as $file) {
+                    $images[] = asset('uploads/combo_buffet/' . basename($file));
+                }
+            }
+
+            // Nếu không có ảnh nào, dùng placeholder
+            if (empty($images)) {
+                $images[] = 'https://placehold.co/600x400?text=No+Image';
+            }
+
+            $combo->images = $images; // gán property tạm thời cho view
+        }
+
         return view('Shop.nhanVien.order.chon-combo', compact('order', 'combos'));
     }
 
