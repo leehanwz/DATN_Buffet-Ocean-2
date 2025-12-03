@@ -163,6 +163,7 @@ class DatBanController extends Controller
 
             DB::commit(); // Lưu tất cả thành công
             return redirect()->route('admin.dat-ban.index')->with('success', "Tạo đơn đặt bàn thành công! Mã: $maDatBan");
+
         } catch (\Exception $e) {
             DB::rollBack(); // Có lỗi thì hoàn tác
             Log::error("Lỗi khi lưu đặt bàn: " . $e->getMessage());

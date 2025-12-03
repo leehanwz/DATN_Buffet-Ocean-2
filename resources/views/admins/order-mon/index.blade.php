@@ -9,6 +9,7 @@
     </div>
 
     <a href="{{ route('admin.order-mon.create') }}" class="btn btn-success mb-3">+ Tạo Order mới</a>
+
     <form method="GET" action="{{ route('admin.order-mon.index') }}" class="mb-3 row g-2">
         <div class="col-md-2">
             <input type="text" name="ma_dat_ban" class="form-control" placeholder="Mã đặt bàn" value="{{ request('ma_dat_ban') }}">
@@ -36,6 +37,7 @@
             </a>
         </div>
     </form>
+
     <table class="table table-bordered text-center">
         <thead class="table-dark">
             <tr>
@@ -61,9 +63,9 @@
                 <td>{{ number_format($order->tong_tien, 0, ',', '.') }} đ</td>
                 <td>
                     @switch($order->trang_thai)
-                    @case('dang_xu_li') <span class="badge bg-info">Đang xử lí</span> @break
-                    @case('hoan_thanh') <span class="badge bg-success">Hoàn Thành</span> @break
-                    @case('huy_mon') <span class="badge bg-danger">Hủy món</span> @break
+                        @case('dang_xu_li') <span class="badge bg-info">Đang xử lí</span> @break
+                        @case('hoan_thanh') <span class="badge bg-success">Hoàn Thành</span> @break
+                        @case('huy_mon') <span class="badge bg-danger">Hủy món</span> @break
                     @endswitch
                 </td>
                 <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
