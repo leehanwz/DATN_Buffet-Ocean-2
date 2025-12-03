@@ -14,12 +14,13 @@ class ComboBuffet extends Model
 
     protected $fillable = [
         'ten_combo',
+        'mo_ta',              // thêm dòng này
         'loai_combo',
         'gia_co_ban',
         'thoi_luong_phut',
         'thoi_gian_bat_dau',
         'thoi_gian_ket_thuc',
-        'anh', // ✅ THÊM DÒNG NÀY
+        'anh', // THÊM DÒNG NÀY
         'trang_thai',
     ];
 
@@ -111,6 +112,11 @@ public function danhSachMon()
         'mon_an_id'           // FK ở pivot trỏ về món ăn
     )->withPivot(['gioi_han_so_luong', 'phu_phi_goi_them']); // nếu có thêm thông tin
 }
+
+public function chiTietDatBan()
+    {
+        return $this->hasMany(ChiTietDatBan::class, 'combo_id', 'id');
+    }
 
     
 }
