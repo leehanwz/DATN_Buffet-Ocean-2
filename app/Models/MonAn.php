@@ -20,7 +20,7 @@ class MonAn extends Model
         'hinh_anh',
         'trang_thai',
         'thoi_gian_che_bien',
-        'loai_mon',
+        'loai_mon'
     ];
 
     public function danhMuc()

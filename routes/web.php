@@ -48,6 +48,7 @@ Route::prefix('/')->group(function () {
 
     // Trang chủ
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    // Route cho trang Hệ Thống Cơ Sở
 
     // Combos
     Route::get('/combos', [ComboClientController::class, 'index'])->name('combos.index');
@@ -82,7 +83,7 @@ Route::prefix('/')->group(function () {
     // Callback và cancel PayOS
     Route::get('payment/cancel', [BookingController::class, 'cancel'])->name('booking.pay-os.cancel');
     Route::get('payment/success', [BookingController::class, 'success'])->name('booking.pay-os.success');
-}); 
+});
 
 
 // ==================== ADMIN SITE ====================
@@ -193,23 +194,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // ==========================================================
 
 Route::prefix('nhanVien')->name('nhanVien.')->group(function () {
- // ... Bên trong nhóm Route::prefix('nhanVien')->name('nhanVien.') ...
- Route::prefix('ban-an')->name('ban-an.')->group(function () {
-    Route::get('/', [NhanVienBanAnController::class, 'index'])->name('index');
+    // ... Bên trong nhóm Route::prefix('nhanVien')->name('nhanVien.') ...
+    Route::prefix('ban-an')->name('ban-an.')->group(function () {
+        Route::get('/', [NhanVienBanAnController::class, 'index'])->name('index');
 
-    // Check-in Walk-in (Khách vãng lai) - Giữ nguyên
-    Route::post('/check-in-walkin', [NhanVienBanAnController::class, 'checkInWalkIn'])->name('check-in-walkin');
+        // Check-in Walk-in (Khách vãng lai) - Giữ nguyên
+        Route::post('/check-in-walkin', [NhanVienBanAnController::class, 'checkInWalkIn'])->name('check-in-walkin');
 
-    // --- SỬA ĐOẠN NÀY ---
-    // 1. Route hiển thị Form chọn bàn cho khách đặt trước (GET)
-    Route::get('/check-in-dattruoc/{id}', [NhanVienBanAnController::class, 'showCheckInForm'])->name('show-checkin-dattruoc');
+        // --- SỬA ĐOẠN NÀY ---
+        // 1. Route hiển thị Form chọn bàn cho khách đặt trước (GET)
+        Route::get('/check-in-dattruoc/{id}', [NhanVienBanAnController::class, 'showCheckInForm'])->name('show-checkin-dattruoc');
 
-    // 2. Route Xử lý Check-in sau khi chọn bàn (POST)
-    Route::post('/process-check-in', [NhanVienBanAnController::class, 'processCheckIn'])->name('process-checkin');
-    // --------------------
-    Route::post('/reset/{id}', [NhanVienBanAnController::class, 'resetBan'])->name('reset-ban');
-});
-// ...
+        // 2. Route Xử lý Check-in sau khi chọn bàn (POST)
+        Route::post('/process-check-in', [NhanVienBanAnController::class, 'processCheckIn'])->name('process-checkin');
+        // --------------------
+        Route::post('/reset/{id}', [NhanVienBanAnController::class, 'resetBan'])->name('reset-ban');
+    });
+    // ...
 
 
     // DatBan NhanVien
@@ -243,7 +244,7 @@ Route::prefix('nhanVien')->name('nhanVien.')->group(function () {
     Route::put('chi-tiet-order/{ctId}', [NhanVienOrderMonController::class, 'update'])->name('chi-tiet-order.update');
     Route::delete('/chi-tiet-order/{id}', [NhanVienOrderMonController::class, 'destroy'])->name('chi-tiet-order.destroy');
 
-        // Thanh toán
+    // Thanh toán
     Route::prefix('thanh-toan')->name('thanh-toan.')->controller(ThanhToanController::class)->group(function () {
         Route::get('/ban/{banId}', 'thanhToanTuBan')->name('ban');
         Route::post('/ban/{banId}', 'luuThanhToanTuBan')->name('luu-ban');
