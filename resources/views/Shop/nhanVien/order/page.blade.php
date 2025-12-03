@@ -406,14 +406,17 @@
                         </div>
                         <hr style="border-color: #f1f5f9;">
                         @php
-                        // Tổng số lượng món lẻ
                         $tongMonLe = $order->chiTietOrders->sum('so_luong');
 
-                        // Tổng số suất combo
                         $tongMonCombo = $order->datBan->combos->sum('so_luong');
 
-                        // Tổng món = món lẻ + suất combo
                         $tongMon = $tongMonLe + $tongMonCombo;
+                        @endphp
+
+                        @php
+                        $tongTienCombo = $order->datBan->combos->sum(function ($combo) {
+                        return $combo->gia_co_ban * $combo->pivot->so_luong;
+                        });
                         @endphp
 
                         <div class="info-row">
@@ -422,7 +425,9 @@
                         </div>
                         <div class="info-row">
                             <span class="info-label">Tạm tính:</span>
-                            <span class="total-money">đ</span>
+                            <span class="total-money">
+                                {{ number_format($tongTienCombo) }}đ
+                            </span>
                         </div>
                     </div>
                 </div>

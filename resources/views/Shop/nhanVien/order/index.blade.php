@@ -54,9 +54,9 @@
         {{-- Phân khu vực --}}
         @foreach($khuVucs as $khu)
         <div class="mb-4">
-            <h4 class="fw-bold mb-3">
+            <h3 class="fw-bold mb-3">
                 <i class="bi bi-building me-2"></i> {{ $khu->ten_khu_vuc }} (Tầng {{ $khu->tang }})
-            </h4>
+            </h3>
             <div class="row g-3 justify-content-start">
                 @foreach($bans->where('khu_vuc_id', $khu->id) as $ban)
                 @php
@@ -172,10 +172,15 @@
 
     .card-body .btn {
         transition: all 0.2s;
+        background: linear-gradient(135deg, #0dcaf0, #dbbf0cff);
+        color: white;
+        border: none;
+        box-shadow: 0 0 10px rgba(13, 202, 240, .6);
     }
 
     .card-body .btn:hover {
         transform: scale(1.1);
+        box-shadow: 0 0 25px rgba(13, 202, 240, .9);
     }
 
     .row.mb-4>.col {
@@ -228,6 +233,301 @@
         100% {
             box-shadow: 0 0 0 rgba(255, 193, 7, 0.8);
         }
+    }
+
+    body {
+        background: radial-gradient(circle at top right, #e3f2ff, #f7f9fc, #f1f5ff);
+    }
+
+    .app-content {
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* =============================== */
+    /* MINI DASHBOARD */
+    /* =============================== */
+
+    .row.mb-4 .rounded-4 {
+        border-radius: 18px !important;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        transition: all 0.25s ease;
+    }
+
+    .row.mb-4 .rounded-4:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .row.mb-4 h5 {
+        font-size: 1.4rem;
+        letter-spacing: 0.3px;
+    }
+
+    .row.mb-4 small {
+        opacity: 0.8;
+        font-size: 0.8rem;
+    }
+
+    /* =============================== */
+    /* TABLE CARD */
+    /* =============================== */
+
+    .table-card {
+        border-radius: 18px !important;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        transition: all 0.25s ease;
+    }
+
+    .table-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.18);
+    }
+
+    /* =============================== */
+    /* HEADER */
+    /* =============================== */
+
+    .table-card-header {
+        position: relative;
+        border-bottom-left-radius: 18px;
+        border-bottom-right-radius: 18px;
+        padding: 14px 10px 10px;
+    }
+
+    .table-card-header::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.12);
+        mix-blend-mode: overlay;
+    }
+
+    .table-card-header h5 {
+        letter-spacing: 0.5px;
+    }
+
+    /* =============================== */
+    /* BADGE */
+    /* =============================== */
+
+    .table-card-header .badge {
+        border-radius: 50px;
+        font-weight: 600;
+        padding: 5px 14px;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.15);
+    }
+
+    /* =============================== */
+    /* BODY */
+    /* =============================== */
+
+    .card-body {
+        text-align: center;
+    }
+
+    .card-body p {
+        font-size: 0.85rem;
+        opacity: 0.85;
+    }
+
+    .card-body p i {
+        color: #0d6efd;
+    }
+
+    .card-body p b {
+        font-size: 0.9rem;
+    }
+
+    /* =============================== */
+    /* BUTTON */
+    /* =============================== */
+
+    .card-body .btn {
+        border-radius: 50px !important;
+        transition: all 0.25s cubic-bezier(.4, 1.8, .6, .9);
+    }
+
+    .card-body .btn:hover {
+        transform: scale(1.15) rotate(3deg);
+    }
+
+    .card-body .btn:active {
+        transform: scale(0.9);
+    }
+
+    /* =============================== */
+    /* GLOW BY STATUS */
+    /* =============================== */
+
+    .table-card:has(.badge.bg-success) {
+        box-shadow: 0 0 12px rgba(40, 167, 69, 0.4);
+    }
+
+    .table-card:has(.badge.bg-warning) {
+        box-shadow: 0 0 12px rgba(255, 193, 7, 0.5);
+    }
+
+    .table-card:has(.badge.bg-info) {
+        box-shadow: 0 0 12px rgba(23, 162, 184, 0.5);
+    }
+
+    .table-card:has(.badge.bg-dark) {
+        opacity: 0.75;
+        filter: grayscale(70%);
+    }
+
+    /* =============================== */
+    /* NEW ORDER ANIMATION */
+    /* =============================== */
+
+    .table-card.new-order {
+        animation: pulseGlow 1.2s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+        from {
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+        }
+
+        to {
+            box-shadow: 0 0 30px rgba(255, 193, 7, 0.9);
+        }
+    }
+
+    /* =============================== */
+    /* SECTION TITLE */
+    /* =============================== */
+
+    h3 {
+        position: relative;
+        display: inline-block;
+        padding-left: 10px;
+        background: linear-gradient(90deg, #000000ff, #d8b00fff);
+        color: white;
+        padding: 8px 18px;
+        border-radius: 50px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, .2);
+    }
+
+    h3::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 6px;
+        height: 60%;
+        width: 4px;
+        border-radius: 10px;
+    }
+
+    /* =============================== */
+    /* MOBILE */
+    /* =============================== */
+
+    @media (max-width: 768px) {
+        .table-card-header h5 {
+            font-size: 0.95rem;
+        }
+    }
+
+    .row.mb-4 .col:nth-child(1) .rounded-4 {
+        background: linear-gradient(135deg, #00c853, #b2ff59) !important;
+        color: #064d2a;
+    }
+
+    .row.mb-4 .col:nth-child(2) .rounded-4 {
+        background: linear-gradient(135deg, #90a4ae, #eceff1) !important;
+        color: #263238;
+    }
+
+    .row.mb-4 .col:nth-child(3) .rounded-4 {
+        background: linear-gradient(135deg, #ff5252, #ff867c) !important;
+        color: white;
+    }
+
+    .row.mb-4 .col:nth-child(4) .rounded-4 {
+        background: linear-gradient(135deg, #40c4ff, #81d4fa) !important;
+        color: white;
+    }
+
+    .row.mb-4 .col:nth-child(5) .rounded-4 {
+        background: linear-gradient(135deg, #616161, #9e9e9e) !important;
+        color: white;
+    }
+
+    .table-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 18px;
+        padding: 1px;
+        background: linear-gradient(140deg, #0dcaf0, #6610f2, #20c997);
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.5;
+    }
+
+    .table-card-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+        transform: rotate(20deg);
+        opacity: 0;
+        transition: .6s;
+    }
+
+    .table-card:hover .table-card-header::before {
+        opacity: 1;
+        top: 50%;
+        left: 50%;
+    }
+
+    .table-card::before,
+    .table-card::after,
+    .table-card-header::before,
+    .table-card-header::after {
+        pointer-events: none;
+    }
+
+    /* Đảm bảo button luôn nằm trên */
+    .card-body,
+    .card-body * {
+        position: relative;
+        z-index: 5;
+    }
+
+    /* Header vẫn đẹp nhưng không che */
+    .table-card-header {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Card nằm đúng lớp dưới button */
+    .table-card {
+        position: relative;
+        z-index: 1;
     }
 </style>
 

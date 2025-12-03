@@ -213,7 +213,7 @@
     .item-name {
         font-size: 0.9rem;
         font-weight: 600;
-        color: var(--text-main);
+        color: #ffffff !important;
         flex: 1;
     }
 
@@ -379,20 +379,36 @@
         padding-right: 10px;
     }
 
+    /* ===== FIX NÚT ĐÓNG MODAL (X) MÀU TRẮNG ===== */
     .modal-close {
-        position: sticky;
-        top: 10px;
-        float: right;
-        align-self: flex-end;
-
-        background: rgba(0, 0, 0, 0.05);
-        border: none;
-        padding: 6px 10px;
+        background: #000;
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 50%;
-        font-size: 18px;
-        cursor: pointer;
+        font-size: 20px;
+        transition: 0.2s;
+        box-shadow: 0 0 10px rgba(255, 255, 255, .6);
+    }
 
-        z-index: 2;
+    .modal-close i {
+        color: #ffffff !important;
+        font-size: 18px;
+    }
+
+    .modal-close:hover {
+        background: #fbbf24;
+        color: black !important;
+        transform: rotate(90deg) scale(1.1);
+        box-shadow: 0 0 12px rgba(251, 191, 36, .8);
+    }
+
+    .modal-close:hover i {
+        color: black !important;
     }
 
     .modal-add {
@@ -485,9 +501,342 @@
     .item-desc {
         display: block;
         font-size: 0.75rem;
-        color: #94a3b8;
+        color: #ffffff !important;
         margin-top: 2px;
         line-height: 1.2;
+        opacity: 0.9;
+    }
+
+    body {
+        background: radial-gradient(circle at top, #ffffffff, #ffffffff);
+        color: #eef2f5ff;
+    }
+
+    :root {
+        --primary: #fbbf24;
+        /* Vàng kim */
+        --primary-dark: #d97706;
+        --dark: #020617;
+        --glass: rgba(0, 0, 0, .55);
+    }
+
+    /* ========================= */
+    /*  HEADER                  */
+    /* ========================= */
+
+    .page-header {
+        padding: 18px 22px;
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.8));
+        border-radius: 14px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, .6);
+    }
+
+    .header-title {
+        color: #fbbf24;
+        letter-spacing: 1px;
+        text-shadow: 0 2px 8px rgba(251, 191, 36, .4);
+    }
+
+    .page-header span {
+        color: #fde68a !important;
+    }
+
+    /* ========================= */
+    /*  CONTEXT BOX              */
+    /* ========================= */
+
+    .context-box {
+        background: linear-gradient(135deg, rgba(251, 191, 36, .12), rgba(0, 0, 0, .85));
+        backdrop-filter: blur(10px);
+        border-left: 5px solid #fbbf24;
+        box-shadow: inset 0 0 15px rgba(251, 191, 36, .2), 0 15px 40px rgba(0, 0, 0, .6);
+    }
+
+    .context-label {
+        color: #facc15;
+    }
+
+    .context-value {
+        color: #fff;
+    }
+
+    /* ========================= */
+    /*  FILTER MENU              */
+    /* ========================= */
+
+    .filter-menu a {
+        background: linear-gradient(135deg, #020617, #111827);
+        border: 1px solid #fbbf24;
+        color: #fde68a;
+        box-shadow: 0 0 5px rgba(251, 191, 36, .4);
+    }
+
+    .filter-menu a:hover,
+    .filter-menu a.active {
+        background: linear-gradient(135deg, #fbbf24, #d97706);
+        color: black;
+        box-shadow: 0 0 18px rgba(251, 191, 36, .9);
+        transform: translateY(-3px) scale(1.05);
+    }
+
+
+    /* ========================= */
+    /* COMBO CARD (GOLD GLASS)   */
+    /* ========================= */
+
+    .combo-card {
+        background: linear-gradient(160deg, #020617, #111827);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, .7);
+    }
+
+    /* viền vàng ánh sáng */
+    .combo-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        padding: 1px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #fbbf24, #fff3b0, #f59e0b);
+        -webkit-mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: .5;
+        pointer-events: none;
+        /* ✅ KHÔNG CHẶN CLICK */
+    }
+
+    .combo-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 25px 60px rgba(251, 191, 36, .35);
+    }
+
+    /* ========================= */
+    /* IMAGE EFFECT              */
+    /* ========================= */
+
+    .img-wrapper::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, .7), transparent);
+        pointer-events: none;
+    }
+
+    .price-badge {
+        background: black;
+        border: 1px solid #fbbf24;
+        color: #fbbf24;
+        box-shadow: 0 0 12px rgba(251, 191, 36, .9);
+    }
+
+
+    /* ========================= */
+    /* TITLE & TEXT              */
+    /* ========================= */
+
+    .combo-title {
+        color: #fbbf24;
+    }
+
+    .combo-desc-label {
+        color: #fcd34d;
+    }
+
+    .menu-item {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 6px;
+        margin-bottom: 4px;
+    }
+
+    .item-qty {
+        background: rgba(251, 191, 36, .2);
+        color: #ffffff !important;
+    }
+
+    .menu-item:hover .item-name,
+    .menu-item:hover .item-desc,
+    .menu-item:hover .item-qty {
+        color: #ffffff !important;
+    }
+
+    .item-name,
+    .item-desc,
+    .item-qty {
+        color: #ffffff !important;
+        text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+    }
+
+    /* ========================= */
+    /* BUTTONS                   */
+    /* ========================= */
+
+    .btn-select {
+        background: linear-gradient(135deg, #fbbf24, #d97706);
+        color: black;
+        text-shadow: 0 1px 1px rgba(255, 255, 255, .5);
+        box-shadow: 0 0 20px rgba(251, 191, 36, .9);
+    }
+
+    .btn-select:hover {
+        box-shadow: 0 0 30px rgba(251, 191, 36, 1);
+        transform: translateY(-3px) scale(1.03);
+    }
+
+    .btn-increase,
+    .btn-decrease {
+        background: black;
+        border: 1px solid #fbbf24;
+        box-shadow: 0 0 8px rgba(251, 191, 36, .5);
+    }
+
+    .btn-increase:hover,
+    .btn-decrease:hover {
+        background: #fbbf24;
+        color: black;
+        transform: scale(1.15);
+    }
+
+    /* ========================= */
+    /* DISABLED COMBO             */
+    /* ========================= */
+
+    .combo-card.disabled {
+        opacity: .4;
+        filter: grayscale(100%);
+        box-shadow: none;
+    }
+
+    /* ========================= */
+    /* MODAL                      */
+    /* ========================= */
+
+    .modal-content {
+        background: linear-gradient(160deg, #020617, #111827);
+        box-shadow: 0 25px 80px rgba(0, 0, 0, .8);
+    }
+
+    .modal-title {
+        color: #fbbf24;
+    }
+
+    .modal-price {
+        color: #fde047;
+    }
+
+    .modal-add {
+        background: linear-gradient(135deg, #fbbf24, #d97706);
+        color: black;
+        box-shadow: 0 0 20px rgba(251, 191, 36, .9);
+    }
+
+    .modal-add:hover {
+        box-shadow: 0 0 30px rgba(251, 191, 36, 1);
+    }
+
+    /* ========================= */
+    /* FIX CLICK SAFETY           */
+    /* ========================= */
+
+    .combo-card::after,
+    .img-wrapper::before,
+    .img-wrapper::after,
+    .modal-content::before,
+    .modal-content::after {
+        pointer-events: none;
+        /* ✅ CHẮN TUYỆT ĐỐI LỚP CHẶN CLICK */
+    }
+
+    .card-body-custom,
+    .card-body-custom * {
+        position: relative;
+        z-index: 3;
+    }
+
+    /* ========================= */
+    /* EFFECT CLICK (nhẹ)         */
+    /* ========================= */
+
+    .btn-select:active,
+    .btn-increase:active,
+    .btn-decrease:active {
+        transform: scale(.9);
+    }
+
+    /* ===== RIÊNG GIAO DIỆN CHI TIẾT MODAL ===== */
+    #comboModal .modal-title {
+        font-size: 1.5rem;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+    }
+
+    #comboModal .modal-price {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #fde047;
+    }
+
+    #comboModal .modal-menu-title {
+        font-weight: 800;
+        color: #fbbf24;
+        margin-bottom: 8px;
+        margin-top: 10px;
+    }
+
+    #comboModal .modal-menu-row {
+        background: rgba(255, 255, 255, .04);
+        border-radius: 6px;
+        transition: 0.2s;
+    }
+
+    #comboModal .modal-menu-row:hover {
+        background: rgba(251, 191, 36, .15);
+        transform: translateX(3px);
+    }
+
+    /* ===== INPUT & NÚT TRONG MODAL ===== */
+    #comboModal .combo-qty {
+        background: black;
+        border: 1px solid #fbbf24;
+        color: #fbbf24;
+        font-weight: 800;
+    }
+
+    #comboModal .btn-increase,
+    #comboModal .btn-decrease {
+        background: #020617;
+        border: 1px solid #fbbf24;
+        color: #fbbf24;
+    }
+
+    #comboModal .btn-increase:hover,
+    #comboModal .btn-decrease:hover {
+        background: #fbbf24;
+        color: black;
+    }
+
+    /* ===== BUTTON THÊM COMBO ===== */
+    #comboModal .modal-add {
+        margin-top: 10px;
+        font-weight: 900;
+        letter-spacing: .5px;
+    }
+
+    #comboModal .modal-menu-row div {
+        color: #ffffff !important;
+    }
+
+    #comboModal .modal-menu-row div:last-child {
+        color: #fde68a !important;
+        /* số lượng vàng mềm */
+    }
+
+    /* Hiệu ứng nổi */
+    #comboModal .modal-menu-row {
+        text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
     }
 </style>
 
