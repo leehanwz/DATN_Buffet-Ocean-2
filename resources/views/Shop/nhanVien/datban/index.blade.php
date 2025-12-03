@@ -444,7 +444,7 @@
                     <!-- Online/Offline -->
                     <div class="col-md-3">
                         <label class="form-label-custom">Đơn Online</label>
-                        <select name="trang_thai" class="form-select-custom">
+                        <select name="la_dat_online" class="form-select-custom">
                             <option value="">-- Tất cả --</option>
                             <option value="1" {{ request('la_dat_online')==='1' ? 'selected' : '' }}>Online</option>
                             <option value="0" {{ request('la_dat_online')==='0' ? 'selected' : '' }}>Offline</option>
