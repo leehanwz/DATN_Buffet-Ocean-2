@@ -50,7 +50,9 @@ class NVDatBanController extends Controller
         if ($r->ma) {
             $query->where('ma_dat_ban', 'like', '%' . $r->ma . '%');
         }
-
+        if ($r->filled('la_dat_online')) {
+            $query->where('la_dat_online', $r->la_dat_online);
+        }
         // Thực thi truy vấn và sắp xếp
         $ds = $query->orderByDesc('id')->get();
         if ($r->ajax()) {

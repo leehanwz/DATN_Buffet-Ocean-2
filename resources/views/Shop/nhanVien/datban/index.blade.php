@@ -285,60 +285,62 @@
         transition: .2s;
         white-space: nowrap;
     }
+
     /* --- TOAST NOTIFICATION --- */
-/* Overlay thông báo */
-#booking-toast-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
+    /* Overlay thông báo */
+    #booking-toast-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
 
-#booking-toast-overlay.show {
-    opacity: 1;
-    pointer-events: auto;
-}
+    #booking-toast-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
 
-/* Hộp thông báo */
-#booking-toast {
-    background: #fff;
-    padding: 20px 30px;
-    border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    max-width: 400px;
-    text-align: center;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 600;
-}
+    /* Hộp thông báo */
+    #booking-toast {
+        background: #fff;
+        padding: 20px 30px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        max-width: 400px;
+        text-align: center;
+        font-family: 'Nunito', sans-serif;
+        font-weight: 600;
+    }
 
-#booking-toast h4 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-}
+    #booking-toast h4 {
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+    }
 
-#booking-toast button {
-    margin-top: 15px;
-    padding: 8px 20px;
-    background: #fea116;
-    border: none;
-    border-radius: 6px;
-    color: #fff;
-    font-weight: 700;
-    cursor: pointer;
-}
+    #booking-toast button {
+        margin-top: 15px;
+        padding: 8px 20px;
+        background: #fea116;
+        border: none;
+        border-radius: 6px;
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+    }
 
-#booking-toast button:hover {
-    background: #d98a12;
-}
+    #booking-toast button:hover {
+        background: #d98a12;
+    }
+
     /* Xác nhận (Chờ xác nhận → Đã xác nhận) */
     .btn-accept {
         background: #fffbeb;
@@ -397,12 +399,12 @@
 </style>
 
 <div class="container py-4">
-<div id="booking-toast-overlay">
-    <div id="booking-toast">
-        <h4 id="booking-toast-message">Đặt bàn mới!</h4>
-        <button id="booking-toast-ok">Đã hiểu</button>
+    <div id="booking-toast-overlay">
+        <div id="booking-toast">
+            <h4 id="booking-toast-message">Đặt bàn mới!</h4>
+            <button id="booking-toast-ok">Đã hiểu</button>
+        </div>
     </div>
-</div>
     {{-- HEADER --}}
     <div class="page-header">
         <h4 class="page-title"><i class="fa-solid fa-clipboard-list text-primary"></i> Danh sách đặt bàn</h4>
@@ -439,24 +441,34 @@
                             <option value="huy" {{ request('trang_thai')=='huy'?'selected':'' }}>Đã hủy</option>
                         </select>
                     </div>
-                    {{-- Mã --}}
+                    <!-- Online/Offline -->
                     <div class="col-md-3">
+                        <label class="form-label-custom">Đơn Online</label>
+                        <select name="trang_thai" class="form-select-custom">
+                            <option value="">-- Tất cả --</option>
+                            <option value="1" {{ request('la_dat_online')==='1' ? 'selected' : '' }}>Online</option>
+                            <option value="0" {{ request('la_dat_online')==='0' ? 'selected' : '' }}>Offline</option>
+                        </select>
+                    </div>
+                    {{-- Mã --}}
+                    <div class="col-md-2">
                         <label class="form-label-custom">Mã đặt bàn</label>
                         <input type="text" name="ma" class="form-control-custom" placeholder="Nhập mã..." value="{{ request('ma') }}">
                     </div>
                     {{-- Bàn --}}
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label-custom">Số bàn</label>
                         <input type="text" name="ban" class="form-control-custom" placeholder="VD: 10..." value="{{ request('ban') }}">
                     </div>
+
                     {{-- Khách --}}
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label-custom">Khách hàng</label>
                         <input type="text" name="khach" class="form-control-custom" placeholder="Tên hoặc SĐT..." value="{{ request('khach') }}">
                     </div>
 
                     {{-- Buttons --}}
-                    <div class="col-12 mt-3 d-flex gap-2">
+                    <div class="col-12 mt-2 d-flex gap-2">
                         <button type="submit" class="btn-filter-action btn-search">
                             <i class="fa-solid fa-magnifying-glass me-1"></i> Tìm kiếm
                         </button>
@@ -654,96 +666,102 @@
 
 {{-- Script đồng hồ --}}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
 
-    function updateCountdowns() {
-        const timers = document.querySelectorAll('.countdown-timer');
-        const now = new Date().getTime();
-        const fiveMinutes = 5 * 60 * 1000;
+        function updateCountdowns() {
+            const timers = document.querySelectorAll('.countdown-timer');
+            const now = new Date().getTime();
+            const fiveMinutes = 5 * 60 * 1000;
 
-        timers.forEach(timer => {
-            const endTime = parseInt(timer.getAttribute('data-endtime'));
-            if (isNaN(endTime)) return;
-            const distance = endTime - now;
+            timers.forEach(timer => {
+                const endTime = parseInt(timer.getAttribute('data-endtime'));
+                if (isNaN(endTime)) return;
+                const distance = endTime - now;
 
-            if (distance < 0) {
-                timer.innerHTML = "HẾT GIỜ";
-                timer.className = "countdown-timer text-danger fw-bold blink-fast";
-                return;
-            }
+                if (distance < 0) {
+                    timer.innerHTML = "HẾT GIỜ";
+                    timer.className = "countdown-timer text-danger fw-bold blink-fast";
+                    return;
+                }
 
-            const totalSeconds = Math.floor(distance / 1000);
-            const h = Math.floor(totalSeconds / 3600);
-            const m = Math.floor((totalSeconds % 3600) / 60);
-            const s = totalSeconds % 60;
+                const totalSeconds = Math.floor(distance / 1000);
+                const h = Math.floor(totalSeconds / 3600);
+                const m = Math.floor((totalSeconds % 3600) / 60);
+                const s = totalSeconds % 60;
 
-            const timeString = `${h < 10 ? "0"+h : h}:${m < 10 ? "0"+m : m}:${s < 10 ? "0"+s : s}`;
+                const timeString = `${h < 10 ? "0"+h : h}:${m < 10 ? "0"+m : m}:${s < 10 ? "0"+s : s}`;
 
-            if (distance <= fiveMinutes) {
-                timer.innerHTML = `${timeString} <i class="fa-solid fa-triangle-exclamation"></i>`;
-                timer.className = "countdown-timer text-warning fw-bold blink-slow";
-            } else {
-                timer.innerHTML = timeString;
-                timer.className = "countdown-timer text-success fw-bold";
-            }
+                if (distance <= fiveMinutes) {
+                    timer.innerHTML = `${timeString} <i class="fa-solid fa-triangle-exclamation"></i>`;
+                    timer.className = "countdown-timer text-warning fw-bold blink-slow";
+                } else {
+                    timer.innerHTML = timeString;
+                    timer.className = "countdown-timer text-success fw-bold";
+                }
+            });
+        }
+
+        setInterval(updateCountdowns, 1000);
+        updateCountdowns();
+
+        // AUTO REFRESH TABLE
+        setInterval(() => {
+            const url = new URL(window.location.href);
+            url.searchParams.set('ajax', '1');
+
+            fetch(url.toString())
+                .then(res => res.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newTbody = doc.querySelector('tbody');
+                    const oldTbody = document.querySelector('.card-table .table tbody');
+                    if (!newTbody || !oldTbody) return;
+
+                    oldTbody.innerHTML = newTbody.innerHTML;
+                    updateCountdowns();
+                })
+                .catch(err => console.error('Auto refresh error:', err));
+        }, 5000);
+
+        // THÔNG BÁO BOOKING MỚI (TOAST) với localStorage
+        const overlay = document.getElementById('booking-toast-overlay');
+        const messageEl = document.getElementById('booking-toast-message');
+        const okBtn = document.getElementById('booking-toast-ok');
+
+        okBtn.addEventListener('click', () => {
+            overlay.classList.remove('show');
         });
-    }
 
-    setInterval(updateCountdowns, 1000);
-    updateCountdowns();
+        function showBookingToast(ten, sdt, id) {
+            const shownBookings = JSON.parse(localStorage.getItem('shownBookings') || '[]');
+            if (shownBookings.includes(id)) return; // đã thông báo → không lặp
 
-    // AUTO REFRESH TABLE
-    setInterval(() => {
-        const url = new URL(window.location.href);
-        url.searchParams.set('ajax', '1');
+            messageEl.innerHTML = `
+    <i class="fa-solid fa-bell me-1" style="color:#fea116;"></i>
+    <span style="font-weight:700; color:#0f172b;">Nhà Hàng Đơn Đặt bàn mới:</span>
+    <br>
+    <span style="font-weight:600; color:#d97706;">Tên Khách Hàng: ${ten}</span> <br>
+    <span style="font-weight:500; color:#16a34a;">Số Điện Thoại:${sdt}</span>
+`;
+            overlay.classList.add('show');
 
-        fetch(url.toString())
-            .then(res => res.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newTbody = doc.querySelector('tbody');
-                const oldTbody = document.querySelector('.card-table .table tbody');
-                if (!newTbody || !oldTbody) return;
+            shownBookings.push(id);
+            localStorage.setItem('shownBookings', JSON.stringify(shownBookings));
+        }
 
-                oldTbody.innerHTML = newTbody.innerHTML;
-                updateCountdowns();
-            })
-            .catch(err => console.error('Auto refresh error:', err));
-    }, 5000);
+        setInterval(() => {
+            const bookingRows = document.querySelectorAll('tr[data-la-dat-online="1"]');
+            bookingRows.forEach(row => {
+                const id = row.getAttribute('data-id');
+                const ten = row.getAttribute('data-ten');
+                const sdt = row.getAttribute('data-sdt');
 
-    // THÔNG BÁO BOOKING MỚI (TOAST) với localStorage
-    const overlay = document.getElementById('booking-toast-overlay');
-    const messageEl = document.getElementById('booking-toast-message');
-    const okBtn = document.getElementById('booking-toast-ok');
+                showBookingToast(ten, sdt, id);
+            });
+        }, 3000);
 
-    okBtn.addEventListener('click', () => {
-        overlay.classList.remove('show');
     });
-
-    function showBookingToast(ten, sdt, id) {
-        const shownBookings = JSON.parse(localStorage.getItem('shownBookings') || '[]');
-        if (shownBookings.includes(id)) return; // đã thông báo → không lặp
-
-        messageEl.textContent = `Đặt bàn mới: ${ten} - ${sdt}`;
-        overlay.classList.add('show');
-
-        shownBookings.push(id);
-        localStorage.setItem('shownBookings', JSON.stringify(shownBookings));
-    }
-
-    setInterval(() => {
-        const bookingRows = document.querySelectorAll('tr[data-la-dat-online="1"]');
-        bookingRows.forEach(row => {
-            const id = row.getAttribute('data-id');
-            const ten = row.getAttribute('data-ten');
-            const sdt = row.getAttribute('data-sdt');
-
-            showBookingToast(ten, sdt, id);
-        });
-    }, 3000);
-
-});
 </script>
 
 @endsection

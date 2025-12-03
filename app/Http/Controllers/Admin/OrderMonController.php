@@ -9,6 +9,7 @@ use App\Models\DatBan;
 use App\Models\BanAn;
 use App\Models\ChiTietOrder;
 use Illuminate\Http\Request;
+use App\Helpers\OrderHelper;
 
 class OrderMonController extends Controller
 {
@@ -47,6 +48,7 @@ class OrderMonController extends Controller
     {
         $datBans = DatBan::with(['banAn', 'chiTietDatBan.combo'])
             ->where('trang_thai', 'khach_da_den')
+             ->whereHas('banAn')
             ->orderByDesc('id')
             ->get();
 
@@ -60,6 +62,7 @@ class OrderMonController extends Controller
     {
         $request->validate([
             'dat_ban_id' => 'required|exists:dat_ban,id',
+            'ban_id' => 'required|exists:ban_an,id',
         ]);
 
         // Lấy thông tin đặt bàn + combo đã chọn
@@ -90,13 +93,12 @@ class OrderMonController extends Controller
 
             if (!$combo) continue;
 
-            $donGiaCombo = $combo->don_gia ?? 0;
+            $donGiaCombo = $combo->gia_co_ban ?? 0;
             $soLuongCombo = $ct->so_luong ?? 1;
 
             $tongTienCombo += $donGiaCombo * $soLuongCombo;
-            $tongMon += $soLuongCombo; // mỗi combo tính như 1 phần
+            $tongMon += $combo->monTrongCombo->sum('gioi_han_so_luong') * $soLuongCombo;// mỗi combo tính như 1 phần
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -194,4 +196,5 @@ class OrderMonController extends Controller
         return redirect()->route('admin.order-mon.index')
             ->with('success', 'Xóa Order món thành công!');
     }
+
 }
