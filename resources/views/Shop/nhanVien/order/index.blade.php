@@ -94,7 +94,6 @@
                             <p class="mb-1"><i class="bi bi-telephone-fill"></i> {{ $order->datBan->sdt_khach }}</p>
                             @endif
                             <p class="mb-1"><i class="bi bi-basket3"></i> {{ $order->tong_mon }} món</p>
-                            <p class="mb-2"><i class="bi bi-currency-dollar"></i> {{ number_format($order->tong_tien) }} đ</p>
 
                             <a href="{{ route('nhanVien.order.page', $order->id) }}"
                                 class="btn btn-warning btn-lg rounded-circle shadow-sm d-flex align-items-center justify-content-center"
