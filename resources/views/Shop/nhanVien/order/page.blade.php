@@ -482,10 +482,13 @@
                                         <div style="font-weight: 700; color: var(--dark);">{{ $ct->monAn->ten_mon }}</div>
                                     </td>
                                     <td class="text-center">
-                                        <span style="font-family:'Heebo'; font-weight:800; font-size:1rem; color: var(--primary);">
-                                            x{{ $ct->so_luong_hien_thi ?? ($ct->so_luong ?? 0) }}
-                                        </span>
+                                        @if($ct->so_luong_hien_thi === 'Chưa chọn')
+                                        <span class="badge bg-secondary">Chưa chọn</span>
+                                        @else
+                                        x{{ $ct->so_luong_hien_thi }}
+                                        @endif
                                     </td>
+
                                     <td>
                                         @if($ct->ghi_chu)
                                         <small class="text-muted fst-italic"><i class="fa-regular fa-comment-dots"></i> {{ $ct->ghi_chu }}</small>

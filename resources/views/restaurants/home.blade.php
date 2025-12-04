@@ -10,50 +10,50 @@
     /* FIX LỖI TRÀN MÀN HÌNH */
     html, body { overflow-x: hidden !important; width: 100%; position: relative; }
 
-    
+
     /* ICON GIỎ HÀNG NỔI */
     #floatingCartIcon {
-        position: fixed !important; 
-        bottom: 30px; 
-        right: 30px; 
+        position: fixed !important;
+        bottom: 30px;
+        right: 30px;
         z-index: 2147483647 !important; /* Max Z-Index */
-        cursor: pointer; 
+        cursor: pointer;
         display: none; /* JS sẽ bật lên thành flex */
         animation: popUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     }
 
     .icon-wrapper {
-        width: 65px; 
-        height: 65px; 
+        width: 65px;
+        height: 65px;
         background: linear-gradient(135deg, #FF6B6B, #FF8E53);
-        color: #fff; 
-        border-radius: 50%; 
-        display: flex; 
-        align-items: center; 
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
         justify-content: center;
-        font-size: 28px; 
-        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.5); 
+        font-size: 28px;
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.5);
         transition: transform 0.2s;
-        border: 3px solid #fff; 
+        border: 3px solid #fff;
     }
 
     .icon-wrapper:active { transform: scale(0.9); }
     .icon-wrapper:hover { transform: scale(1.05); }
 
     .count-badge {
-        position: absolute; 
-        top: -5px; 
-        right: -5px; 
-        background: #fff; 
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #fff;
         color: #d63031;
-        font-size: 14px; 
-        font-weight: 800; 
-        width: 28px; 
-        height: 28px; 
+        font-size: 14px;
+        font-weight: 800;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border: 2px solid #d63031;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
@@ -70,18 +70,18 @@
 
     /* HIỆU ỨNG CARD SẢN PHẨM */
     .product-card-trigger { cursor: pointer; transition: all 0.3s; }
-    .product-card-trigger:hover { 
-        background-color: #fff; 
-        transform: translateY(-5px); 
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important; 
+    .product-card-trigger:hover {
+        background-color: #fff;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
     }
-    
+
     @keyframes popUp { from { transform: scale(0); } to { transform: scale(1); } }
 
     /* --- [MỚI] FIX LỖI POPUP XÁC NHẬN BỊ CHÌM --- */
     /* Đẩy SweetAlert lên cao hơn Modal Giỏ hàng (đang là 9999999) */
     div.swal2-container {
-        z-index: 20000000 !important; 
+        z-index: 20000000 !important;
     }
 </style>
 
@@ -211,7 +211,7 @@
             <h5 class="section-title ff-secondary text-center text-primary fw-normal">Thực Đơn Combo</h5>
             <h1 class="mb-5">Các Gói Buffet Đặc Biệt</h1>
         </div>
-        
+
         <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
             @php $groupedCombos = $combos->groupBy('loai_combo'); @endphp
 
@@ -248,17 +248,17 @@
                                 <div class="col-lg-6">
                                     {{-- ITEM CARD --}}
                                     <div class="d-flex align-items-center product-card-trigger rounded p-3 bg-white shadow-sm h-100"
-                                         data-key="combo_{{ $combo->id }}" 
-                                         data-type="combo" 
+                                         data-key="combo_{{ $combo->id }}"
+                                         data-type="combo"
                                          data-name="{{ $combo->ten_combo }}"
-                                         data-price="{{ $combo->gia_co_ban }}" 
+                                         data-price="{{ $combo->gia_co_ban }}"
                                          data-desc="{{ $combo->mo_ta }}"
                                          data-img="{{ $imageUrl }}"
                                          data-dishes="{{ json_encode($combo->danhSachMon ? $combo->danhSachMon->pluck('ten_mon') : []) }}">
-                                    
+
                                         {{-- Ảnh --}}
                                         <img class="flex-shrink-0 img-fluid rounded" src="{{ $imageUrl }}" alt="{{ $combo->ten_combo }}" style="width: 100px; height: 100px; object-fit: cover;">
-                                        
+
                                         {{-- Thông tin --}}
                                         <div class="w-100 d-flex flex-column text-start ps-4">
                                             <h5 class="d-flex justify-content-between border-bottom pb-2">
@@ -267,7 +267,7 @@
                                             </h5>
                                             <small class="fst-italic text-muted mb-2"><i class="fa fa-clock me-1"></i>{{ $combo->thoi_luong_phut }} phút</small>
                                             <small class="fst-italic text-secondary line-clamp-2">{{ \Illuminate\Support\Str::limit($combo->mo_ta, 60) }}</small>
-                                            
+
                                             <div class="mt-auto pt-2">
                                                 <button class="btn btn-sm btn-outline-warning fw-bold rounded-pill px-3">
                                                     <i class="fa fa-eye me-1"></i> Xem chi tiết
@@ -303,7 +303,7 @@
 
                 @if (session('success')) <div class="alert alert-success alert-dismissible fade show"> {{ session('success') }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> @endif
                 @if (session('error')) <div class="alert alert-danger alert-dismissible fade show"> {{ session('error') }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> @endif
-                
+
                 <form action="{{ route('booking.store') }}" method="POST" id="bookingForm">
                     @csrf
                     <input type="hidden" name="cart_data" id="cart_data_input">
@@ -418,26 +418,26 @@
             <h1 class="mb-5">Khách Hàng Nói Gì Về Chúng Tôi</h1>
         </div>
         <div class="owl-carousel testimonial-carousel">
-            
+
             {{-- FIX: Kiểm tra biến tồn tại trước khi dùng --}}
             @if(isset($danhGias) && $danhGias->count() > 0)
                 @foreach($danhGias as $item)
                 <div class="testimonial-item bg-transparent border rounded p-4">
                     <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                    
+
                     {{-- Nội dung đánh giá --}}
                     <p>{{ $item->noi_dung }}</p>
-                    
+
                     <div class="d-flex align-items-center">
                         {{-- Ảnh mặc định vì database không có cột ảnh --}}
-                        <img class="img-fluid flex-shrink-0 rounded-circle" 
-                             src="{{ asset('assets/img/testimonial-1.jpg') }}" 
+                        <img class="img-fluid flex-shrink-0 rounded-circle"
+                             src="{{ asset('assets/img/testimonial-1.jpg') }}"
                              style="width: 50px; height: 50px; object-fit: cover;">
-                        
+
                         <div class="ps-3">
                             <h5 class="mb-1">{{ $item->ten_khach }}</h5>
                             <small>{{ $item->nghe_nghiep ?? 'Thực khách' }}</small>
-                            
+
                             {{-- Hiển thị sao --}}
                             <div class="small text-warning mt-1">
                                 @for($i = 1; $i <= 5; $i++)
@@ -536,7 +536,7 @@
                         <div class="p-3 bg-light rounded-3 mb-3">
                             <h6 class="text-dark fw-bold mb-2"><i class="fa fa-info-circle me-2"></i>Mô tả:</h6>
                             <p id="modalDesc" class="text-muted small mb-0" style="line-height: 1.6;"></p>
-                            
+
                             <div id="modalComboItems" class="mt-3 pt-3 border-top" style="display: none;">
                                 <h6 class="text-dark fw-bold mb-2 text-primary"><i class="fa fa-utensils me-2"></i>Món trong Combo:</h6>
                                 <ul id="modalComboList" class="list-group list-group-flush small bg-transparent"></ul>
@@ -557,9 +557,9 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        console.log("App script loaded."); 
+        console.log("App script loaded.");
 
-        const BOOKING_SECTION_ID = "#booking-section"; 
+        const BOOKING_SECTION_ID = "#booking-section";
 
         // Elements
         let cart = JSON.parse(localStorage.getItem("oceanCart")) || [];
@@ -583,7 +583,7 @@
         // 1. RENDER GIỎ HÀNG
         function renderCartUI() {
             const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-            
+
             if (cartCountBadge) cartCountBadge.innerText = totalCount;
 
             if (floatingCartIcon) {
@@ -630,7 +630,7 @@
                         cartItemsList.appendChild(li);
                     });
                 }
-                
+
                 const formattedTotal = totalPrice.toLocaleString('vi-VN') + ' đ';
                 if(cartTotalDisplay) cartTotalDisplay.innerText = formattedTotal;
                 if(document.getElementById('cartTotalPrint')) document.getElementById('cartTotalPrint').innerText = formattedTotal;
@@ -666,28 +666,28 @@
         document.querySelectorAll('.product-card-trigger').forEach(card => {
             card.addEventListener('click', function(e) {
                 const d = this.dataset;
-                
+
                 document.getElementById('modalName').innerText = d.name;
                 document.getElementById('modalPrice').innerText = parseInt(d.price).toLocaleString('vi-VN') + ' VNĐ';
                 document.getElementById('modalDesc').innerText = d.desc;
                 if(d.img) document.getElementById('modalImg').src = d.img;
-                
+
                 const badge = document.getElementById('modalType');
-                if(d.type === 'combo') { 
-                    badge.className='badge bg-danger mb-3 px-3 py-2 rounded-pill'; badge.innerText='Combo Hot'; 
-                } else { 
-                    badge.className='badge bg-success mb-3 px-3 py-2 rounded-pill'; badge.innerText='Món Ngon'; 
+                if(d.type === 'combo') {
+                    badge.className='badge bg-danger mb-3 px-3 py-2 rounded-pill'; badge.innerText='Combo Hot';
+                } else {
+                    badge.className='badge bg-success mb-3 px-3 py-2 rounded-pill'; badge.innerText='Món Ngon';
                 }
 
                 const comboSection = document.getElementById('modalComboItems');
                 const comboList = document.getElementById('modalComboList');
-                comboList.innerHTML = ''; 
+                comboList.innerHTML = '';
 
                 if (d.type === 'combo' && d.dishes && d.dishes !== '[]') {
                     try {
                         const dishesArray = JSON.parse(d.dishes);
                         if (dishesArray.length > 0) {
-                            comboSection.style.display = 'block'; 
+                            comboSection.style.display = 'block';
                             dishesArray.forEach(dishName => {
                                 const li = document.createElement('li');
                                 li.className = 'list-group-item bg-transparent px-0 py-1';
@@ -771,7 +771,7 @@
             bookingForm.addEventListener('submit', function(e) {
                 // Lấy dữ liệu giỏ hàng từ LocalStorage
                 const cartData = localStorage.getItem("oceanCart");
-                
+
                 // Đổ vào input hidden
                 const cartInput = document.getElementById('cart_data_input');
                 if(cartInput) {

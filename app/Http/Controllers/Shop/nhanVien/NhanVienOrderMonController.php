@@ -179,41 +179,43 @@ class NhanVienOrderMonController extends Controller
     // Xử lý lưu món mới vào database
     public function store(Request $request)
     {
-        $data = $request->all();
+        $orderId = $request->order_id;
+        $items   = $request->items;
 
-        // Nếu gửi theo AJAX
-        if (isset($data['items'])) {
-            foreach ($data['items'] as $item) {
+        foreach ($items as $item) {
+
+            // 1. TÌM MÓN ĐÃ CÓ TRONG ORDER
+            $existing = ChiTietOrder::where('order_id', $orderId)
+                ->where('mon_an_id', $item['mon_an_id'])
+                ->first();
+
+            if ($existing) {
+                // ✅ NẾU ĐÃ CÓ → CỘNG SỐ LƯỢNG
+                $existing->so_luong += $item['so_luong'];
+
+                // ghi đè ghi chú nếu có
+                if (!empty($item['ghi_chu'])) {
+                    $existing->ghi_chu = $item['ghi_chu'];
+                }
+
+                $existing->save();
+            } else {
+                // ✅ CHƯA CÓ → TẠO DÒNG MỚI
                 ChiTietOrder::create([
-                    'order_id'  => $data['order_id'],
+                    'order_id' => $orderId,
                     'mon_an_id' => $item['mon_an_id'],
-                    'so_luong'  => $item['so_luong'] ?? 1,
-                    'loai_mon'  => ($item['is_combo'] == 1) ? 'combo' : 'goi_them',
-                    'ghi_chu'   => $item['ghi_chu'] ?? null,
+                    'so_luong'  => $item['so_luong'],
+                    'ghi_chu'   => $item['ghi_chu'],
+                    'loai_mon'  => $item['is_combo'] ? 'combo' : 'goi_them',
                     'trang_thai' => 'cho_bep',
+                    'deadline'  => now()->addMinutes(15),
                 ]);
             }
-        } else {
-            // Nếu gửi form thường
-            $request->validate([
-                'order_id' => 'required',
-                'mon_an_id' => 'required',
-                'so_luong' => 'required|integer|min:1'
-            ]);
-
-            ChiTietOrder::create([
-                'order_id'  => $request->order_id,
-                'mon_an_id' => $request->mon_an_id,
-                'so_luong'  => $request->so_luong,
-                'loai_mon'  => $request->is_combo == 1 ? 'combo' : 'goi_them',
-                'ghi_chu'   => $request->ghi_chu,
-                'trang_thai' => 'cho_bep',
-            ]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'Đã thêm món vào order!'
+            'message' => 'Đã cập nhật số lượng món thành công!'
         ]);
     }
 
@@ -277,7 +279,7 @@ class NhanVienOrderMonController extends Controller
                     ChiTietOrder::create([
                         'order_id' => $orderId,
                         'mon_an_id' => $item->mon_an_id,
-                        'so_luong' => $combo->pivot->so_luong,
+                        'so_luong' => null,
                         'loai_mon' => 'combo',
                         'trang_thai' => 'cho_bep',
                     ]);
@@ -289,8 +291,11 @@ class NhanVienOrderMonController extends Controller
         $cts = $order->chiTietOrders;
 
         $order->chiTietOrders->each(function ($ct) {
-            $ct->so_luong_hien_thi = $ct->so_luong;
+            $ct->so_luong_hien_thi = $ct->so_luong === null
+                ? 'Chưa chọn'
+                : $ct->so_luong;
         });
+
 
         return view('Shop.nhanVien.order.page', compact('order', 'cts'));
     }
@@ -367,7 +372,7 @@ class NhanVienOrderMonController extends Controller
                 $chiTietToInsert[] = [
                     'order_id' => $orderId,
                     'mon_an_id' => $item->mon_an_id,
-                    'so_luong' => $soLuongCombo,
+                    'so_luong' => null,
                     'loai_mon' => 'combo',
                     'trang_thai' => 'cho_bep',
                     'created_at' => now(),

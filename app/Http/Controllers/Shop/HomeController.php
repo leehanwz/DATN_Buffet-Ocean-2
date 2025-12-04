@@ -26,9 +26,9 @@ class HomeController extends Controller
             ->get();
 
         // Lấy TẤT CẢ combo đang mở bán
-        $combos = ComboBuffet::with('danhSachMon') 
+        $combos = ComboBuffet::with('danhSachMon')
             ->where('trang_thai', 'dang_ban')
-            ->orderBy('gia_co_ban', 'asc') 
+            ->orderBy('gia_co_ban', 'asc')
             ->get();
 
         // Lấy danh sách khu vực
@@ -36,7 +36,7 @@ class HomeController extends Controller
 
         // Lấy danh sách bàn khả dụng
         $banAns = BanAn::whereNotIn('trang_thai', ['dang_phuc_vu', 'da_dat', 'khong_su_dung'])->get();
-        
+
         // Lấy danh mục hiển thị
         $danhMucs = DanhMuc::where('hien_thi', 1)->get();
 
@@ -48,9 +48,9 @@ class HomeController extends Controller
                             ->get();
 
         return view('restaurants.home', compact(
-            'newDishes', 
-            'combos', 
-            'khuVucs', 
+            'newDishes',
+            'combos',
+            'khuVucs',
             'banAns',
             'danhMucs',
             'danhGias' // <--- Đã thêm biến này vào view
@@ -90,7 +90,7 @@ class HomeController extends Controller
     {
         return view('restaurants.contact');
     }
-    
+
     public function sendContact(Request $request)
     {
         return back()->with('success', 'Cảm ơn bạn đã liên hệ!');
