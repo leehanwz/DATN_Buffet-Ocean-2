@@ -134,14 +134,6 @@ class NVDatBanController extends Controller
         ]);
 
         $tongKhach = $request->nguoi_lon + $request->tre_em;
-        $tongCombo = collect($request->input('combos', []))->sum('so_luong');
-
-        if ($tongCombo < $tongKhach) {
-            return back()->withInput()->with(
-                'error',
-                "Bạn có {$tongKhach} khách nhưng chỉ chọn {$tongCombo} combo. Vui lòng chọn ít nhất {$tongKhach} combo."
-            );
-        }
         $banAn = BanAn::find($request->ban_id);
 
         if ($banAn->so_ghe < $tongKhach) {

@@ -464,43 +464,53 @@
     }
 
     // Chuẩn bị dữ liệu combo trước khi submit (đưa về dạng mảng)
-    function prepareFormData(event) {
-        var comboInputs = document.querySelectorAll('.combo-input');
-        var form = document.querySelector('form');
+   function prepareFormData(event) {
+    let form = document.querySelector("form");
+    let inpTongKhach = parseInt(document.getElementById("inpTongKhach").value) || 0;
 
-        // Xóa các input hidden cũ nếu có (trong trường hợp submit lại)
-        document.querySelectorAll('input[name^="combos["]').forEach(el => el.remove());
+    // Xóa input combos cũ
+    document.querySelectorAll('input[name^="combos["]').forEach(e => e.remove());
 
-        var hasCombo = false;
-        comboInputs.forEach(input => {
-            var quantity = parseInt(input.value) || 0;
-            var comboId = input.getAttribute('data-combo-id');
+    let comboInputs = document.querySelectorAll(".combo-input");
+    let totalCombo = 0;
+    let index = 0;
 
-            if (quantity > 0) {
-                hasCombo = true;
-                // Tạo input hidden cho ID combo (combos[ID_COMBO][id])
-                var idInput = document.createElement('input');
-                idInput.type = 'hidden';
-                idInput.name = `combos[${comboId}][id]`;
-                idInput.value = comboId;
+    comboInputs.forEach(input => {
+        let qty = parseInt(input.value) || 0;
+        let comboId = input.dataset.comboId;
 
-                // Tạo input hidden cho số lượng (combos[ID_COMBO][so_luong])
-                var qtyInput = document.createElement('input');
-                qtyInput.type = 'hidden';
-                qtyInput.name = `combos[${comboId}][so_luong]`;
-                qtyInput.value = quantity;
+        if (qty > 0) {
+            totalCombo += qty;
 
-                // Thêm vào form trước khi submit
-                form.appendChild(idInput);
-                form.appendChild(qtyInput);
-            }
-        });
+            // Tạo input hidden giống cấu trúc ADMIN
+            let idInput = document.createElement("input");
+            idInput.type = "hidden";
+            idInput.name = `combos[${index}][id]`;
+            idInput.value = comboId;
 
-        // Nếu không có combo nào được chọn, Controller sẽ nhận mảng combos rỗng (nullable)
-        // Khách có thể không chọn combo nếu họ định gọi món lẻ
+            let qtyInput = document.createElement("input");
+            qtyInput.type = "hidden";
+            qtyInput.name = `combos[${index}][so_luong]`;
+            qtyInput.value = qty;
 
-        return true;
+            form.appendChild(idInput);
+            form.appendChild(qtyInput);
+
+            index++;
+        }
+    });
+    if (totalCombo === 0) {
+    return true; // cho submit luôn
+}
+    // VALIDATE NHƯ ADMIN
+    if (totalCombo < inpTongKhach) {
+        event.preventDefault();
+        alert(`Bạn có ${inpTongKhach} khách nhưng chỉ chọn ${totalCombo} combo. Vui lòng chọn đủ.`);
+        return false;
     }
+
+    return true;
+}
 
     // Validate số lượng combo
     function validateComboQuantity(input) {
