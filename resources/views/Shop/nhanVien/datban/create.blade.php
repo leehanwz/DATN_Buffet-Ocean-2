@@ -391,7 +391,12 @@
 <script>
     var CHECK_URL = "{{ url('/nhanVien/dat-ban/check-ban-trong') }}";
     var OLD_BAN_ID = "{{ old('ban_id') }}";
-
+    document.addEventListener('DOMContentLoaded', function() {
+        let form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', prepareFormData);
+        }
+    });
     // Hàm cập nhật tổng số khách
     function updateTongKhach() {
         var inpNguoiLon = document.getElementById('inpNguoiLon');
@@ -533,36 +538,32 @@
         // 3. Init search
         if (inpTime && inpTime.value) setTimeout(timBanTrong, 200);
     });
-document.getElementById('selGiaCombo').addEventListener('change', function () {
-    let selectedPrice = this.value;
-    let container = document.getElementById('combo-picker-container');
-    let list = document.querySelectorAll('#combo-picker-container .combo-item');
+    document.getElementById('selGiaCombo').addEventListener('change', function() {
+        let selectedPrice = this.value;
+        let container = document.getElementById('combo-picker-container');
+        let list = document.querySelectorAll('#combo-picker-container .combo-item');
 
-    if (!selectedPrice) {
-        container.classList.add('d-none');
-        list.forEach(item => {
-            item.style.display = "none";
-            let input = item.querySelector('.combo-input');
-            if (input) input.value = 0;
-        });
-        return;
-    }
-
-    // Có giá → hiện container
-    container.classList.remove('d-none');
-
-    list.forEach(item => {
-        let price = item.getAttribute('data-combo-price');
-
-        if (selectedPrice === price) {
-            item.style.display = "flex";
-        } else {
-            item.style.display = "none";
-            let input = item.querySelector('.combo-input');
-            if (input) input.value = 0;
+        if (!selectedPrice) {
+            container.classList.add('d-none');
+            list.forEach(item => {
+                item.style.display = "none";
+            });
+            return;
         }
-    });
-});
 
+        // Có giá → hiện container
+        container.classList.remove('d-none');
+
+        list.forEach(item => {
+            let price = item.getAttribute('data-combo-price');
+
+            if (Number(selectedPrice) == Number(price.trim())) {
+                item.style.display = "flex";
+            } else {
+                item.style.display = "none";
+            }
+        });
+    });
 </script>
+
 @endsection

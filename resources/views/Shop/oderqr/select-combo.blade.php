@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* --- 1. CẤU HÌNH MÀU SẮC & LAYOUT CHUNG --- */
+        /* --- 1. CẤU HÌNH CƠ BẢN --- */
         :root {
             --primary: #fea116;
             --primary-dark: #d98a12;
@@ -15,15 +15,30 @@
             --white: #ffffff;
             --text-main: #1e293b;
             --radius: 12px;
-            --filter-bg: #fea116;
             --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
         }
 
         body { font-family: 'Nunito', sans-serif; background-color: #f2f4f8; color: var(--text-main); padding-bottom: 100px; overflow-x: hidden; }
         .app-content { min-height: 100vh; padding: 20px 10px; display: flex; justify-content: center; }
-        .form-container { width: 100%; max-width: 850px; background: var(--white); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; margin-top: 10px; }
 
-        /* Header */
+        /* --- [MỚI] ẨN HEADER/FOOTER TRÊN MOBILE --- */
+        @media (max-width: 768px) {
+            /* Ẩn các thẻ layout mặc định của web để tối ưu không gian */
+            header, footer, .banner, .top-bar, .site-header, .site-footer {
+                display: none !important;
+            }
+            body { padding-top: 0 !important; }
+            .app-content { padding-top: 0 !important; padding-bottom: 80px; }
+        }
+
+        .form-container {
+            width: 100%; max-width: 850px; background: var(--white);
+            border-radius: 16px; box-shadow: var(--shadow);
+            overflow: hidden; margin-top: 10px;
+            transition: all 0.5s ease-in-out;
+        }
+
+        /* Header Form */
         .form-header { background: var(--dark); padding: 30px 20px; text-align: center; color: var(--white); border-bottom: 4px solid var(--primary); }
         .form-header h1 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.8rem; margin: 0 0 5px 0; color: var(--primary); text-transform: uppercase; }
         .form-header p { margin: 0; opacity: 0.9; font-size: 0.9rem; color: #e2e8f0; }
@@ -32,130 +47,147 @@
         .section-label { font-weight: 700; font-size: 1.1rem; color: var(--dark); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; }
         .section-label i { color: var(--primary); }
 
-        /* Input Khách hàng */
+        /* --- [ĐÃ CẢI TIẾN] CUSTOMER INFO CARD (Khi có đặt bàn) --- */
+        .customer-info-card {
+            background: #fff8e8; /* Nền màu vàng nhạt */
+            border: 1px solid var(--primary); /* Viền màu Primary để nổi bật */
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px -5px rgba(254, 161, 22, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .customer-info-card strong {
+            color: var(--dark);
+            font-weight: 800;
+            margin-right: 5px;
+        }
+
+        .customer-info-card .main-details {
+            font-size: 1.05rem;
+            color: var(--text-main);
+            margin-bottom: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px; /* Tăng khoảng cách giữa 2 thông tin */
+        }
+
+        .customer-info-card small {
+            display: block;
+            color: #64748b;
+            font-weight: 600;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px dashed #fcd34d;
+        }
+
+        .customer-info-card .highlight-count {
+            font-weight: 800;
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+        }
+
+        /* Input & Error */
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .form-group label { display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 5px; color: #64748b; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; background: #fcfcfc; transition: 0.2s; box-sizing: border-box; }
         .form-control:focus { border-color: var(--primary); outline: none; background: #fff; }
-
-        /* Error Box */
         .alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
         .alert-error ul { margin: 5px 0 0 20px; padding: 0; }
 
-        /* --- 2. FILTER NAV (THANH LỌC - KIỂU PILL MỚI) --- */
-        .category-nav-wrapper {
-            background: #ffffff;
-            margin: 0 -10px 20px -10px;
-            padding: 10px 5px;
-            position: sticky;
-            top: 0;
-            z-index: 900;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Bóng mờ nhẹ dưới thanh */
-        }
+        /* --- 2. CATEGORY NAV (NÚT CHỌN GIÁ - STYLE MỚI) --- */
+        .category-nav-wrapper { background: #ffffff; padding: 10px 0 20px 0; margin: 0 -10px; position: sticky; top: 0; z-index: 900; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .category-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; padding: 0 15px; transition: all 0.5s ease; min-height: 60px; }
 
-        .category-nav {
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            gap: 10px; /* Khoảng cách giữa các nút */
-            scrollbar-width: none;
-            flex: 1;
-            scroll-behavior: smooth;
-            padding: 0 5px;
-        }
-        .category-nav::-webkit-scrollbar { display: none; }
-
-        /* Style cho từng nút (Viên thuốc) */
         .cat-item {
-            padding: 10px 20px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #64748b; /* Màu chữ mặc định */
-            background-color: #f1f5f9; /* Màu nền xám nhạt */
-            border-radius: 50px; /* Bo tròn */
+            /* Trạng thái chưa chọn: Lớn, rõ ràng */
+            padding: 20px 15px;
+            font-weight: 800; font-size: 1.2rem;
+            text-align: center; color: #475569; background-color: #fff;
+            border: 2px solid #e2e8f0; border-radius: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            flex: 1 0 calc(33.333% - 15px); /* Chia cột đều */
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            max-width: 500px;
+            position: relative;
         }
+        .cat-item:not(.active):hover { border-color: var(--primary); color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(254, 161, 22, 0.15); z-index: 2; }
 
-        /* Trạng thái Active */
+        /* Trạng thái Active: Nhỏ lại, thu vào giữa (Compact) */
         .cat-item.active {
-            background-color: var(--primary); /* Nền cam */
-            color: #ffffff; /* Chữ trắng */
-            box-shadow: 0 4px 10px rgba(254, 161, 22, 0.3);
+            background-color: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(254, 161, 22, 0.4);
+            /* Thu nhỏ kích thước */
+            flex: 0 0 auto;
+            width: auto;
+            min-width: 180px;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            margin-top: 5px;
+            z-index: 10;
         }
-        /* Xóa gạch chân cũ */
-        .cat-item.active::after { content: none; }
 
-        /* Nút cuộn trái phải */
-        .nav-scroll-btn {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--dark);
-            font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            flex-shrink: 0;
-            z-index: 910;
-        }
-        .nav-scroll-btn:active { transform: scale(0.95); background: #f8fafc; }
+        .cat-item.active.is-removable:hover { background-color: #ef4444; border-color: #ef4444; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); }
+        .cat-item .reset-icon { margin-left: 10px; display: inline-block; font-size: 1rem; }
+        .cat-item.hidden-filter { display: none; }
 
+        @media (max-width: 768px) { .cat-item { flex: 0 0 calc(50% - 10px); padding: 15px 5px; font-size: 1.1rem; } }
 
-        /* --- 3. GRID COMBO --- */
-        .combo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        /* --- 3. [UPDATED] COMBO CARD & ANIMATION --- */
+        .combo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; position: relative; }
         @media (min-width: 768px) { .combo-grid { grid-template-columns: repeat(3, 1fr); } }
 
         .combo-card {
-            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-            overflow: hidden; position: relative;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: center top;
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); cursor: pointer;
+
+            /* Trạng thái mặc định: Ẩn và nằm thấp xuống sâu hơn (60px) */
+            opacity: 0;
+            transform: translateY(60px) scale(0.95);
+            transition: transform 0.2s, box-shadow 0.2s; /* Chỉ transition hover */
+            display: none; /* Ẩn khỏi layout */
         }
-        .combo-card.hiding { opacity: 0; transform: scale(0.9) translateY(20px); pointer-events: none; }
+
+        .combo-card.show-anim {
+            display: block;
+            /* Animation custom: Rõ ràng, dứt khoát */
+            animation: fadeInUpCustom 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeInUpCustom {
+            0% {
+                opacity: 0;
+                transform: translateY(60px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         .combo-card.hidden { display: none; }
         .combo-card:active { transform: scale(0.98); }
         .combo-card.selected { border: 2px solid var(--primary); background: #fffbf2; }
-
         .card-qty-badge { position: absolute; top: 8px; right: 8px; background: var(--primary); color: #fff; width: 26px; height: 26px; border-radius: 50%; font-size: 0.85rem; font-weight: 800; display: none; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 5; }
         .card-qty-badge.show { display: flex; }
-
         .combo-img-wrap { width: 100%; padding-top: 60%; position: relative; background: #f1f5f9; }
         .combo-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
         .combo-info-card { padding: 12px; }
         .combo-title { font-weight: 800; font-size: 0.95rem; color: var(--dark); margin-bottom: 4px; height: 2.6em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .combo-price-tag { color: var(--primary-dark); font-weight: 800; font-size: 1rem; }
-
         .btn-fake-add { margin-top: 8px; width: 100%; padding: 8px; background: #f8fafc; color: var(--primary); border: 1px solid var(--primary); border-radius: 6px; font-weight: 700; font-size: 0.9rem; text-align: center; cursor: pointer; transition: 0.2s; }
         .btn-fake-add.added { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-        /* --- 4. WIDGET & MODAL --- */
-        .mini-cart-widget {
-            position: fixed; bottom: 10%; right: 20px;
-            background: var(--dark); border: 2px solid var(--primary); color: #fff;
-            padding: 8px 20px; border-radius: 50px;
-            display: none; align-items: center; gap: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            z-index: 1000; cursor: pointer; transition: transform 0.2s;
-            animation: slideUpWidget 0.3s ease-out;
-        }
-        @keyframes slideUpWidget { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* WIDGET & MODAL */
+        .mini-cart-widget { position: fixed; bottom: 30px; right: 30px; background: var(--dark); color: #fff; border: 2px solid var(--primary); padding: 16px 35px; border-radius: 60px; display: none; align-items: center; gap: 15px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); z-index: 1000; cursor: pointer; transition: all 0.3s; }
         .mini-cart-widget:active { transform: scale(0.95); }
-
         .widget-icon { font-size: 1.5rem; color: var(--primary); position: relative; }
         .widget-qty-badge { position: absolute; top: -5px; right: -8px; background: red; color: white; font-size: 0.7rem; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .widget-info { display: flex; flex-direction: column; line-height: 1.2; }
@@ -179,7 +211,6 @@
         .qty-btn-mini { width: 32px; height: 32px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 1.1rem; color: #64748b; }
         .qty-display-mini { font-weight: 800; width: 25px; text-align: center; font-size: 1.1rem; color: var(--dark); }
         .btn-remove-mini { margin-left: 8px; color: #ef4444; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-
         .modal-footer-custom { padding: 20px; background: #fff; border-top: 1px solid #eee; }
         .cart-summary { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
         .summary-label { font-weight: 700; font-size: 1.1rem; color: var(--dark); }
@@ -191,6 +222,33 @@
 
         .flying-img { position: fixed; z-index: 9999; width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); pointer-events: none; transition: all 0.8s cubic-bezier(0.2, 1, 0.2, 1); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .detail-img-wrap { position: relative; height: 180px; }
+
+        /* CUSTOM WARNING MODAL */
+        .custom-warning-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); z-index: 4000; display: none; align-items: center; justify-content: center; }
+        .custom-warning-modal.show { display: flex; }
+        .warning-box { background: var(--white); border-radius: 16px; width: 85%; max-width: 380px; text-align: center; padding: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: bounceIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .warning-icon { font-size: 3rem; color: #f59e0b; margin-bottom: 15px; }
+        .warning-title { font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 10px; }
+        .warning-content { font-size: 0.95rem; color: #64748b; line-height: 1.5; margin-bottom: 20px; }
+        .warning-btn { background: var(--primary); color: white; border: none; padding: 10px 30px; border-radius: 30px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 5px 15px rgba(254, 161, 22, 0.3); transition: all 0.2s; }
+        .warning-btn:active { transform: scale(0.95); }
+        @keyframes bounceIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Custom Confirm Modal */
+        .custom-confirm-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 3000; display: none; align-items: center; justify-content: center; }
+        .custom-confirm-modal.show { display: flex; }
+        .confirm-box { background: var(--white); border-radius: var(--radius); width: 90%; max-width: 350px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); overflow: hidden; animation: zoomIn 0.2s ease-out; }
+        .confirm-header { background: var(--dark); color: var(--white); padding: 15px 20px; font-size: 1.1rem; font-weight: 700; border-bottom: 3px solid var(--primary); display: flex; align-items: center; gap: 10px; }
+        .confirm-body { padding: 25px 20px; color: var(--text-main); font-size: 0.95rem; line-height: 1.4; }
+        .confirm-body strong { color: var(--primary-dark); }
+        .confirm-footer { padding: 15px 20px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; }
+        .confirm-btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+        .confirm-btn-ok { background: #10b981; color: var(--white); }
+        .confirm-btn-ok:hover { background: #059669; }
+        .confirm-btn-ok:active { transform: scale(0.98); }
+        .confirm-btn-cancel { background: #f1f5f9; color: var(--dark); border: 1px solid #cbd5e1; }
+        .confirm-btn-cancel:hover { background: #e2e8f0; }
+        .confirm-btn-cancel:active { transform: scale(0.98); }
     </style>
 
     <main class="app-content">
@@ -206,29 +264,40 @@
                 </div>
 
                 <div class="form-body">
-                    {{-- [MỚI] Hiển thị lỗi từ Controller --}}
                     @if ($errors->any())
                         <div class="alert-error">
                             <strong><i class="fa-solid fa-triangle-exclamation"></i> Vui lòng kiểm tra lại:</strong>
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                            <ul>@foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach</ul>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert-error" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">
+                            <strong><i class="fa-solid fa-circle-exclamation"></i> {{ session('error') }}</strong>
                         </div>
                     @endif
 
                     <div class="section-label"><i class="fa-solid fa-user-group"></i> Thông Tin Khách Hàng</div>
                     @if($datBan && $datBan->ten_khach && $datBan->ten_khach !== 'Khách Vãng Lai')
-                        <div style="background: #fffbf0; border: 1px solid #ffeeba; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
-                            <strong>Khách:</strong> {{ $datBan->ten_khach }} - <strong>SĐT:</strong> {{ $datBan->sdt_khach }}
-                            <br><small>Đã đặt: {{ $datBan->nguoi_lon }} Người lớn, {{ $datBan->tre_em }} Trẻ em</small>
+                        {{-- BLOCK ĐÃ CẢI TIẾN --}}
+                        <div class="customer-info-card">
+                            <div class="main-details">
+                                <div><strong>Khách:</strong> {{ $datBan->ten_khach }}</div>
+                                <div><strong>SĐT:</strong> {{ $datBan->sdt_khach }}</div>
+                            </div>
+                            <small>
+                                Đã đặt:
+                                <span id="display-nguoi-lon" class="highlight-count">{{ $datBan->nguoi_lon }}</span> Người lớn,
+                                <span id="display-tre-em" class="highlight-count">{{ $datBan->tre_em }}</span> Trẻ em
+                            </small>
+
                             <input type="hidden" name="ten_khach" value="{{ $datBan->ten_khach }}">
                             <input type="hidden" name="sdt_khach" value="{{ $datBan->sdt_khach }}">
-                            <input type="hidden" name="nguoi_lon" value="{{ $datBan->nguoi_lon }}">
-                            <input type="hidden" name="tre_em" value="{{ $datBan->tre_em }}">
+                            <input type="hidden" name="nguoi_lon" id="input-nguoi-lon" value="{{ $datBan->nguoi_lon }}">
+                            <input type="hidden" name="tre_em" id="input-tre-em" value="{{ $datBan->tre_em }}">
                         </div>
                     @else
+                        {{-- BLOCK NHẬP TAY --}}
                         <div class="input-grid">
                             <div class="form-group">
                                 <label>Họ Tên (*)</label>
@@ -240,11 +309,11 @@
                             </div>
                             <div class="form-group">
                                 <label>Người Lớn (*)</label>
-                                <input type="number" name="nguoi_lon" class="form-control" min="1" value="{{ old('nguoi_lon', 1) }}" required>
+                                <input type="number" name="nguoi_lon" id="input-nguoi-lon" class="form-control" min="1" value="{{ old('nguoi_lon', 1) }}" required>
                             </div>
                             <div class="form-group">
                                 <label>Trẻ Em</label>
-                                <input type="number" name="tre_em" class="form-control" min="0" value="{{ old('tre_em', 0) }}">
+                                <input type="number" name="tre_em" id="input-tre-em" class="form-control" min="0" value="{{ old('tre_em', 0) }}">
                             </div>
                         </div>
                     @endif
@@ -258,14 +327,12 @@
                         </div>
 
                         <div class="category-nav" id="categoryScrollBox">
-                            <div class="cat-item active" onclick="filterCombos('all', this)">Tất cả</div>
-                            <div class="cat-item" onclick="filterCombos('nguoi_lon', this)">Người Lớn</div>
-                            <div class="cat-item" onclick="filterCombos('tre_em', this)">Trẻ Em</div>
-                            <div class="cat-item" onclick="filterCombos('vip', this)">VIP</div>
-                        </div>
-
-                        <div class="nav-scroll-btn" onclick="scrollNav('right')">
-                            <i class="fa-solid fa-chevron-right"></i>
+                            @php $categories = $combos->pluck('loai_combo')->unique(); @endphp
+                            @foreach ($categories as $cat)
+                                <div class="cat-item" data-filter-category="{{ $cat }}" onclick="filterCombos('{{ $cat }}', this)">
+                                    Combo {{ strtoupper($cat) }} <span class="reset-icon"></span>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
 
@@ -292,11 +359,10 @@
                                 </div>
                             </div>
 
-                            {{-- Input ẩn để gửi về Controller --}}
                             <input type="hidden" name="combos[{{ $index }}][id]" id="input-id-{{ $combo->id }}" value="{{ $combo->id }}" disabled>
                             <input type="hidden" name="combos[{{ $index }}][so_luong]" id="input-qty-{{ $combo->id }}" value="0" disabled>
 
-                            {{-- Modal Chi tiết --}}
+                            {{-- MODAL CHI TIẾT --}}
                             <div class="modal-overlay" id="detail-modal-{{ $combo->id }}">
                                 <div class="modal-box" onclick="event.stopPropagation()">
                                     <div class="detail-img-wrap">
@@ -323,7 +389,7 @@
                 </div>
             </div>
 
-            {{-- 3. MINI CART WIDGET --}}
+            {{-- MINI CART WIDGET --}}
             <div id="mini-cart" class="mini-cart-widget" onclick="openCartModal()">
                 <div class="widget-icon">
                     <i class="fa-solid fa-basket-shopping"></i>
@@ -335,7 +401,7 @@
                 </div>
             </div>
 
-            {{-- 4. CART MODAL (GIỎ HÀNG) --}}
+            {{-- CART MODAL --}}
             <div id="cart-modal" class="modal-overlay">
                 <div class="modal-box">
                     <div class="modal-header-custom">
@@ -344,7 +410,6 @@
                     </div>
 
                     <div id="cart-list" class="modal-body-custom"></div>
-
                     <div class="modal-footer-custom">
                         <div class="cart-summary">
                             <span class="summary-label">Tổng cộng:</span>
@@ -357,6 +422,29 @@
                 </div>
             </div>
 
+            {{-- WARNING MODAL --}}
+            <div id="custom-warning" class="custom-warning-modal" onclick="closeWarning()">
+                <div class="warning-box" onclick="event.stopPropagation()">
+                    <div class="warning-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="warning-title">Chưa Đủ Số Lượng!</div>
+                    <div class="warning-content" id="warning-message">Nội dung thông báo lỗi...</div>
+                    <button type="button" class="warning-btn" onclick="closeWarning()">Đã Hiểu</button>
+                </div>
+            </div>
+
+            {{-- CUSTOM CONFIRM MODAL --}}
+            <div id="custom-confirm" class="custom-confirm-modal" onclick="closeCustomConfirm()">
+                <div class="confirm-box" onclick="event.stopPropagation()">
+                    <div class="confirm-header">
+                        <i class="fa-solid fa-triangle-exclamation" style="color:var(--primary);"></i> Xác Nhận Thao Tác
+                    </div>
+                    <div class="confirm-body" id="confirm-message"></div>
+                    <div class="confirm-footer">
+                        <button type="button" class="confirm-btn confirm-btn-cancel" onclick="resolveCustomConfirm(false)">Hủy</button>
+                        <button type="button" class="confirm-btn confirm-btn-ok" onclick="resolveCustomConfirm(true)">Đồng Ý</button>
+                    </div>
+                </div>
+            </div>
         </form>
     </main>
 
@@ -403,20 +491,20 @@
             if (direction === 'left') {
                 container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
             } else {
-                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                activePill.classList.remove('is-removable');
+                if(resetIcon) resetIcon.innerHTML = ``;
             }
         }
+    }
 
-        // --- CORE LOGIC ---
-        function toggleInputs(id, qty) {
-            const inputQty = document.getElementById(`input-qty-${id}`);
-            const inputId = document.getElementById(`input-id-${id}`);
-            inputQty.value = qty;
-            const enable = qty > 0;
-            // Chỉ enable input khi có số lượng > 0 để Controller nhận được mảng sạch
-            inputQty.disabled = !enable;
-            inputId.disabled = !enable;
-        }
+    function toggleInputs(id, qty) {
+        const inputQty = document.getElementById(`input-qty-${id}`);
+        const inputId = document.getElementById(`input-id-${id}`);
+        inputQty.value = qty;
+        const enable = qty > 0;
+        inputQty.disabled = !enable;
+        inputId.disabled = !enable;
+    }
 
         function quickAdd(id, event) {
             if(event) event.stopPropagation();
@@ -483,83 +571,87 @@
             recalcTotal();
         }
 
-        function recalcTotal() {
-            let total = 0;
-            let count = 0;
-            for(let id in comboData) {
-                const val = parseInt(document.getElementById(`input-qty-${id}`).value) || 0;
-                if(val > 0) {
-                    total += val * comboData[id].price;
-                    count += val;
-                }
-            }
-
-            const totalStr = formatter.format(total);
-            document.getElementById('total-count-badge').innerText = count;
-            document.getElementById('widget-total-price').innerText = totalStr;
-            document.getElementById('cart-modal-total').innerText = totalStr;
-
-            const widget = document.getElementById('mini-cart');
-            const submitBtn = document.getElementById('btn-submit-all');
-
-            if(count > 0) {
-                widget.style.display = 'flex';
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'XÁC NHẬN ĐẶT BÀN <i class="fa-solid fa-arrow-right"></i>';
-            } else {
-                widget.style.display = 'none';
-                submitBtn.disabled = true; // Khóa nút gửi nếu chưa chọn gì
-                submitBtn.innerHTML = 'Vui lòng chọn combo';
-                closeCartModal();
+    function recalcTotal() {
+        let total = 0;
+        let count = 0;
+        for(let id in comboData) {
+            const val = parseInt(document.getElementById(`input-qty-${id}`).value) || 0;
+            if(val > 0) {
+                total += val * comboData[id].price;
+                count += val;
             }
         }
+        const totalStr = formatter.format(total);
+        document.getElementById('total-count-badge').innerText = count;
+        document.getElementById('widget-total-price').innerText = totalStr;
+        document.getElementById('cart-modal-total').innerText = totalStr;
 
-        // --- MODAL CONTROLLERS ---
-        function openDetailModal(id) { document.getElementById(`detail-modal-${id}`).classList.add('active'); }
-        function closeDetailModal(id) { document.getElementById(`detail-modal-${id}`).classList.remove('active'); }
-        function openCartModal() { renderCartList(); document.getElementById('cart-modal').classList.add('active'); }
-        function closeCartModal() { document.getElementById('cart-modal').classList.remove('active'); }
+        const widget = document.getElementById('mini-cart');
+        const submitBtn = document.getElementById('btn-submit-all');
+        if (count > 0) {
+            widget.style.display = 'flex';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'XÁC NHẬN ĐẶT BÀN <i class="fa-solid fa-arrow-right"></i>';
+        } else {
+            widget.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Vui lòng chọn combo';
+            closeCartModal();
+        }
+    }
 
-        function renderCartList() {
-            const list = document.getElementById('cart-list');
-            list.innerHTML = '';
-            let hasItem = false;
-            for(let id in comboData) {
-                const qty = parseInt(document.getElementById(`input-qty-${id}`).value) || 0;
-                if(qty > 0) {
-                    hasItem = true;
-                    const item = comboData[id];
-                    list.innerHTML += `
-                        <div class="cart-item">
-                            <div class="item-info">
-                                <h4>${item.name}</h4>
-                                <div class="item-price">${formatter.format(item.price)}</div>
-                            </div>
-                            <div class="item-actions">
-                                <div class="qty-btn-mini" onclick="updateCartItem(${id}, -1)">-</div>
-                                <div class="qty-display-mini">${qty}</div>
-                                <div class="qty-btn-mini" onclick="updateCartItem(${id}, 1)">+</div>
-                                <div class="btn-remove-mini" onclick="updateCartItem(${id}, -${qty})">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </div>
-                            </div>
+    function openDetailModal(id) { document.getElementById(`detail-modal-${id}`).classList.add('active'); }
+    function closeDetailModal(id) { document.getElementById(`detail-modal-${id}`).classList.remove('active'); }
+    function openCartModal() { renderCartList(); document.getElementById('cart-modal').classList.add('active'); }
+    function closeCartModal() { document.getElementById('cart-modal').classList.remove('active'); }
+
+    function renderCartList() {
+        const list = document.getElementById('cart-list');
+        list.innerHTML = '';
+        let hasItem = false;
+        for(let id in comboData) {
+            const qty = parseInt(document.getElementById(`input-qty-${id}`).value) || 0;
+            if(qty > 0) {
+                hasItem = true;
+                const item = comboData[id];
+                list.innerHTML += `
+                    <div class="cart-item">
+                        <div class="item-info"><h4>${item.name}</h4><div class="item-price">${formatter.format(item.price)}</div></div>
+                        <div class="item-actions">
+                            <div class="qty-btn-mini" onclick="updateCartItem(${id}, -1)">-</div>
+                            <div class="qty-display-mini">${qty}</div>
+                            <div class="qty-btn-mini" onclick="updateCartItem(${id}, 1)">+</div>
+                            <div class="btn-remove-mini" onclick="updateCartItem(${id}, -${qty})"><i class="fa-solid fa-trash-can"></i></div>
                         </div>
-                    `;
+                    </div>`;
+            }
+        }
+        if(!hasItem) list.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Chưa có combo nào được chọn</div>';
+    }
+
+    function updateCartItem(id, change) {
+        const input = document.getElementById(`input-qty-${id}`);
+        let qty = parseInt(input.value) || 0;
+        if (change > 0 && qty === 0) {
+            resetOtherCategories(id);
+            selectedCategory = comboData[id].category;
+            const filterEl = document.querySelector(`.cat-item[data-filter-category="${selectedCategory}"]`);
+            if(filterEl) {
+                if(!filterEl.classList.contains('active')) {
+                   filterCombos(selectedCategory, filterEl);
                 }
             }
-            if(!hasItem) {
-                list.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Chưa có combo nào được chọn</div>';
-            }
         }
-
-        function updateCartItem(id, change) {
-            const input = document.getElementById(`input-qty-${id}`);
-            let qty = parseInt(input.value) || 0;
-            qty += change;
-            if(qty < 0) qty = 0;
-            updateSystem(id, qty);
-            renderCartList();
+        qty += change;
+        if(qty < 0) qty = 0;
+        updateSystem(id, qty);
+        renderCartList();
+        let currentTotal = 0;
+        for (let k in combosInCart) currentTotal += combosInCart[k];
+        if (currentTotal === 0 && selectedCategory) {
+            resetAllCombosInCart();
         }
+    }
 
         // --- VALIDATION TRƯỚC KHI GỬI ---
         function validateForm() {
@@ -577,11 +669,16 @@
                 return false;
             }
 
-            // Hiệu ứng loading nút gửi
-            const btn = document.getElementById('btn-submit-all');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
-            btn.disabled = true;
-            return true;
-        }
-    </script>
+        const btn = document.getElementById('btn-submit-all');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+        btn.disabled = true;
+        return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Khởi tạo trạng thái ban đầu: Ẩn tất cả combo
+        document.querySelectorAll('.combo-card').forEach(card => card.classList.add('hidden'));
+        document.querySelectorAll('.cat-item').forEach(el => el.classList.remove('active'));
+    });
+</script>
 @endsection

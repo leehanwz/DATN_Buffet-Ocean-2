@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
+
 class OrderController extends Controller
 {
     // HÀM HELPER: Tìm bàn theo mã QR
@@ -59,17 +60,19 @@ class OrderController extends Controller
     }
 
     // Hàm xử lý bắt đầu gọi món với nhiều Combo
-public function startOrder(Request $request)
+    // ... trong class OrderController
+    // Hàm xử lý bắt đầu gọi món với nhiều Combo (ĐÃ BỎ AUTO ORDER)
+    public function startOrder(Request $request)
     {
         // 1. Validate dữ liệu
         $validator = Validator::make($request->all(), [
             'ma_qr' => 'required|exists:ban_an,ma_qr',
             'dat_ban_id' => 'nullable|exists:dat_ban,id',
-
             'combos' => 'required|array|min:1',
             'combos.*.id' => 'required|exists:combo_buffet,id',
             'combos.*.so_luong' => 'required|integer|min:1',
-
+            'nguoi_lon' => 'required|integer|min:1',
+            'tre_em' => 'nullable|integer|min:0',
             'ten_khach' => 'nullable|string|max:255',
             'sdt_khach' => 'nullable|string|max:20',
         ]);
@@ -87,19 +90,36 @@ public function startOrder(Request $request)
         $inputCombos = $request->input('combos');
         $tenKhachInput = $request->input('ten_khach') ?: 'Khách Vãng Lai';
         $sdtKhachInput = $request->input('sdt_khach') ?: '0';
+        $nguoiLonInput = (int)$request->input('nguoi_lon', 1);
+        $treEmInput = (int)$request->input('tre_em', 0);
+
+        // =================================================================
+        // 🔥 [LOGIC MỚI] KIỂM TRA SỐ LƯỢNG COMBO >= TỔNG SỐ NGƯỜI
+        // =================================================================
+        $tongNguoi = $nguoiLonInput + $treEmInput;
+        $tongComboDaChon = 0;
+
+        foreach ($inputCombos as $c) {
+            $tongComboDaChon += (int)$c['so_luong'];
+        }
+
+        if ($tongComboDaChon < $tongNguoi) {
+            // Trả về lỗi và giữ lại input cũ
+            return back()
+                ->with('error', "Lỗi số lượng: Tổng số khách là $tongNguoi người, nhưng bạn chỉ chọn $tongComboDaChon suất combo. Vui lòng chọn đủ số lượng!")
+                ->withInput();
+        }
+        // =================================================================
 
         $nowObj = Carbon::now('Asia/Ho_Chi_Minh');
         $nowString = $nowObj->toDateTimeString();
 
-        // Tính tổng số khách và thời lượng lớn nhất
-        $tongSoKhach = 0;
         $maxThoiLuong = 0;
 
         // [MỚI 1] Biến tính tổng tiền combo ban đầu
         $tongTienComboBanDau = 0;
 
         foreach ($inputCombos as $c) {
-            $tongSoKhach += $c['so_luong'];
             $comboInfo = ComboBuffet::find($c['id']);
             if ($comboInfo) {
                 if ($comboInfo->thoi_luong_phut > $maxThoiLuong) {
@@ -109,10 +129,13 @@ public function startOrder(Request $request)
                 // [MỚI 2] Cộng dồn tiền combo (Số lượng x Giá vé)
                 // Lưu ý: Đảm bảo tên cột giá trong DB đúng (gia_co_ban hoặc gia_ban)
                 $giaVe = $comboInfo->gia_co_ban ?? $comboInfo->gia_ban ?? 0;
+
+                // Lấy giá từ gia_co_ban
+                $giaVe = $comboInfo->gia_co_ban ?? 0;
                 $tongTienComboBanDau += ($giaVe * $c['so_luong']);
             }
         }
-        if ($maxThoiLuong == 0) $maxThoiLuong = 120; // Mặc định
+        if ($maxThoiLuong == 0) $maxThoiLuong = 120;
 
         // --- BẮT ĐẦU TRANSACTION ---
         DB::beginTransaction();
@@ -132,22 +155,21 @@ public function startOrder(Request $request)
             }
 
             if ($datBan) {
-                // [CASE A] CẬP NHẬT
                 $datBan->update([
-                    'nguoi_lon' => $tongSoKhach,
+                    'nguoi_lon' => $nguoiLonInput,
+                    'tre_em' => $treEmInput,
                     'thoi_luong_phut' => $maxThoiLuong,
                     'ten_khach' => $request->filled('ten_khach') ? $tenKhachInput : $datBan->ten_khach,
                     'sdt_khach' => $request->filled('sdt_khach') ? $sdtKhachInput : $datBan->sdt_khach,
                     'updated_at' => $nowString,
                 ]);
             } else {
-                // [CASE B] TẠO MỚI
                 $datBan = DatBan::create([
                     'ma_dat_ban' => 'QR' . $nowObj->format('Ymd') . '-' . strtoupper(bin2hex(random_bytes(2))),
                     'ten_khach' => $tenKhachInput,
                     'sdt_khach' => $sdtKhachInput,
-                    'nguoi_lon' => $tongSoKhach,
-                    'tre_em' => 0,
+                    'nguoi_lon' => $nguoiLonInput,
+                    'tre_em' => $treEmInput,
                     'ban_id' => $banId,
                     'gio_den' => $nowString,
                     'thoi_luong_phut' => $maxThoiLuong,
@@ -159,9 +181,8 @@ public function startOrder(Request $request)
 
             $ban->update(['trang_thai' => 'dang_phuc_vu']);
 
-            // 4. LƯU CHI TIẾT COMBO
+            // 4. LƯU CHI TIẾT COMBO (Vé Buffet)
             ChiTietDatBan::where('dat_ban_id', $datBan->id)->delete();
-
             foreach ($inputCombos as $item) {
                 ChiTietDatBan::create([
                     'dat_ban_id' => $datBan->id,
@@ -170,7 +191,7 @@ public function startOrder(Request $request)
                 ]);
             }
 
-            // 5. TẠO ORDER VÀ ĐẨY MÓN TỰ ĐỘNG
+            // 5. TẠO ORDER (HÓA ĐƠN TẠM)
             $orderMon = OrderMon::firstOrCreate(
                 ['dat_ban_id' => $datBan->id, 'trang_thai' => 'dang_xu_li'],
                 [
@@ -180,12 +201,16 @@ public function startOrder(Request $request)
                     // [MỚI 3] Gán luôn tổng tiền combo vào đây để Admin thấy doanh thu
                     'tong_tien' => $tongTienComboBanDau,
 
+                    'ban_id' => $datBan->ban_id,
+                    'tong_mon' => 0,
+                    'tong_tien' => $tongTienComboBanDau,
                     'created_at' => $nowString,
                     'updated_at' => $nowString
                 ]
             );
 
             // Nếu order đã tồn tại (quét lại), cập nhật lại giá tiền cho đúng thực tế
+
             if (!$orderMon->wasRecentlyCreated) {
                 $orderMon->tong_tien = $tongTienComboBanDau;
                 $orderMon->save();
@@ -244,6 +269,7 @@ public function startOrder(Request $request)
 
             DB::commit();
             return redirect()->route('oderqr.menu', ['qrKey' => $ban->ma_qr]);
+
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Lỗi hệ thống: ' . $e->getMessage())->withInput();
@@ -360,7 +386,7 @@ public function startOrder(Request $request)
     }
 
     // Xử lý gửi gọi món
-public function submitOrder(Request $request)
+    public function submitOrder(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'dat_ban_id' => 'required|exists:dat_ban,id',

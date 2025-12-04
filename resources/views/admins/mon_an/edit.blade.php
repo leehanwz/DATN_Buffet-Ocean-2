@@ -210,10 +210,10 @@
 
 @push('scripts')
 <script>
-    // Mảng lưu ID của các ảnh bị đánh dấu xóa
+    // Mảng lưu ID của các ảnh bị đánh dấu xóa (Được định nghĩa ở phạm vi toàn cục)
     let anhXoaIds = [];
 
-    // Hàm preview cho ảnh chính
+    // HÀM PREVIEW CHO ẢNH CHÍNH (Phạm vi toàn cục)
     function previewImage(event, previewId) {
         const preview = document.getElementById(previewId);
         if (event.target.files.length > 0) {
@@ -222,16 +222,16 @@
         }
     }
 
-    // Hàm preview cho Thư viện ảnh mới
+    // HÀM PREVIEW CHO THƯ VIỆN ẢNH MỚI (Phạm vi toàn cục)
     function previewGallery(event) {
+        // ... (Giữ nguyên logic hàm previewGallery của bạn) ...
         const previewContainer = document.getElementById('gallery_preview');
         // Xóa nội dung cũ
         previewContainer.innerHTML = '';
 
         const files = event.target.files;
-
         if (files.length === 0) {
-            previewContainer.innerHTML = '<span class="text-muted small">Ảnh mới sẽ hiển thị ở đây.</span>';
+            if (previewContainer) previewContainer.innerHTML = '<span class="text-muted small">Ảnh mới sẽ hiển thị ở đây.</span>';
             return;
         }
 
@@ -245,7 +245,9 @@
             img.style.height = '80px';
             img.style.objectFit = 'cover';
 
-            previewContainer.appendChild(img);
+            wrapperDiv.appendChild(img);
+            if (previewContainer) previewContainer.appendChild(wrapperDiv);
+
             img.onload = () => URL.revokeObjectURL(img.src);
         }
     }
@@ -264,7 +266,17 @@
         // 3. Cập nhật input ẩn để gửi dữ liệu về Controller
         document.getElementById('anh_xoa').value = anhXoaIds.join(',');
 
-        alert('Ảnh sẽ được xóa khi bạn bấm "Cập nhật"');
+        // 4. Cập nhật trạng thái hiển thị
+        const galleryCurrent = document.getElementById('gallery_current');
+        if (galleryCurrent) {
+            setTimeout(() => {
+                if (galleryCurrent.querySelectorAll('.position-relative').length === 0) {
+                    galleryCurrent.innerHTML = '<span class="text-muted small">Chưa có ảnh phụ nào.</span>';
+                }
+            }, 10);
+        }
+
+        alert('Ảnh sẽ được xóa khỏi cơ sở dữ liệu khi bạn bấm "Cập nhật"');
     }
 
     // Khởi tạo preview cho ảnh chính với ID mới
@@ -277,8 +289,26 @@
 
         // Fix: Nếu không có ảnh cũ, gán lại text mặc định cho vùng preview
         const galleryCurrent = document.getElementById('gallery_current');
-        if (galleryCurrent && galleryCurrent.children.length === 0) {
+        if (galleryCurrent && galleryCurrent.querySelectorAll('.position-relative').length === 0) {
             galleryCurrent.innerHTML = '<span class="text-muted small">Chưa có ảnh phụ nào.</span>';
+        }
+
+        // Khởi tạo trạng thái ban đầu cho khu vực preview ảnh mới
+        const galleryPreview = document.getElementById('gallery_preview');
+        if (galleryPreview && galleryPreview.children.length === 0) {
+             galleryPreview.innerHTML = '<span class="text-muted small">Chưa có ảnh mới nào được chọn.</span>';
+        }
+
+        // Khôi phục trạng thái xóa ảnh cũ (nếu có trong input hidden)
+        const anhXoaInput = document.getElementById('anh_xoa');
+        if (anhXoaInput && anhXoaInput.value) {
+            anhXoaIds = anhXoaInput.value.split(',').map(id => parseInt(id));
+        }
+
+        // Gán ID cho input file (vì nó nằm trong thẻ HTML nên có thể gọi ngay)
+        const inputAnhThuVien = document.querySelector('input[name="anh_thu_vien[]"]');
+        if (inputAnhThuVien) {
+             inputAnhThuVien.id = 'input_anh_thu_vien';
         }
     });
 </script>
