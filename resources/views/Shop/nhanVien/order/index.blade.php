@@ -24,29 +24,6 @@
         </div>
         @endif
 
-        {{-- Mini Dashboard --}}
-        <div class="row mb-4 g-3">
-            @php
-            $dashboardItems = [
-            ['label'=>'Tổng số bàn', 'count'=>$bans->count(), 'bg'=>'#28a74533', 'icon'=>'bi-grid-3x3-gap'],
-            ['label'=>'Bàn trống', 'count'=>$bans->where('trang_thai', 'trong')->count(), 'bg'=>'#6c757d33', 'icon'=>'bi-person-check'],
-            ['label'=>'Đang phục vụ', 'count'=>$bans->where('trang_thai', 'dang_phuc_vu')->count(), 'bg'=>'#dc354533', 'icon'=>'bi-people-fill'],
-            ['label'=>'Bàn bảo trì', 'count'=>$bans->where('trang_thai', 'khong_su_dung')->count(), 'bg'=>'#6c757d88', 'icon'=>'bi-tools']
-            ];
-            @endphp
-
-            @foreach($dashboardItems as $item)
-            <div class="col d-flex">
-                <div class="p-3 rounded-4 shadow-sm text-center flex-fill" style="background: {{ $item['bg'] }}">
-                    <h5 class="fw-bold mb-1">
-                        <i class="bi {{ $item['icon'] }}"></i> {{ $item['count'] }}
-                    </h5>
-                    <small>{{ $item['label'] }}</small>
-                </div>
-            </div>
-            @endforeach
-        </div>
-
         {{-- Phân khu vực --}}
         @foreach($khuVucs as $khu)
         <div class="mb-4">
@@ -78,7 +55,7 @@
                     <div class="card table-card shadow-sm rounded-4 border-0 position-relative overflow-hidden flex-fill d-flex flex-column">
                         <div class="table-card-header text-center text-white fw-bold py-2 rounded-top"
                             style="background: {{ $bgHeader }};">
-                            <h5 class="mb-1"><i class="bi {{ $icon }}"></i> Bàn {{ $ban->so_ban }}</h5>
+                            <h5 class="mb-1"><i class="bi {{ $icon }}"></i> {{ $ban->so_ban }}</h5>
                             <div class="mt-2 w-100 text-center">
                                 @php
                                 if($ban->trang_thai == 'khong_su_dung') {
