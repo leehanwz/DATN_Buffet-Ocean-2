@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 01, 2025 at 05:27 PM
+-- Generation Time: Dec 04, 2025 at 05:25 AM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.26
 
@@ -44,22 +44,30 @@ CREATE TABLE `ban_an` (
 --
 
 INSERT INTO `ban_an` (`id`, `khu_vuc_id`, `so_ban`, `ma_qr`, `duong_dan_qr`, `so_ghe`, `trang_thai`, `created_at`, `updated_at`) VALUES
-(1, 3, 'Bàn 1', 'MCMdhJ2lcqtj', 'http://localhost/order?table_code=MCMdhJ2lcqtj', 2, 'dang_phuc_vu', '2025-11-14 04:34:56', '2025-12-01 10:21:55'),
-(2, 3, 'Bàn 2', 'uEWj1TG8iJIS', 'http://localhost/order?table_code=uEWj1TG8iJIS', 4, 'dang_phuc_vu', '2025-11-14 04:34:56', '2025-12-01 07:57:43'),
-(3, 5, 'Bàn 3', 'pTX21dKoRDWY', 'http://localhost/order?table_code=pTX21dKoRDWY', 2, 'dang_phuc_vu', '2025-11-14 04:34:56', '2025-12-01 09:42:02'),
-(4, 1, 'Bàn 4', 'QR74MQ', 'http://www.wilderman.org/enim-non-dolorum-eaque-voluptates-iusto.html', 5, 'dang_phuc_vu', '2025-11-14 04:34:56', '2025-12-01 10:33:03'),
-(5, 5, 'Bàn 5', 'ZmzhrNA3YaVh', 'http://localhost/order?table_code=ZmzhrNA3YaVh', 6, 'trong', '2025-11-14 04:34:56', '2025-11-25 16:21:13'),
-(6, 3, 'Bàn 6', 'qjmWy8V9bsbD', 'http://localhost/order?table_code=qjmWy8V9bsbD', 4, 'trong', '2025-11-14 04:34:56', '2025-12-01 07:43:58'),
-(7, 1, 'Bàn 7', 'Cdzg7jvGXRpR', 'http://localhost/order?table_code=Cdzg7jvGXRpR', 5, 'dang_phuc_vu', '2025-11-14 04:34:56', '2025-12-01 06:43:10'),
-(8, 1, 'Bàn 8', 'QR41WQ', 'https://www.conroy.biz/porro-atque-voluptas-consequatur-qui', 9, 'dang_phuc_vu', '2025-11-14 04:34:56', '2025-12-01 10:20:36'),
-(9, 5, 'Bàn 9', 'QR25RV', 'http://www.adams.com/quia-nostrum-voluptatem-atque-a-facilis-suscipit.html', 7, 'dang_phuc_vu', '2025-11-14 04:34:56', '2025-12-01 10:14:45'),
-(10, 1, 'Bàn 10', 'QR01IT', 'http://www.collier.com/illo-sed-voluptatem-corporis-expedita-error-in-corrupti', 3, 'dang_phuc_vu', '2025-11-14 04:34:56', '2025-12-01 11:27:48'),
-(11, 4, 'Bàn 11', 'QR06RV', 'https://www.lueilwitz.biz/eos-iure-fuga-nobis', 8, 'da_dat', '2025-11-14 04:34:56', '2025-12-01 11:02:16'),
-(12, 1, 'Bàn 12', 'QR39XJ', 'https://harber.com/tempora-iusto-inventore-natus-eius.html', 4, 'dang_phuc_vu', '2025-11-14 04:34:56', '2025-12-01 11:20:34'),
-(13, 1, 'Bàn 13', 'QR32JA', 'http://www.moen.net/earum-perferendis-non-quis-iste-error-ipsum.html', 5, 'dang_phuc_vu', '2025-11-14 04:34:56', '2025-12-01 11:24:43'),
-(14, 4, 'Bàn 14', 'QR76OW', 'https://treutel.com/corporis-atque-ullam-voluptatem.html', 10, 'trong', '2025-11-14 04:34:56', '2025-12-01 07:43:58'),
-(15, 2, 'Bàn 15', 'QR55PH', 'http://stanton.com/eos-voluptates-aut-et-repellat-inventore-dolore', 3, 'trong', '2025-11-14 04:34:56', '2025-12-01 07:43:58'),
-(16, 6, '11', 'Wi9diDQchjso', 'http://localhost/order?table_code=Wi9diDQchjso', 2, 'trong', '2025-11-18 15:28:34', '2025-12-01 07:43:58');
+(1, 1, 'Bàn A1', 'oYQ6HIrqFxG6', 'http://localhost/order?table_code=oYQ6HIrqFxG6', 4, 'dang_phuc_vu', '2025-12-03 13:03:41', '2025-12-03 14:35:42'),
+(2, 1, 'Bàn A2', 'QKO2Ghs93sZZ', 'http://localhost/order?table_code=QKO2Ghs93sZZ', 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:35:35'),
+(3, 1, 'Bàn A3', 'edcasc', NULL, 6, 'trong', '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(4, 2, 'Bàn B1', 'PbN2zam96HOM', 'http://localhost/order?table_code=PbN2zam96HOM', 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:35:45'),
+(5, 2, 'Bàn B2', 'K9lrizFCvIqM', 'http://localhost/order?table_code=K9lrizFCvIqM', 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:35:49'),
+(6, 2, 'Bàn B3', 'bIUkppaZUL5X', 'http://localhost/order?table_code=bIUkppaZUL5X', 2, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:35:53'),
+(7, 3, 'Bàn C1', 'dasdawd', NULL, 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(8, 3, 'Bàn C2', 'hthtfhtf', NULL, 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(9, 3, 'Bàn C3', 'htjth', NULL, 8, 'trong', '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(10, 4, 'Bàn D1', 'AyvIuDsMIeO4', 'http://localhost/order?table_code=AyvIuDsMIeO4', 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:36:08'),
+(11, 4, 'Bàn D2', 'FpgpVf1mD3sL', 'http://localhost/order?table_code=FpgpVf1mD3sL', 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:36:08'),
+(12, 4, 'Bàn D3', 'xdyMg86wFEjB', 'http://localhost/order?table_code=xdyMg86wFEjB', 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:35:57'),
+(13, 5, 'Bàn E1', 'SEVVDBgM3TK0', 'http://localhost/order?table_code=SEVVDBgM3TK0', 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:36:08'),
+(14, 5, 'Bàn E2', 'q3PxyUdr3i0b', 'http://localhost/order?table_code=q3PxyUdr3i0b', 2, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:36:09'),
+(15, 5, 'Bàn E3', 'pMw7wDlOhMxJ', 'http://localhost/order?table_code=pMw7wDlOhMxJ', 2, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:36:10'),
+(16, 6, 'Bàn F1 (VIP)', 'g9Ez8YbHUE1t', 'http://localhost/order?table_code=g9Ez8YbHUE1t', 10, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:36:03'),
+(17, 6, 'Bàn F2 (VIP)', '6igEeNBmALph', 'http://localhost/order?table_code=6igEeNBmALph', 10, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:36:03'),
+(18, 6, 'Bàn F3 (VIP)', 'wEWFA0dCqxJY', 'http://localhost/order?table_code=wEWFA0dCqxJY', 12, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:36:02'),
+(19, 7, 'Bàn G1', '2asawd', NULL, 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(20, 7, 'Bàn G2', 'gtgr', NULL, 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(21, 7, 'Bàn G3', 'wdwadwa', NULL, 4, 'trong', '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(22, 8, 'Bàn H1', '9uLVv39Wyppx', 'http://localhost/order?table_code=9uLVv39Wyppx', 6, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:36:15'),
+(23, 8, 'Bàn H2', '9fAc0NC0Jnoh', 'http://localhost/order?table_code=9fAc0NC0Jnoh', 8, 'trong', '2025-12-03 13:03:41', '2025-12-03 14:36:14'),
+(24, 8, 'Bàn H3', 'adwadawd', NULL, 8, 'trong', '2025-12-03 13:03:41', '2025-12-03 13:03:41');
 
 -- --------------------------------------------------------
 
@@ -136,6 +144,13 @@ CREATE TABLE `chi_tiet_hoa_don` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `chi_tiet_hoa_don`
+--
+
+INSERT INTO `chi_tiet_hoa_don` (`id`, `hoa_don_id`, `ten_khach`, `sdt_khach`, `email_khach`, `so_khach`, `ban_so`, `khu_vuc`, `tang`, `so_ghe`, `ma_dat_ban`, `gio_vao`, `gio_ra`, `thoi_gian_phuc_vu_phut`, `thoi_gian_quy_dinh_phut`, `thoi_gian_vuot_phut`, `so_lan_10_phut`, `phu_thu_thoi_gian`, `ten_combo`, `gia_combo_per_person`, `tong_tien_combo`, `danh_sach_mon`, `tong_tien_combo_mon`, `tien_giam_voucher`, `tien_coc`, `phu_thu_tu_dong`, `phu_thu_thu_cong`, `tong_phu_thu`, `phai_thanh_toan`, `tien_khach_dua`, `tien_tra_lai`, `phuong_thuc_tt`, `ma_voucher`, `created_at`, `updated_at`) VALUES
+(4, 126, 'Phạm', '01111', NULL, 1, 'Bàn A2', 'Khu vực A - Sảnh', '1', 4, 'DB-4K40QG', '2025-12-03 20:47:20', '2025-12-03 21:02:59', 16, 180, 0, 0, 0.00, 'Combo Buffet 499k - Gói 1', 499000.00, 1996000.00, '[{\"stt\": 1, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Salad Rong Biển\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 2, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Phồng Tôm Chiên\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 3, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Bánh Mì Bơ Tỏi\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 4, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Khoai Tây Chiên\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 5, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Tôm Sú Tươi\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 6, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Mực Ống Tươi\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 7, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Sò Điệp Nhật\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 8, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Ghẹ Xanh Tươi\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 9, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Dẻ Sườn Bò BBQ\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 10, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Thịt Gà Ướp Tiêu\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 11, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Bắp Bò Cuộn Rau\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 12, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Thịt Heo Iberico\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 13, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Cơm Chiên Hải Sản\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 14, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Ốc Hấp Sả\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 15, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Bánh Phồng Tôm Thượng Hạng\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 16, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Há Cảo Tôm Thịt\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 17, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Rau Muống Tươi\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 18, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Nấm Bào Ngư\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 19, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Lá Tía Tô\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 20, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Bí Đao\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 21, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Bò Viên\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 22, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Tôm Viên\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 23, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Há Cảo Nhân Tôm\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 24, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Xúc Xích Cocktail\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 25, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Sushi Cá Ngừ\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 26, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Sashimi Cá Trích Ép Trứng\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 27, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Nigiri Lươn\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 28, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Sushi Bơ Cuộn\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 29, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Sushi Thanh Cua\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 30, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"California Roll\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 31, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Bánh Flan Caramel\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 32, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Bánh Kem Phô Mai\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 33, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Sữa Chua Nếp Cẩm\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 34, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Bánh Mousse Socola\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 35, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Bia Hà Nội\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 36, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Trà Chanh\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 37, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Nước Ép Cam Tươi\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 38, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Trà Đào Cam Sả\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 39, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Sốt Chấm Hải Sản\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 40, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Sốt BBQ Hàn Quốc\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 41, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Nước Chấm Mắm Gừng\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 42, \"don_gia\": 0, \"phu_phi\": 0, \"ten_mon\": \"Sốt Mayonnaise\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 0, \"la_mon_combo\": true, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 43, \"don_gia\": \"130836.00\", \"phu_phi\": 0, \"ten_mon\": \"Cá Hồi Phi Lê\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 130836, \"la_mon_combo\": false, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 44, \"don_gia\": \"88775.00\", \"phu_phi\": 0, \"ten_mon\": \"Lõi Vai Bò Sốt Cay\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 88775, \"la_mon_combo\": false, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}, {\"stt\": 45, \"don_gia\": \"83033.00\", \"phu_phi\": 0, \"ten_mon\": \"Vẹm Xanh Canada\", \"gioi_han\": null, \"so_luong\": 1, \"thanh_tien\": 83033, \"la_mon_combo\": false, \"phu_phi_tong\": 0, \"so_luong_vuot\": 0, \"vuot_gioi_han\": false}]', 2298644.00, 100000.00, 0.00, 0.00, 0.00, 0.00, 2198644.00, 2000000.00, NULL, 'tien_mat', 'SALE20', '2025-12-03 14:02:59', '2025-12-03 14:02:59');
+
 -- --------------------------------------------------------
 
 --
@@ -159,21 +174,52 @@ CREATE TABLE `chi_tiet_order` (
 --
 
 INSERT INTO `chi_tiet_order` (`id`, `order_id`, `mon_an_id`, `so_luong`, `loai_mon`, `trang_thai`, `ghi_chu`, `created_at`, `updated_at`) VALUES
-(1099, 152, 216, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1100, 152, 178, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1101, 152, 152, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1102, 152, 135, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1103, 152, 188, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1104, 152, 161, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1105, 152, 201, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1106, 152, 136, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1107, 152, 155, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1108, 152, 176, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1109, 152, 163, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1110, 152, 212, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1111, 152, 186, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1112, 152, 205, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(1113, 152, 179, 1, 'combo', 'cho_bep', NULL, '2025-12-01 17:27:01', '2025-12-01 17:27:01');
+(1343, 171, 132, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:04', '2025-12-03 13:51:04'),
+(1344, 171, 133, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:04', '2025-12-03 13:51:04'),
+(1345, 171, 135, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:04', '2025-12-03 13:51:04'),
+(1346, 171, 139, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:04', '2025-12-03 13:51:04'),
+(1347, 171, 141, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:04', '2025-12-03 13:51:04'),
+(1348, 171, 142, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:04', '2025-12-03 13:51:04'),
+(1349, 171, 145, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:04', '2025-12-03 13:51:04'),
+(1350, 171, 149, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:04', '2025-12-03 13:51:04'),
+(1351, 171, 152, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:04', '2025-12-03 13:51:04'),
+(1352, 171, 155, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1353, 171, 156, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1354, 171, 157, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1355, 171, 161, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1356, 171, 163, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1357, 171, 166, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1358, 171, 168, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1359, 171, 171, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1360, 171, 174, 1, 'combo', 'cho_bep', 'Nhiều nước', '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1361, 171, 176, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1362, 171, 179, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1363, 171, 182, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1364, 171, 183, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1365, 171, 188, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1366, 171, 189, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1367, 171, 192, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1368, 171, 193, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1369, 171, 195, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1370, 171, 197, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1371, 171, 199, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1372, 171, 200, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1373, 171, 203, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1374, 171, 205, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1375, 171, 206, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1376, 171, 208, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1377, 171, 213, 1, 'combo', 'da_len_mon', NULL, '2025-12-03 13:51:05', '2025-12-03 13:52:00'),
+(1378, 171, 214, 1, 'combo', 'dang_che_bien', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:49'),
+(1379, 171, 215, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1380, 171, 216, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1381, 171, 221, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1382, 171, 223, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1383, 171, 224, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1384, 171, 226, 1, 'combo', 'cho_bep', NULL, '2025-12-03 13:51:05', '2025-12-03 13:51:05'),
+(1385, 171, 147, 1, 'goi_them', 'cho_bep', NULL, '2025-12-03 13:53:50', '2025-12-03 13:53:50'),
+(1386, 171, 154, 1, 'goi_them', 'cho_bep', NULL, '2025-12-03 13:53:50', '2025-12-03 13:53:50'),
+(1387, 171, 150, 1, 'goi_them', 'dang_che_bien', NULL, '2025-12-03 13:54:01', '2025-12-03 13:54:08'),
+(1388, 169, 149, 1, 'combo', 'cho_bep', NULL, '2025-12-03 14:21:17', '2025-12-03 14:21:17');
 
 -- --------------------------------------------------------
 
@@ -221,6 +267,25 @@ INSERT INTO `combo_buffet` (`id`, `ten_combo`, `mo_ta`, `loai_combo`, `gia_co_ba
 (32, 'Combo Buffet 499k - Gói 2', 'Combo 499k đặc biệt, thời lượng phục vụ 180 phút.', '499k', 499000.00, 180, '2025-12-01 00:00:00', '2026-12-01 23:59:59', 'combo_buffet/1764609688_chup-anh-mon-an-tai-nha-trang.jpg', 'dang_ban', '2025-12-01 10:00:00', '2025-12-01 10:00:00'),
 (33, 'Combo Buffet 499k - Gói 3', 'Combo 499k đặc biệt, thời lượng phục vụ 180 phút.', '499k', 499000.00, 180, '2025-12-01 00:00:00', '2026-12-01 23:59:59', 'combo_buffet/1764609688_chup-anh-mon-an-tai-nha-trang.jpg', 'dang_ban', '2025-12-01 10:00:00', '2025-12-01 10:00:00'),
 (34, 'Combo Buffet 499k - Gói 4', 'Combo 499k đặc biệt, thời lượng phục vụ 180 phút.', '499k', 499000.00, 180, '2025-12-01 00:00:00', '2026-12-01 23:59:00', 'combo_buffet/1764609688_chup-anh-mon-an-tai-nha-trang.jpg', 'dang_ban', '2025-12-01 10:00:00', '2025-12-01 17:21:28');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `danh_gia`
+--
+
+CREATE TABLE `danh_gia` (
+  `id` bigint UNSIGNED NOT NULL,
+  `ten_khach` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sdt` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nghe_nghiep` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Nghề nghiệp của khách',
+  `noi_dung` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `so_sao` tinyint UNSIGNED NOT NULL DEFAULT '5' COMMENT 'Đánh giá từ 1 đến 5 sao',
+  `trang_thai` enum('cho_duyet','hien_thi','an') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'cho_duyet' COMMENT 'Trạng thái hiển thị đánh giá',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -285,51 +350,9 @@ CREATE TABLE `dat_ban` (
 --
 
 INSERT INTO `dat_ban` (`id`, `ma_dat_ban`, `ten_khach`, `email_khach`, `sdt_khach`, `nguoi_lon`, `tre_em`, `ban_id`, `nhan_vien_id`, `gio_den`, `thoi_luong_phut`, `tien_coc`, `trang_thai`, `xac_thuc_ma`, `la_dat_online`, `ghi_chu`, `created_at`, `updated_at`) VALUES
-(292, 'DB-20251129182927-F6U', 'Phạm Trung', NULL, '0111111111', 0, 0, 12, 9, '2025-11-29 18:28:00', NULL, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-11-29 11:29:28', '2025-11-30 08:39:22'),
-(293, 'QR20251129-4C02', 'phạm', NULL, '111111111111', 6, 0, 2, NULL, '2025-11-29 18:30:44', 180, NULL, 'hoan_tat', NULL, 0, NULL, '2025-11-29 11:30:44', '2025-11-30 13:19:40'),
-(294, 'DB-20251129-02NX', 'Trung phạm', 'trungleogi@gmail.com', '011111111111', 0, 0, 15, NULL, '2025-11-30 18:44:00', 120, 20000.00, 'hoan_tat', NULL, 1, NULL, '2025-11-29 11:40:39', '2025-11-30 13:21:12'),
-(295, 'DB-20251129-NQYX', 'Trung', 'trungleogi@gmail.com', '0111111111', 0, 0, 12, NULL, '2025-12-07 18:45:00', 120, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-11-29 11:45:30', '2025-11-29 11:46:20'),
-(296, 'DB-20251129-ENJB', 'Khách', '11111@gmail.com', '11111111', 0, 0, 11, NULL, '2025-11-29 19:20:00', 120, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-11-29 11:51:11', '2025-11-30 06:53:44'),
-(297, 'DB-20251129-S6X9', 'Trung', '11111@gmail.com', '1111111111111', 0, 0, 13, NULL, '2025-11-29 19:19:00', 120, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-11-29 11:52:14', '2025-11-29 13:23:44'),
-(298, 'DB-20251129-3ZOB', 'Trung', 'trungleogi@gmail.com', '11111111', 4, 0, 15, NULL, '2025-11-29 20:17:00', 120, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-11-29 12:59:19', '2025-12-01 05:20:05'),
-(299, 'QR20251129-1717', 'trrr', NULL, '1111', 0, 0, 4, NULL, '2025-11-29 20:18:31', 146, NULL, 'hoan_tat', NULL, 0, NULL, '2025-11-29 13:18:31', '2025-11-29 13:26:08'),
-(300, 'QR20251129-C3C4', 'pppppppp', NULL, '000000', 1, 0, 4, NULL, '2025-11-29 20:34:52', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-11-29 13:34:52', '2025-12-01 02:53:40'),
-(301, 'DB-20251130-ZIOQ', '11111111', '11111@gmail.com', '11111111', 2, 0, 12, NULL, '2025-11-30 13:46:00', 120, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-11-30 06:42:52', '2025-12-01 04:39:33'),
-(302, 'DB-20251130134921-ENT', '1111111111', NULL, '111111', 0, 0, 14, 7, '2025-11-30 13:49:00', NULL, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-11-30 06:49:21', '2025-11-30 06:49:32'),
-(303, 'QR20251130-BF3A', '111111111', NULL, '11111111111', 2, 0, 1, NULL, '2025-11-30 16:04:19', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-11-30 09:04:19', '2025-11-30 14:39:59'),
-(304, 'DB-20251130-DWX1', 'aaaa1111111111', 'trungleogi@gmail.com', '1111111', 2, 6, NULL, 7, '2025-12-21 16:15:00', 120, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-11-30 09:15:58', '2025-11-30 09:28:40'),
-(305, 'DB-20251130-LFLA', 'aaaa', 'trungleogi@gmail.com', '1111111', 2, 3, NULL, NULL, '2025-12-06 16:15:00', 120, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-11-30 09:15:58', '2025-11-30 09:15:58'),
-(306, 'QR20251130-507C', 'aaaaaaaa', NULL, '111111111', 4, 0, 10, NULL, '2025-11-30 20:13:20', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-11-30 13:13:20', '2025-11-30 13:13:20'),
-(307, 'DB-20251130-MMSI', 'Phạm111', '2leogi@gmail.com', '1222222', 5, 2, NULL, 7, '2025-12-05 21:06:00', 120, 0.00, 'hoan_tat', NULL, 0, '111111', '2025-11-30 14:06:43', '2025-11-30 14:16:02'),
-(308, 'QR20251201-EA63', '111111', NULL, '11111111', 3, 0, 3, NULL, '2025-12-01 08:24:59', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 01:24:59', '2025-12-01 01:25:25'),
-(309, 'QR20251201-FC5C', 'Phạm Trung', NULL, '0111111', 6, 0, 3, NULL, '2025-12-01 08:52:11', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 01:52:11', '2025-12-01 02:22:23'),
-(310, 'QR20251201-A06F', 'Trung', NULL, '111111', 1, 0, 3, NULL, '2025-12-01 09:22:52', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 02:22:52', '2025-12-01 02:22:52'),
-(311, 'QR20251201-F1FA', 'Phạm Trung', NULL, '11111', 2, 0, 11, NULL, '2025-12-01 10:29:28', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 03:29:28', '2025-12-01 03:29:28'),
-(312, 'QR20251201-E242', '11111111', NULL, '1111111111', 3, 0, 16, NULL, '2025-12-01 11:36:38', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 04:36:38', '2025-12-01 04:36:38'),
-(313, 'QR20251201-26FF', '1111111', NULL, '11111', 4, 0, 8, NULL, '2025-12-01 11:56:50', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 04:56:50', '2025-12-01 04:56:50'),
-(314, 'QR20251201-3351', '1111111', NULL, '111111', 6, 0, 7, NULL, '2025-12-01 13:09:05', 180, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 06:09:05', '2025-12-01 06:42:42'),
-(315, 'QR20251201-4CCB', '11111111', NULL, '11111111', 1, 0, 6, NULL, '2025-12-01 13:27:50', 90, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 06:27:50', '2025-12-01 06:27:50'),
-(316, 'QR20251201-E9D4', 'qqqqqq', NULL, '1111111', 3, 0, 13, NULL, '2025-12-01 13:34:21', 180, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 06:34:21', '2025-12-01 06:34:21'),
-(317, 'QR20251201-B4B3', '1111111', NULL, '11111', 1, 0, 7, NULL, '2025-12-01 13:43:10', 90, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 06:43:10', '2025-12-01 06:43:10'),
-(318, 'QR20251201-3BB6', '111', NULL, '1111', 1, 0, 7, NULL, '2025-12-01 14:31:55', 150, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 07:31:55', '2025-12-01 07:31:55'),
-(319, 'DB-20251201-FE8Z', 'aaaaaaaaaaaaaaa', 'trungleogi@gmail.com', '11111111', 3, 1, NULL, NULL, '2025-12-01 14:52:00', 120, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-12-01 07:51:44', '2025-12-01 08:25:43'),
-(320, 'DB-20251201-Q4OU', '11111111111', 'trungleogi@gmail.com', '11111111', 2, 1, 2, 7, '2025-12-01 14:57:43', 120, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-12-01 07:52:49', '2025-12-01 08:01:01'),
-(321, 'QR20251201-6456', '1111111', NULL, '11111111', 2, 0, 3, NULL, '2025-12-01 16:42:02', 180, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 09:42:02', '2025-12-01 09:42:02'),
-(322, 'QR20251201-9D65', '111111111111', NULL, '11111', 1, 0, 9, NULL, '2025-12-01 17:14:45', 180, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 10:14:45', '2025-12-01 10:14:45'),
-(323, 'QR20251201-0DD3', 'Trung phạm', NULL, '111222333', 4, 2, 8, NULL, '2025-12-01 17:20:36', 180, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 10:20:36', '2025-12-01 10:20:36'),
-(324, 'QR20251201-8CC3', '111', NULL, '1111', 2, 0, 1, NULL, '2025-12-01 17:21:55', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 10:21:55', '2025-12-01 10:21:55'),
-(325, 'QR20251201-687F', '1111111', NULL, '111', 6, 3, 4, NULL, '2025-12-01 17:33:03', 180, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 10:33:03', '2025-12-01 10:33:03'),
-(326, 'QR20251201-976D', 'Trung', NULL, '1111', 3, 1, 4, NULL, '2025-12-01 17:34:33', 120, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 10:34:33', '2025-12-01 10:34:33'),
-(327, 'DB-20251201180216-ZACW', 'aaaaaaaaaaaaaaa', NULL, '111111111', 3, 2, 11, 9, '2025-12-01 18:01:00', 130, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-12-01 11:02:16', '2025-12-01 14:32:54'),
-(328, 'DB-20251201180344-SUYZ', '222', NULL, '22222222', 2, 1, 12, 7, '2025-12-01 18:03:00', 130, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-12-01 11:03:44', '2025-12-01 11:20:34'),
-(329, 'QR20251201-FAAD', '111111111', NULL, '111111111', 2, 1, 13, NULL, '2025-12-01 18:24:43', 130, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 11:24:43', '2025-12-01 11:24:43'),
-(330, 'DB-20251201182522-81UO', 'dâd', NULL, '1111111', 2, 1, 10, 9, '2025-12-01 17:25:00', 130, 0.00, 'hoan_tat', NULL, 0, NULL, '2025-12-01 11:25:22', '2025-12-01 11:28:55'),
-(331, 'QR20251201-9815', 'aaaaaaaaaaaaaaa', NULL, '11111111', 2, 1, 1, NULL, '2025-12-01 19:46:29', 130, NULL, 'hoan_tat', NULL, 0, NULL, '2025-12-01 12:46:29', '2025-12-01 12:46:29'),
-(332, 'QR20251201-12D3', 'Trung', NULL, '1111', 3, 1, 1, NULL, '2025-12-01 21:59:52', 90, NULL, 'khach_da_den', NULL, 0, NULL, '2025-12-01 14:59:52', '2025-12-01 17:27:01'),
-(333, 'QR20251201-AF1F', 'Trug', NULL, '1111', 2, 1, 2, NULL, '2025-12-01 22:33:02', 130, NULL, 'khach_da_den', NULL, 0, NULL, '2025-12-01 15:33:02', '2025-12-01 15:33:02'),
-(334, 'DB-20251201-PSBP', 'Trung', 'trungleogi@gmail.com', '0999999999', 3, 1, NULL, 7, '2025-12-01 22:45:00', 120, 0.00, 'khach_da_den', NULL, 0, NULL, '2025-12-01 15:35:39', '2025-12-01 15:35:55'),
-(335, 'DB-20251201-UVTK', 'Trung', 'trungleogi@gmail.com', '1111111111', 1, 0, NULL, NULL, '2025-12-01 22:41:00', 120, 0.00, 'cho_xac_nhan', NULL, 0, NULL, '2025-12-01 15:36:34', '2025-12-01 15:36:34'),
-(336, 'QR20251201-7359', 'Phạm', NULL, '11111111', 2, 1, 9, NULL, '2025-12-01 22:59:37', 130, NULL, 'khach_da_den', NULL, 0, NULL, '2025-12-01 15:59:37', '2025-12-01 15:59:37');
+(359, 'DB-2TPNHS', 'Trung', NULL, '11111111', 2, 0, 1, 7, '2025-12-03 20:26:58', 180, NULL, 'khach_da_den', NULL, 1, NULL, '2025-12-03 13:24:09', '2025-12-03 14:21:06'),
+(360, 'DB-4K40QG', 'Phạm', NULL, '01111', 3, 1, 2, 7, '2025-12-03 20:47:20', 180, NULL, 'hoan_tat', NULL, 1, NULL, '2025-12-03 13:46:01', '2025-12-03 14:02:59'),
+(361, 'DB-MD0DAN', 'Phạm Trung', NULL, '111111111', 2, 1, NULL, NULL, '2025-12-03 21:31:00', NULL, NULL, 'cho_xac_nhan', NULL, 1, 'Không', '2025-12-03 14:28:57', '2025-12-03 14:28:57');
 
 -- --------------------------------------------------------
 
@@ -351,8 +374,12 @@ CREATE TABLE `dat_ban_combo` (
 --
 
 INSERT INTO `dat_ban_combo` (`id`, `dat_ban_id`, `combo_id`, `so_luong`, `created_at`, `updated_at`) VALUES
-(64, 332, 15, 1, '2025-12-01 17:27:01', '2025-12-01 17:27:01'),
-(65, 332, 16, 1, '2025-12-01 17:27:01', '2025-12-01 17:27:01');
+(101, 360, 31, 1, '2025-12-03 13:49:49', '2025-12-03 13:49:49'),
+(102, 360, 32, 1, '2025-12-03 13:49:49', '2025-12-03 13:49:49'),
+(103, 360, 33, 1, '2025-12-03 13:49:49', '2025-12-03 13:49:49'),
+(104, 360, 34, 1, '2025-12-03 13:49:49', '2025-12-03 13:49:49'),
+(105, 359, 32, 1, '2025-12-03 14:21:06', '2025-12-03 14:21:06'),
+(106, 359, 33, 1, '2025-12-03 14:21:06', '2025-12-03 14:21:06');
 
 -- --------------------------------------------------------
 
@@ -379,8 +406,7 @@ CREATE TABLE `hoa_don` (
 --
 
 INSERT INTO `hoa_don` (`id`, `ma_hoa_don`, `dat_ban_id`, `voucher_id`, `tong_tien`, `tien_giam`, `phu_thu`, `da_thanh_toan`, `phuong_thuc_tt`, `created_at`, `updated_at`) VALUES
-(121, 'HD20251129202344-297', 297, NULL, 0.00, 0.00, 0.00, 0.00, 'tien_mat', '2025-11-29 13:23:44', '2025-11-29 13:23:44'),
-(122, 'HD20251129202608-299', 299, NULL, 1990176.00, 0.00, 21830.00, 2012006.00, 'tien_mat', '2025-11-29 13:26:08', '2025-11-29 13:26:08');
+(126, 'HD20251203210259-360', 360, 1, 2298644.00, 100000.00, 0.00, 2198644.00, 'tien_mat', '2025-12-03 14:02:59', '2025-12-03 14:02:59');
 
 -- --------------------------------------------------------
 
@@ -402,12 +428,14 @@ CREATE TABLE `khu_vuc` (
 --
 
 INSERT INTO `khu_vuc` (`id`, `ten_khu_vuc`, `mo_ta`, `tang`, `created_at`, `updated_at`) VALUES
-(1, 'Khu vực K', 'Dicta eligendi numquam optio autem velit maiores ea.', 3, '2025-11-14 04:34:56', '2025-11-14 04:34:56'),
-(2, 'Khu vực L', 'Omnis eum expedita aut magni excepturi sed.', 3, '2025-11-14 04:34:56', '2025-11-14 04:34:56'),
-(3, 'Khu vực V', 'Cum laboriosam sequi quia.', 2, '2025-11-14 04:34:56', '2025-11-14 04:34:56'),
-(4, 'Khu vực D', 'Id natus est est quia culpa quibusdam magnam quod.', 3, '2025-11-14 04:34:56', '2025-11-14 04:34:56'),
-(5, 'Khu vực I', 'Rerum officiis inventore deleniti rerum impedit consequatur ut.', 1, '2025-11-14 04:34:56', '2025-11-14 04:34:56'),
-(6, '1', '11', 1, '2025-11-18 15:28:20', '2025-11-18 15:28:20');
+(1, 'Khu vực A - Sảnh', 'Khu vực sảnh chính tầng 1', 1, '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(2, 'Khu vực B - Cửa sổ', 'Góc view cửa sổ tầng 1', 1, '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(3, 'Khu vực C - Góc', 'Góc yên tĩnh tầng 1', 1, '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(4, 'Khu vực D - Bếp', 'Gần quầy line tầng 1', 1, '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(5, 'Khu vực E - Ban công', 'Không gian mở tầng 2', 2, '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(6, 'Khu vực F - VIP', 'Phòng lạnh VIP tầng 2', 2, '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(7, 'Khu vực G - Sân thượng', 'View ngoài trời tầng 2', 2, '2025-12-03 13:03:41', '2025-12-03 13:03:41'),
+(8, 'Khu vực H - Gia đình', 'Bàn lớn cho gia đình tầng 2', 2, '2025-12-03 13:03:41', '2025-12-03 13:03:41');
 
 -- --------------------------------------------------------
 
@@ -755,7 +783,7 @@ INSERT INTO `mon_trong_combo` (`id`, `combo_id`, `mon_an_id`, `gioi_han_so_luong
 (263, 34, 157, NULL, NULL, '2025-12-01 10:00:00', '2025-12-01 10:00:00'),
 (264, 34, 145, NULL, NULL, '2025-12-01 10:00:00', '2025-12-01 10:00:00'),
 (265, 34, 192, NULL, NULL, '2025-12-01 10:00:00', '2025-12-01 10:00:00'),
-(266, 34, 214, 1, NULL, '2025-12-01 10:00:00', '2025-12-01 10:00:00'),
+(266, 34, 214, NULL, NULL, '2025-12-01 10:00:00', '2025-12-02 09:53:40'),
 (267, 34, 188, NULL, NULL, '2025-12-01 10:00:00', '2025-12-01 10:00:00'),
 (268, 34, 166, NULL, NULL, '2025-12-01 10:00:00', '2025-12-01 10:00:00'),
 (269, 34, 179, NULL, NULL, '2025-12-01 10:00:00', '2025-12-01 10:00:00'),
@@ -786,10 +814,18 @@ CREATE TABLE `nhan_vien` (
 --
 
 INSERT INTO `nhan_vien` (`id`, `ho_ten`, `sdt`, `email`, `mat_khau`, `vai_tro`, `trang_thai`, `created_at`, `updated_at`) VALUES
-(2, 'Trần Thị Bình', '0902003002', 'binh.tran@example.com', '$2y$12$ePz6ia.RDY0rSPMyTxLZiOn.AU6KZQHRg9UkYjpYDQ2kwycNQ1OKu', 'bep', 1, NULL, '2025-11-19 06:29:55'),
-(7, 'Em. Đổng Hào', '0966868924', 'au.vy@example.com', '$2y$12$26kJrZ8w3BFdi9MHOe8rTOR1rlUhcpZzQqjCN.6SveojyM1/WZ4La', 'phuc_vu', 1, NULL, '2025-11-19 06:44:27'),
-(8, 'Phạm Lê Đức Trung', '11111111', '1111@gmail.com', '$2y$12$Omv5GABtl5cyBGpg6zqiQ.FT6RKQlrmk/mCpN5VDxrcq6i1WPSceu', 'bep', 1, '2025-11-19 06:32:20', '2025-11-19 06:32:20'),
-(9, 'Phạm Lê Đức Trung1', '1111111111', '111111@gmail.com', '$2y$12$6w.RDUgxZNpwL8d7OKpsderT2uNNY1IAPyeB.F2L25Je4.ShlwrHC', 'le_tan', 1, '2025-11-19 06:35:24', '2025-11-19 06:35:24');
+(2, 'Trần Thị Bình', '0902003002', 'binh.tran@example.com', '$2y$12$.tkqoNhpCRqDTLwOWX2rcOCPg6pfk1q2N4qZMfzLlORLNmFMRALDC', 'bep', 1, NULL, '2025-12-03 15:47:37'),
+(7, 'Em. Đổng Hào', '0966868924', 'au.vy@example.com', '$2y$12$.tkqoNhpCRqDTLwOWX2rcOCPg6pfk1q2N4qZMfzLlORLNmFMRALDC', 'phuc_vu', 1, NULL, '2025-12-03 15:47:37'),
+(8, 'Phạm Lê Đức Trung', '11111111', '1111@gmail.com', '$2y$12$.tkqoNhpCRqDTLwOWX2rcOCPg6pfk1q2N4qZMfzLlORLNmFMRALDC', 'bep', 1, '2025-11-19 06:32:20', '2025-12-03 15:47:37'),
+(9, 'Phạm Lê Đức Trung1', '1111111111', '111111@gmail.com', '$2y$12$.tkqoNhpCRqDTLwOWX2rcOCPg6pfk1q2N4qZMfzLlORLNmFMRALDC', 'le_tan', 1, '2025-11-19 06:35:24', '2025-12-03 15:47:37'),
+(10, 'Đức Trung', '0799132504', 'trungleogi@gmail.com', '$2y$12$.tkqoNhpCRqDTLwOWX2rcOCPg6pfk1q2N4qZMfzLlORLNmFMRALDC', 'quan_ly', 1, '2025-12-03 15:09:14', '2025-12-03 15:47:37'),
+(11, 'Nhân viên', '0123456789', 'nhanvien@gmail.com', '$2y$12$WGSR3/Ms1DucCX1P6f9AdeXNifKrqy2zEljp31G1XmmIABvWWEcvq', 'phuc_vu', 1, '2025-12-03 15:49:06', '2025-12-03 15:59:25'),
+(12, 'admin', '0123456788', 'admin@gmail.com', '$2y$12$ctMV6tAJXFhmpK1xLmJEyuF/c2q4PELwDnsoWZWMbxha/U8lmi9ny', 'quan_ly', 1, '2025-12-03 15:58:35', '2025-12-03 15:58:35'),
+(13, 'bep', '01222222222', 'bep@gmail.com', '$2y$12$FTSKgKB95XvzS0fVg2xfkOGnvcI9f3AfSI3uubbL2LH1MMaevXlCy', 'bep', 1, '2025-12-03 15:59:08', '2025-12-03 15:59:08'),
+(14, 'Trung', '122111211', 'nhanvientrung@gmail.com', '$2y$12$y.BMrR0yTJETy315tSvyt.xDbOQzB7kz4QcpSMDn0ybZ4wz9/tw4q', 'phuc_vu', 1, '2025-12-03 16:57:16', '2025-12-03 16:57:16'),
+(15, '111111', '111111111111111', '11111@gmail.com', '$2y$12$ktMfErqk2ZGNG8SbQp9UbOn3vIayaEMGHTBph8NpKsw6L0Rkb0rSC', 'bep', 1, '2025-12-03 16:59:42', '2025-12-03 16:59:42'),
+(16, '11111111', '23132', '222@gmail.com', '$2y$12$E1C9W/wmotIGK.Wm77ayZujC8xRKL/7i4UXq2O4REV.EJI/.9nCDS', 'phuc_vu', 1, '2025-12-03 17:03:35', '2025-12-03 17:03:35'),
+(17, 'aaaaaaaa', '121212', '112@gmail.com', '$2y$12$PHj6MnCRMygXAkQ1vkrwMen9wzUuOAqrEzYdIFcLlFIQt4h3YQE/K', 'phuc_vu', 1, '2025-12-04 04:59:15', '2025-12-04 04:59:15');
 
 -- --------------------------------------------------------
 
@@ -813,38 +849,9 @@ CREATE TABLE `order_mon` (
 --
 
 INSERT INTO `order_mon` (`id`, `dat_ban_id`, `ban_id`, `tong_mon`, `tong_tien`, `trang_thai`, `created_at`, `updated_at`) VALUES
-(123, 293, 2, 6, 752326.00, 'dang_xu_li', '2025-11-29 11:30:44', '2025-11-29 13:21:32'),
-(124, 299, 4, 11, 1990176.00, 'hoan_thanh', '2025-11-29 13:18:31', '2025-11-29 13:26:08'),
-(125, 300, 4, 34, 255000.00, 'dang_xu_li', '2025-11-29 13:34:52', '2025-11-30 08:42:27'),
-(126, 303, 1, 12, 565000.00, 'dang_xu_li', '2025-11-30 09:04:19', '2025-11-30 12:34:55'),
-(127, 306, 10, 0, 0.00, 'dang_xu_li', '2025-11-30 13:13:20', '2025-11-30 13:13:20'),
-(128, 308, 3, 0, 0.00, 'dang_xu_li', '2025-12-01 01:24:59', '2025-12-01 01:24:59'),
-(129, 309, 3, 0, 0.00, 'dang_xu_li', '2025-12-01 01:52:11', '2025-12-01 01:52:11'),
-(130, 310, 3, 0, 0.00, 'dang_xu_li', '2025-12-01 02:22:52', '2025-12-01 02:22:52'),
-(131, 311, 11, 0, 0.00, 'dang_xu_li', '2025-12-01 03:29:28', '2025-12-01 03:29:28'),
-(132, 312, 16, 0, 0.00, 'dang_xu_li', '2025-12-01 04:36:38', '2025-12-01 04:36:38'),
-(133, 301, 12, 0, 0.00, 'dang_xu_li', '2025-12-01 04:39:33', '2025-12-01 04:39:33'),
-(134, 313, 8, 6, 165000.00, 'dang_xu_li', '2025-12-01 04:56:50', '2025-12-01 05:32:01'),
-(135, 298, 15, 11, 761000.00, 'dang_xu_li', '2025-12-01 05:20:05', '2025-12-01 05:20:34'),
-(136, 314, 7, 36, 1229000.00, 'dang_xu_li', '2025-12-01 06:09:05', '2025-12-01 06:40:33'),
-(137, 315, 6, 5, 99000.00, 'dang_xu_li', '2025-12-01 06:27:50', '2025-12-01 06:27:50'),
-(138, 316, 13, 11, 1052000.00, 'dang_xu_li', '2025-12-01 06:34:21', '2025-12-01 06:34:54'),
-(139, 317, 7, 8, 529000.00, 'dang_xu_li', '2025-12-01 06:43:10', '2025-12-01 06:46:48'),
-(140, 318, 7, 34, 644000.00, 'dang_xu_li', '2025-12-01 07:31:55', '2025-12-01 07:41:33'),
-(141, 320, 2, 11, 388000.00, 'dang_xu_li', '2025-12-01 08:01:01', '2025-12-01 09:19:07'),
-(142, 321, 3, 10, 568000.00, 'dang_xu_li', '2025-12-01 09:42:02', '2025-12-01 09:42:02'),
-(143, 322, 9, 5, 399000.00, 'dang_xu_li', '2025-12-01 10:14:45', '2025-12-01 10:14:45'),
-(144, 323, 8, 15, 956000.00, 'dang_xu_li', '2025-12-01 10:20:36', '2025-12-01 10:20:36'),
-(145, 324, 1, 6, 373000.00, 'dang_xu_li', '2025-12-01 10:21:55', '2025-12-01 10:22:07'),
-(146, 325, 4, 15, 816000.00, 'dang_xu_li', '2025-12-01 10:33:03', '2025-12-01 10:33:03'),
-(147, 326, 4, 17, 532000.00, 'dang_xu_li', '2025-12-01 10:34:33', '2025-12-01 10:36:35'),
-(148, 328, 12, 2, 30000.00, 'dang_xu_li', '2025-12-01 11:21:04', '2025-12-01 11:21:04'),
-(149, 329, 13, 5, 99000.00, 'dang_xu_li', '2025-12-01 11:24:43', '2025-12-01 11:24:43'),
-(150, 330, 10, 12, 284000.00, 'dang_xu_li', '2025-12-01 11:28:55', '2025-12-01 11:35:27'),
-(151, 331, 1, 33, 2207000.00, 'dang_xu_li', '2025-12-01 12:46:29', '2025-12-01 12:47:28'),
-(152, 332, 1, 30, 198000.00, 'dang_xu_li', '2025-12-01 14:59:52', '2025-12-01 17:27:01'),
-(153, 333, 2, 10, 498000.00, 'dang_xu_li', '2025-12-01 15:33:02', '2025-12-01 15:33:02'),
-(154, 336, 9, 14, 458000.00, 'dang_xu_li', '2025-12-01 15:59:37', '2025-12-01 16:07:59');
+(169, 359, 1, 1, 998000.00, 'dang_xu_li', '2025-12-03 13:34:17', '2025-12-03 14:21:17'),
+(170, 359, 1, 0, 0.00, 'dang_xu_li', '2025-12-03 13:34:31', '2025-12-03 13:34:31'),
+(171, 360, 2, 45, 2298644.00, 'hoan_thanh', '2025-12-03 13:49:49', '2025-12-03 14:02:59');
 
 -- --------------------------------------------------------
 
@@ -866,7 +873,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('zS8rnWwqTs6DWozTJdpCZKw4nxu2kxumr2TsyQri', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTkh4S3VMUUFraGJaNDBoYkRndUdFSUZPMnNqMkJqZ3h5d1ZPRmtqayI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9vZGVycXIvb3JkZXIvc3RhdHVzLzMzMiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6OToic2R0X2toYWNoIjtzOjk6IjExMTExMTExMSI7fQ==', 1764610049);
+('cAeixiO7yLPF1QUyPlNo4EAMihS6vwmYN840iDEo', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiT1FSd0NiZjIyeFJpUkt2RWRrZ0wzdUpQTUo1dGFXS0N4bHpsUWVsTSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1764825272);
 
 -- --------------------------------------------------------
 
@@ -1218,7 +1225,7 @@ CREATE TABLE `vouchers` (
 --
 
 INSERT INTO `vouchers` (`id`, `ma_voucher`, `loai_giam`, `gia_tri`, `gia_tri_toi_da`, `mo_ta`, `so_luong`, `so_luong_da_dung`, `ngay_bat_dau`, `ngay_ket_thuc`, `trang_thai`, `created_at`, `updated_at`) VALUES
-(1, 'SALE20', 'phan_tram', 20.00, 100000.00, 'Giảm 20% tối đa 100.000đ', 50, 2, '2025-11-14 11:34:58', '2025-12-14 11:34:58', 'dang_ap_dung', '2025-11-14 04:34:58', '2025-11-28 20:19:58'),
+(1, 'SALE20', 'phan_tram', 20.00, 100000.00, 'Giảm 20% tối đa 100.000đ', 50, 4, '2025-11-14 11:34:58', '2025-12-14 11:34:58', 'dang_ap_dung', '2025-11-14 04:34:58', '2025-12-03 14:02:59'),
 (2, 'BUFFET50', 'tien_mat', 50000.00, NULL, 'Giảm trực tiếp 50.000đ', 100, 10, '2025-11-14 11:34:58', '2026-01-13 11:34:58', 'dang_ap_dung', '2025-11-14 04:34:58', '2025-11-14 05:26:07'),
 (3, 'VIP10', 'phan_tram', 10.00, 50000.00, 'Giảm 10% tối đa 50.000đ cho khách VIP', 20, 5, '2025-11-12 11:34:58', '2025-11-29 11:34:58', 'dang_ap_dung', '2025-11-14 04:34:58', '2025-11-14 04:34:58'),
 (4, 'TET2025', 'tien_mat', 100000.00, NULL, 'Giảm 100.000đ mừng Tết 2025', 500, 120, '2025-01-01 00:00:00', '2025-02-01 23:59:59', 'dang_ap_dung', '2025-11-14 04:34:58', '2025-11-14 04:34:58'),
@@ -1270,6 +1277,12 @@ ALTER TABLE `chi_tiet_order`
 -- Indexes for table `combo_buffet`
 --
 ALTER TABLE `combo_buffet`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `danh_gia`
+--
+ALTER TABLE `danh_gia`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1376,25 +1389,31 @@ ALTER TABLE `vouchers`
 -- AUTO_INCREMENT for table `ban_an`
 --
 ALTER TABLE `ban_an`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `chi_tiet_hoa_don`
 --
 ALTER TABLE `chi_tiet_hoa_don`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `chi_tiet_order`
 --
 ALTER TABLE `chi_tiet_order`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1114;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1389;
 
 --
 -- AUTO_INCREMENT for table `combo_buffet`
 --
 ALTER TABLE `combo_buffet`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- AUTO_INCREMENT for table `danh_gia`
+--
+ALTER TABLE `danh_gia`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `danh_muc_mon`
@@ -1406,25 +1425,25 @@ ALTER TABLE `danh_muc_mon`
 -- AUTO_INCREMENT for table `dat_ban`
 --
 ALTER TABLE `dat_ban`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=337;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=362;
 
 --
 -- AUTO_INCREMENT for table `dat_ban_combo`
 --
 ALTER TABLE `dat_ban_combo`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
 
 --
 -- AUTO_INCREMENT for table `hoa_don`
 --
 ALTER TABLE `hoa_don`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- AUTO_INCREMENT for table `khu_vuc`
 --
 ALTER TABLE `khu_vuc`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `migrations`
@@ -1448,19 +1467,19 @@ ALTER TABLE `mon_trong_combo`
 -- AUTO_INCREMENT for table `nhan_vien`
 --
 ALTER TABLE `nhan_vien`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `order_mon`
 --
 ALTER TABLE `order_mon`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=172;
 
 --
 -- AUTO_INCREMENT for table `thu_vien_anh_mon_an`
 --
 ALTER TABLE `thu_vien_anh_mon_an`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=591;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=380;
 
 --
 -- AUTO_INCREMENT for table `vouchers`
