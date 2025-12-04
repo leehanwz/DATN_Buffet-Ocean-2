@@ -12,7 +12,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap"
+        rel="stylesheet">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -28,7 +30,8 @@
 
 <body>
     <div class="container-xxl bg-white p-0">
-        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div id="spinner"
+            class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
@@ -50,47 +53,57 @@
                 <!-- Chỉ 1 collapse duy nhất -->
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0 pe-4">
+                        {{-- Các route chức năng của nhân viên --}}
                         <a href="{{ route('nhanVien.ban-an.index') }}"
-                            class="nav-item nav-link {{ request()->routeIs('nhanVien.ban-an.index') ? 'active' : '' }}">
-                            Bàn ăn
-                        </a>
+                            class="nav-item nav-link {{ request()->routeIs('nhanVien.ban-an.*') ? 'active' : '' }}">Bàn
+                            ăn</a>
                         <a href="{{ route('nhanVien.order.index') }}"
-                            class="nav-item nav-link {{ request()->routeIs('nhanVien.order.*') ? 'active' : '' }}">
-                            Mở order gọi món
-                        </a>
+                            class="nav-item nav-link {{ request()->routeIs('nhanVien.order.*') ? 'active' : '' }}">Mở
+                            order gọi món</a>
                         <a href="{{ route('nhanVien.datban.index') }}"
-                            class="nav-item nav-link {{ request()->routeIs('nhanVien.datban.index') ? 'active' : '' }}">
-                            Xác nhận & tạo đặt bàn
-                        </a>
+                            class="nav-item nav-link {{ request()->routeIs('nhanVien.datban.*') ? 'active' : '' }}">Xác
+                            nhận & tạo đặt bàn</a>
                     </div>
-
+                    {{-- Nút Logout (Ví dụ) --}}
                 </div>
-            </nav>
-        </div>
+                {{-- Form Logout POST --}}
+                <a href="#" class="btn btn-primary py-2 px-4"
+                    onclick="event.preventDefault(); document.getElementById('logout-form-nhanvien').submit();">
+                    <i class="fa fa-sign-out-alt me-2"></i> Đăng xuất
+                </a>
 
-        <div class="container-xxl py-5 bg-dark hero-header mb-5">
-            <div class="container text-center my-5 pt-5 pb-4">
-                <h1 class="display-3 text-white mb-3 animated slideInDown">
-                    @yield('title')
-                </h1>
+                {{-- Form ẩn để thực hiện POST request --}}
+                <form id="logout-form-nhanvien" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
 
-                {{-- <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb justify-content-center text-uppercase">
-                            <li class="breadcrumb-item"><a href="#">Nhân viên</a></li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">@yield('title')</li>
-                        </ol>
-                    </nav> --}}
-            </div>
         </div>
     </div>
-    <!-- Navbar & Hero End -->
+    </nav>
 
-    {{-- nd --}}
-    <main>
-        @yield('content')
-    </main>
-
-    <!-- Footer Start -->
+    {{-- 2. HERO HEADER --}}
+    <div class="container-xxl py-5 bg-dark hero-header mb-5">
+        <div class="container text-center my-5 pt-5 pb-4">
+            {{-- Hiển thị tiêu đề trang con --}}
+            <h1 class="display-3 text-white mb-3 animated slideInDown">
+                @yield('title')
+            </h1>
+            {{-- Breadcrumb để điều hướng --}}
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center text-uppercase">
+                    <li class="breadcrumb-item"><a href="#">Nhân viên</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">@yield('title')</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    </div>
+    {{-- Bọc trong container để nội dung không bị dính sát lề --}}
+    <div class="container-xxl py-5">
+        <div class="container">
+            @yield('content')
+        </div>
+    </div>
     <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container py-5">
             <div class="row g-5">
@@ -108,12 +121,10 @@
                     <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
                     <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
                     <div class="d-flex pt-2">
-                        <a class="btn btn-outline-light btn-social" href=""><i
-                                class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
                         <a class="btn btn-outline-light btn-social" href=""><i
                                 class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i
-                                class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
                         <a class="btn btn-outline-light btn-social" href=""><i
                                 class="fab fa-linkedin-in"></i></a>
                     </div>
@@ -142,8 +153,6 @@
                 <div class="row">
                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
                         &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
-
-                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
                         Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a><br><br>
                         Distributed By <a class="border-bottom" href="https://themewagon.com"
                             target="_blank">ThemeWagon</a>
@@ -160,10 +169,6 @@
             </div>
         </div>
     </div>
-    <!-- Footer End -->
-
-
-    <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>
 
@@ -171,7 +176,6 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    {{-- PHẢI DÙNG asset() ĐỂ KHÔNG BỊ LỖI 404 --}}
     <script src="{{ asset('restaurant/lib/wow/wow.min.js') }}"></script>
     <script src="{{ asset('restaurant/lib/easing/easing.min.js') }}"></script>
     <script src="{{ asset('restaurant/lib/waypoints/waypoints.min.js') }}"></script>
@@ -182,9 +186,8 @@
     <script src="{{ asset('restaurant/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js') }}"></script>
     <script src="{{ asset('restaurant/js/main.js') }}"></script>
 
-    <!-- Template Javascript -->
-    <script src="{{ asset('restaurant/js/main.js') }}"></script>
-    @push('scripts')
+    {{-- Chỗ này để các trang con push thêm JS riêng nếu cần --}}
+    @stack('scripts')
 </body>
 
 </html>
