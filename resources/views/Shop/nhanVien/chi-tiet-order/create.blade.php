@@ -520,17 +520,18 @@
                             @foreach($mons as $mon)
                             @php $soLuong = $soLuongMonTrongCombo[$mon->id] ?? 1; @endphp
                             <div class="col-lg-6">
-                                <div class="dish-card mon-card"
+                                <div class="dish-card mon-card combo-item"
+                                    data-is-combo="1"
                                     data-id="{{ $mon->id }}"
                                     data-ten="{{ $mon->ten_mon }}"
-                                    data-gia="{{ $mon->gia }}"
+                                    data-gia="0"
                                     data-loai="{{ $mon->loai_mon }}"
                                     data-category="{{ $mon->danh_muc_id }}">
                                     <img src="{{ asset($mon->hinh_anh ?? 'https://placehold.co/70x70?text=IMG') }}" class="dish-thumb" alt="{{ $mon->ten_mon }}">
                                     <div class="dish-info">
                                         <div class="dish-name">{{ $mon->ten_mon }}</div>
                                         <div class="dish-meta">{{ $mon->loai_mon }}</div>
-                                        <div class="dish-price">{{ number_format($mon->gia,0,',','.') }} <small>đ</small></div>
+                                        <div class="dish-price">0 <small>đ</small></div>
                                     </div>
                                     <div class="btn-add-quick add-to-cart"><i class="fa-solid fa-plus"></i></div>
                                 </div>
@@ -552,6 +553,7 @@
                             @foreach($mons as $mon)
                             <div class="col-lg-6">
                                 <div class="dish-card mon-card"
+                                    data-is-combo="0"
                                     data-id="{{ $mon->id }}"
                                     data-ten="{{ $mon->ten_mon }}"
                                     data-gia="{{ $mon->gia }}"
@@ -620,7 +622,11 @@
                 li.className = "cart-item";
                 li.innerHTML = `
                     <div style="flex: 1;">
-                        <div class="item-name">${item.ten_mon} <span class="item-qty">x${item.so_luong}</span></div>
+                        <div class="item-name">
+                            ${item.ten_mon}
+                            <span class="item-qty">x${item.so_luong}</span>
+                            ${item.is_combo == 1 ? '<small style="color: #22c55e;">(Combo)</small>' : '<small style="color:#f97316;">(Gọi thêm)</small>'}
+                            </div>
                         ${item.ghi_chu ? `<span class="item-note"><i class="fa-regular fa-comment"></i> ${item.ghi_chu}</span>` : ''}
                     </div>
                     <div style="flex-shrink: 0; display: flex;">
@@ -633,7 +639,7 @@
         }
 
         // Logic Add Cart
-        function addToCart(monId, tenMon, gia, loaiMon) {
+        function addToCart(monId, tenMon, gia, loaiMon, isCombo) {
             const existing = cart.find(i => i.mon_an_id == monId);
             if (existing) {
                 existing.so_luong++;
@@ -643,7 +649,8 @@
                     ten_mon: tenMon,
                     so_luong: 1,
                     ghi_chu: null,
-                    loai_mon: loaiMon
+                    loai_mon: loaiMon,
+                    is_combo: isCombo
                 });
             }
             renderCart();
@@ -680,7 +687,8 @@
                     card.dataset.id,
                     card.dataset.ten,
                     card.dataset.gia,
-                    card.dataset.loai
+                    card.dataset.loai,
+                    card.dataset.isCombo
                 );
             });
         });
@@ -755,23 +763,6 @@
                 card.parentElement.style.display = (matchesType && matchesName) ? 'block' : 'none';
             });
         });
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('.add-to-cart');
-            if (!btn) return;
-
-            const card = btn.closest('.mon-card');
-
-            // Animation effect (optional)
-            card.style.transform = "scale(0.98)";
-            setTimeout(() => card.style.transform = "", 100);
-
-            addToCart(
-                card.dataset.id,
-                card.dataset.ten,
-                card.dataset.gia,
-                card.dataset.loai
-            );
-        }) // Toggle hiển thị filter
         document.getElementById('toggle-filter').addEventListener('click', () => {
             const row = document.getElementById('filter-row');
             row.style.display = row.style.display === 'none' ? 'flex' : 'none';

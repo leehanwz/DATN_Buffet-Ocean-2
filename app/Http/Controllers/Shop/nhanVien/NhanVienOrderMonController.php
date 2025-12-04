@@ -181,31 +181,32 @@ class NhanVienOrderMonController extends Controller
     {
         $data = $request->all();
 
-        // Nếu gửi theo AJAX, items là mảng
+        // Nếu gửi theo AJAX
         if (isset($data['items'])) {
             foreach ($data['items'] as $item) {
                 ChiTietOrder::create([
-                    'order_id' => $data['order_id'],
+                    'order_id'  => $data['order_id'],
                     'mon_an_id' => $item['mon_an_id'],
-                    'so_luong' =>  1,
-                    'loai_mon' => 'goi_them',
-                    'ghi_chu' => $item['ghi_chu'] ?? null,
+                    'so_luong'  => $item['so_luong'] ?? 1,
+                    'loai_mon'  => ($item['is_combo'] == 1) ? 'combo' : 'goi_them',
+                    'ghi_chu'   => $item['ghi_chu'] ?? null,
                     'trang_thai' => 'cho_bep',
                 ]);
             }
         } else {
-            // Nếu gửi form bình thường
+            // Nếu gửi form thường
             $request->validate([
                 'order_id' => 'required',
                 'mon_an_id' => 'required',
                 'so_luong' => 'required|integer|min:1'
             ]);
+
             ChiTietOrder::create([
-                'order_id' => $request->order_id,
+                'order_id'  => $request->order_id,
                 'mon_an_id' => $request->mon_an_id,
-                'so_luong' => $request->so_luong,
-                'loai_mon' => 'goi_them',
-                'ghi_chu' => $request->ghi_chu,
+                'so_luong'  => $request->so_luong,
+                'loai_mon'  => $request->is_combo == 1 ? 'combo' : 'goi_them',
+                'ghi_chu'   => $request->ghi_chu,
                 'trang_thai' => 'cho_bep',
             ]);
         }

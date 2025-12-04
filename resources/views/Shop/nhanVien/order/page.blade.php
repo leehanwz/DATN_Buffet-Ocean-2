@@ -46,6 +46,7 @@
         margin-bottom: 24px;
         overflow: hidden;
         border: 1px solid #f1f5f9;
+        transition: .25s ease;
     }
 
     .card-header-custom {
@@ -424,6 +425,18 @@
                         });
                         @endphp
 
+                        @php
+                        $tongTienMonLe = $order->chiTietOrders
+                        ->where('loai_mon', 'goi_them')
+                        ->sum(function ($ct) {
+                        return ($ct->monAn->gia ?? 0) * ($ct->so_luong ?? 0);
+                        });
+                        @endphp
+
+                        @php
+                        $tongTien = $tongTienCombo + $tongTienMonLe;
+                        @endphp
+
                         <div class="info-row">
                             <span class="info-label">Tổng món:</span>
                             <span class="info-value">{{ $tongMon }}</span>
@@ -431,7 +444,7 @@
                         <div class="info-row">
                             <span class="info-label">Tạm tính:</span>
                             <span class="total-money">
-                                {{ number_format($tongTienCombo) }}đ
+                                {{ number_format($tongTien) }}đ
                             </span>
                         </div>
                     </div>
@@ -608,7 +621,11 @@
         });
         document.addEventListener("DOMContentLoaded", function() {
 
-            const ORDER_ID = {{$order -> id}};
+            const ORDER_ID = {
+                {
+                    $order - > id
+                }
+            };
             // sửa thành : const ORDER_ID = {{$order -> id}};
             const STORAGE_KEY = "kitchen_sent_" + ORDER_ID;
             const TIME_PER_DISH = 15 * 60 * 1000; // 15 phút
