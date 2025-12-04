@@ -621,11 +621,7 @@
         });
         document.addEventListener("DOMContentLoaded", function() {
 
-            const ORDER_ID = {
-                {
-                    $order - > id
-                }
-            };
+            const ORDER_ID = {{$order -> id}};
             // sửa thành : const ORDER_ID = {{$order -> id}};
             const STORAGE_KEY = "kitchen_sent_" + ORDER_ID;
             const TIME_PER_DISH = 15 * 60 * 1000; // 15 phút
