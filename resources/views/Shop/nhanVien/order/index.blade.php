@@ -31,10 +31,6 @@
             ['label'=>'Tổng số bàn', 'count'=>$bans->count(), 'bg'=>'#28a74533', 'icon'=>'bi-grid-3x3-gap'],
             ['label'=>'Bàn trống', 'count'=>$bans->where('trang_thai', 'trong')->count(), 'bg'=>'#6c757d33', 'icon'=>'bi-person-check'],
             ['label'=>'Đang phục vụ', 'count'=>$bans->where('trang_thai', 'dang_phuc_vu')->count(), 'bg'=>'#dc354533', 'icon'=>'bi-people-fill'],
-            ['label'=>'Khách đến & chưa chọn combo', 'count'=>$bans->filter(function($ban) use ($orders) {
-            $datBanMoiNhat = \App\Models\DatBan::where('ban_id', $ban->id)->latest()->first();
-            return $datBanMoiNhat && $datBanMoiNhat->trang_thai == 'khach_da_den' && !$orders->has($ban->id);
-            })->count(), 'bg'=>'#17a2b833', 'icon'=>'bi-person-plus'],
             ['label'=>'Bàn bảo trì', 'count'=>$bans->where('trang_thai', 'khong_su_dung')->count(), 'bg'=>'#6c757d88', 'icon'=>'bi-tools']
             ];
             @endphp
@@ -149,93 +145,12 @@
 </main>
 
 <style>
-    .table-card {
-        transition: transform 0.2s, box-shadow 0.2s;
-        cursor: pointer;
-    }
-
-    .table-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    }
-
-    .table-card-header .badge {
-        font-size: 0.75rem;
-        padding: 0.25em 0.6em;
-        border-radius: 12px;
-    }
-
-    .card-body p {
-        font-size: 0.85rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .card-body .btn {
-        transition: all 0.2s;
-        background: linear-gradient(135deg, #0dcaf0, #dbbf0cff);
-        color: white;
-        border: none;
-        box-shadow: 0 0 10px rgba(13, 202, 240, .6);
-    }
-
-    .card-body .btn:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 25px rgba(13, 202, 240, .9);
-    }
-
-    .row.mb-4>.col {
-        flex: 1;
-        min-width: 0;
-    }
-
-    /* Responsive 6 cột */
-    @media (max-width: 1200px) {
-        .col-xl-2 {
-            flex: 0 0 16.666667%;
-            max-width: 16.666667%;
-        }
-    }
-
-    @media (max-width: 992px) {
-        .col-lg-3 {
-            flex: 0 0 25%;
-            max-width: 25%;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .col-md-4 {
-            flex: 0 0 33.333333%;
-            max-width: 33.333333%;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .col-sm-6 {
-            flex: 0 0 50%;
-            max-width: 50%;
-        }
-    }
-
-    .table-card.new-order {
-        animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-        0% {
-            box-shadow: 0 0 0 rgba(255, 193, 7, 0.8);
-        }
-
-        50% {
-            box-shadow: 0 0 15px rgba(255, 193, 7, 0.9);
-        }
-
-        100% {
-            box-shadow: 0 0 0 rgba(255, 193, 7, 0.8);
-        }
-    }
+    /* =============================== */
+    /* GLOBAL & ANIMATION */
+    /* =============================== */
 
     body {
+        /* Giữ nguyên màu nền body đẹp */
         background: radial-gradient(circle at top right, #e3f2ff, #f7f9fc, #f1f5ff);
     }
 
@@ -256,14 +171,31 @@
     }
 
     /* =============================== */
-    /* MINI DASHBOARD */
+    /* MINI DASHBOARD - GIỮ NGUYÊN MÀU TỪ BLADE */
     /* =============================== */
 
+    .row.mb-4 .col {
+        flex: 1;
+        min-width: 0;
+    }
+
     .row.mb-4 .rounded-4 {
+        /* Loại bỏ các lớp background bị ghi đè để dùng màu từ style="" */
+        color: inherit;
+        /* Đảm bảo màu chữ tự động đổi tùy theo background */
         border-radius: 18px !important;
         backdrop-filter: blur(8px);
         border: 1px solid rgba(0, 0, 0, 0.04);
         transition: all 0.25s ease;
+    }
+
+    /* Thêm màu chữ tương phản cho từng thẻ dashboard nếu màu nền quá sáng */
+    .row.mb-4 .col:nth-child(1) .rounded-4,
+    /* Tổng số bàn (Xanh lá) */
+    .row.mb-4 .col:nth-child(2) .rounded-4 {
+        /* Bàn trống (Xám) */
+        color: #333 !important;
+        /* Đặt màu chữ đậm để nổi bật trên nền nhạt */
     }
 
     .row.mb-4 .rounded-4:hover {
@@ -292,6 +224,9 @@
         border: 1px solid rgba(0, 0, 0, 0.06);
         overflow: hidden;
         transition: all 0.25s ease;
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
     }
 
     .table-card:hover {
@@ -299,8 +234,11 @@
         box-shadow: 0 14px 35px rgba(0, 0, 0, 0.18);
     }
 
+    /* Loại bỏ border gradient để không ghi đè lên hover glow */
+    /* .table-card::before { ... } */
+
     /* =============================== */
-    /* HEADER */
+    /* TABLE CARD HEADER - GIỮ NGUYÊN MÀU TỪ BLADE */
     /* =============================== */
 
     .table-card-header {
@@ -308,18 +246,41 @@
         border-bottom-left-radius: 18px;
         border-bottom-right-radius: 18px;
         padding: 14px 10px 10px;
+        z-index: 2;
     }
 
+    /* Thêm lớp phủ mờ nhẹ cho header để hiệu ứng gradient đẹp hơn */
     .table-card-header::after {
         content: "";
         position: absolute;
         inset: 0;
-        background: rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.1);
         mix-blend-mode: overlay;
     }
 
     .table-card-header h5 {
         letter-spacing: 0.5px;
+    }
+
+    /* Hiệu ứng ánh sáng hover trên header */
+    .table-card-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+        transform: rotate(20deg);
+        opacity: 0;
+        transition: .6s;
+        pointer-events: none;
+    }
+
+    .table-card:hover .table-card-header::before {
+        opacity: 1;
+        top: 50%;
+        left: 50%;
     }
 
     /* =============================== */
@@ -331,19 +292,26 @@
         font-weight: 600;
         padding: 5px 14px;
         box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.15);
+        font-size: 0.75rem;
+        /* Đặt lại font-size cho badge */
     }
 
     /* =============================== */
-    /* BODY */
+    /* CARD BODY */
     /* =============================== */
 
     .card-body {
         text-align: center;
+        padding: 1.5rem 1rem !important;
+        /* Căn chỉnh lại padding cho đẹp */
+        position: relative;
+        z-index: 5;
     }
 
     .card-body p {
         font-size: 0.85rem;
         opacity: 0.85;
+        margin-bottom: 0.25rem;
     }
 
     .card-body p i {
@@ -355,12 +323,32 @@
     }
 
     /* =============================== */
-    /* BUTTON */
+    /* BUTTON (ACTION) */
     /* =============================== */
 
     .card-body .btn {
         border-radius: 50px !important;
         transition: all 0.25s cubic-bezier(.4, 1.8, .6, .9);
+        width: 50px;
+        height: 50px;
+        padding: 0;
+        border: none;
+        /* Loại bỏ border cho nút */
+
+        /* Đặt lại màu sắc nút để nó nổi bật, không dùng màu gradient bị ghi đè */
+        /* Nút mở Order (màu xanh lá) */
+        &.btn-success {
+            background: linear-gradient(135deg, #28a745, #157347) !important;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.6) !important;
+            color: white;
+        }
+
+        /* Nút xem Order (màu vàng) */
+        &.btn-warning {
+            background: linear-gradient(135deg, #ffc107, #d49500) !important;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.6) !important;
+            color: #333;
+        }
     }
 
     .card-body .btn:hover {
@@ -372,24 +360,25 @@
     }
 
     /* =============================== */
-    /* GLOW BY STATUS */
+    /* GLOW BY STATUS (Hover Shadow) */
     /* =============================== */
 
-    .table-card:has(.badge.bg-success) {
-        box-shadow: 0 0 12px rgba(40, 167, 69, 0.4);
+    .table-card:has(.badge.bg-success):hover {
+        box-shadow: 0 14px 35px rgba(40, 167, 69, 0.3) !important;
     }
 
-    .table-card:has(.badge.bg-warning) {
-        box-shadow: 0 0 12px rgba(255, 193, 7, 0.5);
+    .table-card:has(.badge.bg-warning):hover {
+        box-shadow: 0 14px 35px rgba(255, 193, 7, 0.4) !important;
     }
 
-    .table-card:has(.badge.bg-info) {
-        box-shadow: 0 0 12px rgba(23, 162, 184, 0.5);
+    .table-card:has(.badge.bg-info):hover {
+        box-shadow: 0 14px 35px rgba(23, 162, 184, 0.4) !important;
     }
 
     .table-card:has(.badge.bg-dark) {
         opacity: 0.75;
-        filter: grayscale(70%);
+        filter: grayscale(50%);
+        /* Giảm nhẹ hiệu ứng xám */
     }
 
     /* =============================== */
@@ -411,124 +400,86 @@
     }
 
     /* =============================== */
-    /* SECTION TITLE */
+    /* SECTION TITLE (H3) */
     /* =============================== */
 
     h3 {
         position: relative;
         display: inline-block;
-        padding-left: 10px;
-        background: linear-gradient(90deg, #000000ff, #d8b00fff);
+        background: linear-gradient(90deg, #333333, #666666);
+        /* Tông xám đen */
         color: white;
         padding: 8px 18px;
         border-radius: 50px;
         box-shadow: 0 6px 18px rgba(0, 0, 0, .2);
+        margin-bottom: 1.5rem !important;
+        /* Thêm khoảng cách dưới cho đẹp */
+        font-size: 1.35rem;
+    }
+
+    h3 i.bi {
+        color: #ffc107;
+        /* Đổi màu icon thành vàng nổi bật */
     }
 
     h3::before {
         content: '';
         position: absolute;
         left: 0;
-        top: 6px;
-        height: 60%;
-        width: 4px;
-        border-radius: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 80%;
+        width: 8px;
+        border-radius: 50px;
+        background: #ffc107;
+        /* Màu trang trí ở đầu section */
     }
 
     /* =============================== */
-    /* MOBILE */
+    /* RESPONSIVE GRID (Giữ nguyên) */
     /* =============================== */
 
-    @media (max-width: 768px) {
-        .table-card-header h5 {
-            font-size: 0.95rem;
+    /* Responsive 6 cột */
+    @media (min-width: 1200px) {
+
+        /* LỚP XL-2 CÓ SẴN TRONG HTML */
+        .col-xl-2 {
+            flex: 0 0 16.666667%;
+            max-width: 16.666667%;
         }
     }
 
-    .row.mb-4 .col:nth-child(1) .rounded-4 {
-        background: linear-gradient(135deg, #00c853, #b2ff59) !important;
-        color: #064d2a;
+    @media (min-width: 992px) and (max-width: 1199.98px) {
+        .col-xl-2 {
+            flex: 0 0 20%;
+            max-width: 20%;
+        }
     }
 
-    .row.mb-4 .col:nth-child(2) .rounded-4 {
-        background: linear-gradient(135deg, #90a4ae, #eceff1) !important;
-        color: #263238;
+    @media (max-width: 991.98px) {
+        .col-lg-3 {
+            flex: 0 0 33.333333%;
+            max-width: 33.333333%;
+        }
     }
 
-    .row.mb-4 .col:nth-child(3) .rounded-4 {
-        background: linear-gradient(135deg, #ff5252, #ff867c) !important;
-        color: white;
+    @media (max-width: 767.98px) {
+
+        .col-md-4,
+        .col-lg-3 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
     }
 
-    .row.mb-4 .col:nth-child(4) .rounded-4 {
-        background: linear-gradient(135deg, #40c4ff, #81d4fa) !important;
-        color: white;
-    }
+    @media (max-width: 575.98px) {
 
-    .row.mb-4 .col:nth-child(5) .rounded-4 {
-        background: linear-gradient(135deg, #616161, #9e9e9e) !important;
-        color: white;
-    }
-
-    .table-card::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 18px;
-        padding: 1px;
-        background: linear-gradient(140deg, #0dcaf0, #6610f2, #20c997);
-        -webkit-mask:
-            linear-gradient(#fff 0 0) content-box,
-            linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        opacity: 0.5;
-    }
-
-    .table-card-header::before {
-        content: "";
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-        transform: rotate(20deg);
-        opacity: 0;
-        transition: .6s;
-    }
-
-    .table-card:hover .table-card-header::before {
-        opacity: 1;
-        top: 50%;
-        left: 50%;
-    }
-
-    .table-card::before,
-    .table-card::after,
-    .table-card-header::before,
-    .table-card-header::after {
-        pointer-events: none;
-    }
-
-    /* Đảm bảo button luôn nằm trên */
-    .card-body,
-    .card-body * {
-        position: relative;
-        z-index: 5;
-    }
-
-    /* Header vẫn đẹp nhưng không che */
-    .table-card-header {
-        position: relative;
-        z-index: 2;
-    }
-
-    /* Card nằm đúng lớp dưới button */
-    .table-card {
-        position: relative;
-        z-index: 1;
+        .col-sm-6,
+        .col-md-4,
+        .col-lg-3 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
     }
 </style>
-
 @endsection

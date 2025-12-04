@@ -373,9 +373,14 @@
                     ORDER BÀN {{ $order->banAn->so_ban }}
                 </h3>
             </div>
-            <a href="{{ route('nhanVien.chi-tiet-order.create', ['order_id' => $order->id]) }}" class="btn-custom btn-add">
-                <i class="fa-solid fa-plus"></i> Thêm món
-            </a>
+            <div class="d-flex gap-2">
+                <button id="btnSendKitchen" class="btn-custom btn-add">
+                    <i class="fa-solid fa-fire"></i> Gửi bếp
+                </button>
+                <a href="{{ route('nhanVien.chi-tiet-order.create', ['order_id' => $order->id]) }}" class="btn-custom btn-add">
+                    <i class="fa-solid fa-plus"></i> Thêm món
+                </a>
+            </div>
         </div>
 
         <div class="row">
@@ -459,7 +464,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($order->chiTietOrders as $ct)
-                                <tr>
+                                <tr data-id="{{ $ct->id }}">
                                     <td>
                                         <div style="font-weight: 700; color: var(--dark);">{{ $ct->monAn->ten_mon }}</div>
                                     </td>
@@ -600,9 +605,87 @@
                     el.innerHTML = `⏳ ${minutes}:${seconds.toString().padStart(2,'0')}`;
                 });
             }
+        });
+        document.addEventListener("DOMContentLoaded", function() {
 
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
+            const ORDER_ID = {{$order -> id}};
+            // sửa thành : const ORDER_ID = {{$order -> id}};
+            const STORAGE_KEY = "kitchen_sent_" + ORDER_ID;
+            const TIME_PER_DISH = 15 * 60 * 1000; // 15 phút
+
+            let sentItems = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+            function saveStorage() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(sentItems));
+            }
+
+            // 👉 Khi bấm GỬI BẾP
+            document.getElementById("btnSendKitchen").addEventListener("click", function() {
+
+                document.querySelectorAll("tr[data-id]").forEach(row => {
+
+                    let id = row.dataset.id;
+
+                    // ✅ Chỉ set countdown cho món chưa gửi
+                    if (!sentItems[id]) {
+                        sentItems[id] = Date.now() + TIME_PER_DISH;
+                    }
+                });
+
+                saveStorage();
+                startCountdown();
+                alert("✅ Đã gửi món mới xuống bếp!");
+            });
+
+            function startCountdown() {
+
+                setInterval(() => {
+
+                    document.querySelectorAll(".countdown").forEach(el => {
+
+                        let row = el.closest("tr");
+                        let id = row.dataset.id;
+
+                        // 👉 Nếu món CHƯA gửi thì không đếm
+                        if (!sentItems[id]) {
+                            el.innerHTML = "⏸ Chưa gửi";
+                            el.classList.remove("warning", "danger");
+                            return;
+                        }
+
+                        let deadline = sentItems[id];
+                        let diff = deadline - Date.now();
+
+                        if (diff <= 0) {
+
+                            if (!el.dataset.alerted) {
+                                showDelayAlert("⚠ Trễ món: " + el.dataset.tenMon);
+                                el.dataset.alerted = 1;
+                            }
+
+                            el.innerHTML = "⚠ Trễ món";
+                            el.classList.add("danger");
+                            row.classList.add("tre-mon");
+                            return;
+                        }
+
+                        let minutes = Math.floor(diff / 60000);
+                        let seconds = Math.floor((diff % 60000) / 1000);
+
+                        el.classList.remove("warning", "danger");
+
+                        if (minutes <= 2) el.classList.add("danger");
+                        else if (minutes <= 5) el.classList.add("warning");
+
+                        el.innerHTML = `⏳ ${minutes}:${seconds.toString().padStart(2,'0')}`;
+
+                    });
+
+                }, 1000);
+            }
+
+            // ✅ Khi load trang → auto chạy lại những món đang đếm
+            startCountdown();
         });
     </script>
 

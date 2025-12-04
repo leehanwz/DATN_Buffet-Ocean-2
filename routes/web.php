@@ -30,11 +30,7 @@ use App\Http\Controllers\Shop\NhanVien\NhanVienOrderMonController;
 use App\Http\Controllers\Shop\Bep\BepController;
 use App\Http\Controllers\Shop\NhanVien\NVDatBanController;
 use App\Http\Controllers\Shop\NhanVien\ThanhToanController;
-
-
-// ===== PHẦN THÊM MỚI 1: KHAI BÁO CONTROLLER =====
 use App\Http\Controllers\Shop\Oderqr\OrderController;
-// ===============================================
 
 
 /*
@@ -46,14 +42,22 @@ use App\Http\Controllers\Shop\Oderqr\OrderController;
 // ==================== CLIENT SITE ====================
 Route::prefix('/')->group(function () {
 
-    // Trang chủ
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::controller(HomeController::class)->group(function () {
+        Route::get('/', 'index')->name('home');              // Trang chủ
+        Route::get('/gioi-thieu', 'about')->name('about');   // About
+        Route::get('/dich-vu', 'service')->name('service');  // Service
+        Route::get('/thuc-don', 'menu')->name('menu');       // Menu
+        Route::get('/lien-he', 'contact')->name('contact');  // Contact
+        Route::get('/doi-ngu', 'team')->name('team');        // Team
+        Route::get('/danh-gia', 'testimonial')->name('testimonial');
+    });
 
-    // Combos
+    // ==== 2. COMBOS ====
     Route::get('/combos', [ComboClientController::class, 'index'])->name('combos.index');
     Route::get('/combos/{id}', [ComboClientController::class, 'show'])->name('combos.show');
 
-    // Booking: resource (trừ show)
+    // ==== 3. BOOKING ====
+    // Resource (trừ show)
     Route::resource('booking', BookingController::class)->except(['show']);
 
     // Trang đặt bàn thành công
@@ -62,19 +66,21 @@ Route::prefix('/')->group(function () {
     // AJAX: lấy bàn theo khu vực
     Route::get('booking/bans-by-khuvuc/{khu_vuc_id}', [BookingController::class, 'getBansByKhuVuc']);
 
-    // ==== OTP cho booking ====
+    // ==== 4. OTP CHO BOOKING ====
     Route::prefix('otp')->group(function () {
         Route::get('verify', [OtpController::class, 'showOtpForm'])->name('otp.form');
         Route::post('send', [OtpController::class, 'sendOtp'])->name('otp.send');
         Route::post('verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');
     });
-    // ==== Chọn phương thức thanh toán sau khi xác thực OTP ====
+
+    // ==== 5. THANH TOÁN ====
+    // Chọn phương thức thanh toán sau khi xác thực OTP
     Route::get('booking/{booking_id}/payment-method', [BookingController::class, 'paymentMethod'])
         ->name('booking.payment_method');
 
-    // ==== Các phương thức thanh toán ====
+    // Các phương thức thanh toán
     Route::get('booking/{booking_id}/pay-cash', [BookingController::class, 'payCash'])->name('booking.pay_cash');
-    Route::get('booking/{booking_id}/pay-os', [BookingController::class, 'payOS'])->name('booking.pay_os'); // đúng với controller
+    Route::get('booking/{booking_id}/pay-os', [BookingController::class, 'payOS'])->name('booking.pay_os');
     Route::get('booking/{booking_id}/pay-vnpay', [BookingController::class, 'payVNPay'])->name('booking.pay_vnpay');
     Route::get('booking/{booking_id}/pay-vietqr', [BookingController::class, 'payVietQR'])->name('booking.pay_vietqr');
 
@@ -168,17 +174,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
     // CRUD CHO ĐẶT BÀN
-    Route::prefix('dat-ban')->name('dat-ban.')->controller(DatBanController::class)->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::get('/create', 'create')->name('create');
-        Route::post('/store', 'store')->name('store');
-        Route::get('/{id}', 'show')->name('show');
-        Route::get('/{id}/edit', 'edit')->name('edit');
-        Route::put('/{id}', 'update')->name('update');
-        Route::post('/{id}/delete', 'destroy')->name('destroy');
-        Route::post('/{id}/update-status', 'updateStatus')->name('updateStatus');
-    });
+Route::prefix('dat-ban')->name('dat-ban.')->controller(DatBanController::class)->group(function () {
+
+    // --- [QUAN TRỌNG] ĐƯA CÁC ROUTE AJAX LÊN ĐẦU TIÊN ---
+    Route::get('/ajax-get-combos-by-loai', 'ajaxGetCombosByLoai')->name('ajax-get-combos-by-loai');
+    Route::get('/ajax-get-available-tables', 'ajaxGetAvailableTables')->name('ajax-get-available-tables');
+
+    // --- SAU ĐÓ MỚI ĐẾN CÁC ROUTE CƠ BẢN ---
+    Route::get('/', 'index')->name('index');
+    Route::get('/create', 'create')->name('create');
+    Route::post('/store', 'store')->name('store');
+
+    // --- CÁC ROUTE CÓ THAM SỐ {id} PHẢI ĐỂ DƯỚI CÙNG ---
+    Route::get('/{id}', 'show')->name('show'); // Wildcard {id} sẽ bắt tất cả nếu để trên
+    Route::get('/{id}/edit', 'edit')->name('edit');
+    Route::put('/{id}', 'update')->name('update');
+    Route::post('/{id}/delete', 'destroy')->name('destroy');
+    Route::post('/{id}/update-status', 'updateStatus')->name('updateStatus');
 });
+    });
+
+
 // <-- ** KẾT THÚC NHÓM ADMIN **
 
 
@@ -349,8 +365,8 @@ Route::get('/test-debug', function () {
     // 2. Kiểm tra xem có bàn nào đang gọi không
     $bans = \App\Models\BanAn::all();
     $dangGoi = [];
-    foreach ($bans as $b) {
-        if (\Illuminate\Support\Facades\Cache::has('goi_nhan_vien_' . $b->id)) {
+    foreach($bans as $b) {
+        if(\Illuminate\Support\Facades\Cache::has('goi_nhan_vien_' . $b->id)) {
             $dangGoi[] = "Bàn " . $b->so_ban . " (ID: " . $b->id . ") đang gọi";
         }
     }

@@ -285,12 +285,13 @@ class NhanVienOrderMonController extends Controller
         }
 
         $order->load('chiTietOrders.monAn');
+        $cts = $order->chiTietOrders;
 
         $order->chiTietOrders->each(function ($ct) {
             $ct->so_luong_hien_thi = $ct->so_luong;
         });
 
-        return view('Shop.nhanVien.order.page', compact('order'));
+        return view('Shop.nhanVien.order.page', compact('order', 'cts'));
     }
 
     public function chonCombo($orderId)

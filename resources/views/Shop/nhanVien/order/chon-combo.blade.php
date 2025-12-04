@@ -49,6 +49,8 @@
         flex-wrap: nowrap;
         margin-bottom: 20px;
         gap: 10px;
+        background: linear-gradient(135deg, #020617, #000000) !important;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, .8);
     }
 
     .page-header span.text-muted {
@@ -56,7 +58,7 @@
     }
 
     .header-title {
-        color: var(--dark);
+        color: var(--primary) !important;
         font-weight: 800;
         font-size: 1.8rem;
         text-transform: uppercase;
@@ -66,11 +68,12 @@
 
     /* --- INFO BOX (Context Order) --- */
     .context-box {
-        background: var(--white);
+        background-color: black;
+        color: var(--text-main);
+        box-shadow: inset 0 0 20px rgba(251, 191, 36, .2), 0 20px 40px rgba(0, 0, 0, .8);
         border-radius: var(--radius);
         padding: 15px 20px;
         border-left: 4px solid var(--primary);
-        box-shadow: var(--shadow-card);
         margin-bottom: 30px;
         display: flex;
         align-items: center;
@@ -545,13 +548,6 @@
     /*  CONTEXT BOX              */
     /* ========================= */
 
-    .context-box {
-        background: linear-gradient(135deg, rgba(251, 191, 36, .12), rgba(0, 0, 0, .85));
-        backdrop-filter: blur(10px);
-        border-left: 5px solid #fbbf24;
-        box-shadow: inset 0 0 15px rgba(251, 191, 36, .2), 0 15px 40px rgba(0, 0, 0, .6);
-    }
-
     .context-label {
         color: #facc15;
     }
@@ -838,6 +834,10 @@
     #comboModal .modal-menu-row {
         text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
     }
+
+    .combo-row {
+        display: none;
+    }
 </style>
 
 @section('content')
@@ -875,8 +875,6 @@
         <div class="mb-4">
             <h5 class="mb-2"></h5>
             <div class="filter-menu">
-                <a href="{{ route('nhanVien.order.chon-combo', ['orderId' => $order->id]) }}"
-                    class="{{ request('price') ? '' : 'active' }}">Tất cả combo</a>
                 @foreach ([99000, 199000, 299000, 399000, 499000] as $price)
                 <a href="{{ route('nhanVien.order.chon-combo', ['orderId' => $order->id, 'price' => $price]) }}"
                     class="{{ request('price') == $price ? 'active' : '' }}">
@@ -890,7 +888,7 @@
         {{-- COMBO GRID --}}
         <form method="POST" action="{{ route('nhanVien.order.luu-combo', $order->id) }}">
             @csrf
-            <div class="row">
+            <div class="row combo-row">
                 @foreach ($combos as $combo)
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="combo-card" data-price="{{ $combo->gia_co_ban }}">
@@ -1012,6 +1010,21 @@
 {{-- JS --}}
 <script>
     const cartSummary = document.getElementById('cart-summary');
+    const orderMinCombo = {{ ($order->datBan->nguoi_lon ?? 0) + ($order->datBan->tre_em ?? 0) }}; // tổng số khách
+    // lỗi thì thay thành : const orderMinCombo = {{ ($order->datBan->nguoi_lon ?? 0) + ($order->datBan->tre_em ?? 0) }}; // tổng số khách
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', function(e) {
+        let totalCombo = 0;
+        document.querySelectorAll('.combo-qty').forEach(input => {
+            totalCombo += parseInt(input.value) || 0;
+        });
+
+        if (totalCombo < orderMinCombo) {
+            e.preventDefault();
+            alert(`Số lượng combo phải ít nhất bằng số khách đặt bàn : Số khách hàng ${orderMinCombo}`);
+        }
+    });
 
     function updateCart() {
         let total = 0;
@@ -1071,17 +1084,26 @@
 
     // --- Filter combo theo giá ---
     function filterCombos(price) {
+        const comboRow = document.querySelector('.combo-row');
+        if (!price) {
+            comboRow.style.display = 'none'; // ẩn tất cả khi chưa chọn giá
+            return;
+        } else {
+            comboRow.style.display = 'flex'; // hiện row combo khi chọn giá
+        }
+
         document.querySelectorAll('.col-lg-4').forEach(col => {
             const comboCard = col.querySelector('.combo-card');
             const comboPrice = parseInt(comboCard.dataset.price);
 
-            if (!price || comboPrice === price) {
-                col.style.display = 'block'; // hiện cả cột
+            if (comboPrice === price) {
+                col.style.display = 'block';
             } else {
-                col.style.display = 'none'; // ẩn cả cột để không chiếm space
+                col.style.display = 'none';
             }
         });
     }
+
     // --- Modal ---
     const modal = document.getElementById('comboModal');
     const modalImg = modal.querySelector('.modal-img');
@@ -1224,6 +1246,37 @@
                 input.closest('.combo-card').classList.remove('disabled');
             }
         });
+    } // Hiển thị combo theo giá
+    function showCombosByPrice(price) {
+        document.querySelector('.combo-row').style.display = 'flex'; // hiện row
+        document.querySelectorAll('.combo-row .col-lg-4').forEach(col => {
+            const comboCard = col.querySelector('.combo-card');
+            const comboPrice = parseInt(comboCard.dataset.price);
+            if (comboPrice === price) {
+                col.style.display = 'block';
+            } else {
+                col.style.display = 'none';
+            }
+        });
+    }
+
+    // Lắng nghe click filter menu
+    document.querySelectorAll('.filter-menu a').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            const price = parseInt(link.innerText.replace('k', '')) * 1000;
+            showCombosByPrice(price);
+
+            // Cập nhật active
+            document.querySelectorAll('.filter-menu a').forEach(a => a.classList.remove('active'));
+            link.classList.add('active');
+        });
+    });
+
+    // Nếu load trang đã có giá được request, show ngay
+    const initialPrice = parseInt("{{ request('price') ?? 0 }}");
+    if (initialPrice) {
+        showCombosByPrice(initialPrice);
     }
 </script>
 
