@@ -118,12 +118,15 @@
         border-color: rgba(254, 161, 22, 0.4);
     }
 
-    /* ẩn món */
-    .combo-card .combo-desc-label,
-    .combo-card .menu-list {
+    /* CHƯA CHỌN GIÁ → ẨN HẾT COMBO */
+    .combo-row.not-selected {
         display: none !important;
     }
 
+    /* KHI CHỌN → HIỆN */
+    .combo-row {
+        display: flex;
+    }
 
     /* Image Area */
     .img-wrapper {
@@ -186,10 +189,7 @@
 
     /* List Items */
     .menu-list {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 20px 0;
-        flex: 1;
+        display: none;
     }
 
     .menu-item {
@@ -835,10 +835,6 @@
         text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
     }
 
-    .combo-row {
-        display: flex;
-    }
-
     /* ========================= */
     /* POPUP GIỮA MÀN HÌNH       */
     /* ========================= */
@@ -913,6 +909,17 @@
         display: none;
     }
 
+    #btnConfirmCombo:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: grayscale(50%);
+        box-shadow: none;
+    }
+
+    #btnConfirmCombo:disabled:hover {
+        transform: none;
+    }
+
     @keyframes popIn {
         to {
             transform: translate(-50%, -50%) scale(1);
@@ -968,7 +975,7 @@
         {{-- COMBO GRID --}}
         <form method="POST" action="{{ route('nhanVien.order.luu-combo', $order->id) }}">
             @csrf
-            <div class="row combo-row">
+            <div class="row combo-row not-selected">
                 @foreach ($combos as $combo)
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="combo-card" data-price="{{ $combo->gia_co_ban }}">
@@ -1026,9 +1033,6 @@
                                             <i class="fa-solid fa-circle-info"></i> {{ $ct->monAn->mo_ta }}
                                         </small>
                                     </div>
-                                    <span class="item-qty">
-                                        {{ $ct->gioi_han_so_luong !== null ? $ct->gioi_han_so_luong : 'Không giới hạn' }}
-                                    </span>
                                 </li>
                                 @endif
                                 @endforeach
@@ -1063,7 +1067,7 @@
             </div>
 
             {{-- Submit --}}
-            <button type="submit" class="btn-select mt-3"><i class="fa-solid fa-check"></i> Xác nhận chọn combo</button>
+            <button type="submit" class="btn-select mt-3" id="btnConfirmCombo"><i class="fa-solid fa-check"></i> Xác nhận chọn combo</button>
         </form>
     </div>
     <div id="comboModal" class="modal-overlay" style="display:none;">
@@ -1135,9 +1139,20 @@
             }
         });
 
-        cartSummary.innerText = lines.length ?
+        let summaryText = lines.length ?
             lines.join(' | ') + ' | Tổng: ' + total.toLocaleString() + ' đ' :
             'Chưa chọn combo nào';
+
+        // ✅ Hint đủ / thiếu combo
+        let totalCombo = getTotalCombo();
+
+        if (totalCombo < orderMinCombo) {
+            summaryText += ` | ⚠ Thiếu ${orderMinCombo - totalCombo} combo`;
+        } else {
+            summaryText += ` | ✅ Đã đủ combo`;
+        }
+
+        cartSummary.innerHTML = summaryText;
     }
 
     function showPopup(title, message, isConfirm = false) {
@@ -1179,6 +1194,9 @@
     // ========================
     document.querySelectorAll('.combo-card .btn-increase').forEach(btn => {
         btn.addEventListener('click', () => {
+            let currentTotal = 0;
+            document.querySelectorAll('.combo-qty').forEach(i => currentTotal += parseInt(i.value) || 0);
+
             const input = btn.closest('.input-group').querySelector('.combo-qty');
             const newPrice = parseInt(input.dataset.price);
 
@@ -1236,14 +1254,20 @@
     // FILTER COMBO BY PRICE
     // ========================
     function showCombosByPrice(price) {
-        document.querySelector('.combo-row').style.display = 'flex';
 
+        const row = document.querySelector('.combo-row');
+
+        // ✅ BỎ ẨN
+        row.classList.remove('not-selected');
+
+        // ✅ HIỆN những combo đúng giá
         document.querySelectorAll('.combo-row .col-lg-4').forEach(col => {
             const card = col.querySelector('.combo-card');
             const comboPrice = parseInt(card.dataset.price);
             col.style.display = (comboPrice === price) ? 'block' : 'none';
         });
     }
+
 
     // ========================
     // FILTER CLICK
@@ -1263,18 +1287,130 @@
     // VALIDATE SUBMIT
     // ========================
     document.querySelector('form').addEventListener('submit', function(e) {
-        let totalCombo = 0;
-        document.querySelectorAll('.combo-qty').forEach(i => totalCombo += parseInt(i.value) || 0);
+        e.preventDefault();
+        let totalCombo = getTotalCombo();
 
+        // ❌ CHƯA ĐỦ THEO SỐ KHÁCH
         if (totalCombo < orderMinCombo) {
             e.preventDefault();
             showPopup(
                 "Chưa đủ combo!",
-                `Số combo tối thiểu phải bằng số khách: <b>${orderMinCombo}</b>`,
+                `
+            Số combo tối thiểu phải bằng số khách.<br>
+            Số khách: <b>${orderMinCombo}</b><br>
+            Hiện tại: <b>${totalCombo}</b> combo
+            `,
                 false
             );
-
+            return;
         }
+
+        // ✅ ĐỦ HOẶC DƯ → CHO SUBMIT
+    });
+    // ========================
+    // OPEN MODAL CHI TIẾT COMBO (CLICK VÀO CARD)
+    // ========================
+    document.querySelectorAll('.combo-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+
+            // KHÔNG mở modal khi click tăng giảm hoặc input
+            if (e.target.closest('.btn-increase') ||
+                e.target.closest('.btn-decrease') ||
+                e.target.closest('.combo-qty')) return;
+
+            const modal = document.getElementById('comboModal');
+
+            // THÔNG TIN COMBO
+            const title = card.querySelector('.combo-title')?.innerText || '';
+            const price = parseInt(card.dataset.price) || 0;
+
+            // IMAGES
+            const images = [];
+            card.querySelectorAll('.combo-img, .combo-img-gallery img').forEach(img => {
+                images.push(img.src);
+            });
+
+            // MENU
+            const menu = [];
+            card.querySelectorAll('.menu-item').forEach(item => {
+                const name = item.querySelector('.item-name')?.innerText || '';
+                const desc = item.querySelector('.item-desc')?.innerText || '';
+                const img = item.querySelector('img')?.src || '';
+
+                if (name) menu.push({
+                    name,
+                    desc,
+                    img
+                });
+            });
+
+            // ĐỔ DỮ LIỆU VÀO MODAL
+            modal.querySelector('.modal-title').innerText = title;
+            modal.querySelector('.modal-price').innerText = price.toLocaleString() + ' đ';
+
+            // ẢNH
+            const gallery = modal.querySelector('.modal-img-gallery');
+            gallery.innerHTML = '';
+            images.forEach(src => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'modal-img';
+                gallery.appendChild(img);
+            });
+
+            // MENU
+            const menuBox = modal.querySelector('.modal-desc');
+            menuBox.innerHTML = '';
+            if (!menu.length) {
+                menuBox.innerHTML = `<div class="text-muted">Chưa có món</div>`;
+            } else {
+                menu.forEach(m => {
+                    menuBox.innerHTML += `
+                <div class="modal-menu-row" style="display:flex; align-items:center; gap:10px;">
+                    <img src="${m.img}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                    <div style="flex:1;">
+                        <div style="font-weight:700;">${m.name}</div>
+                        <div style="font-size:0.8rem;color:#fde68a;">${m.desc}</div>
+                    </div>
+                </div>
+                `;
+                });
+            }
+
+            // SỐ LƯỢNG
+            const mainInput = card.querySelector('.combo-qty');
+            modal.querySelector('.combo-qty').value = mainInput.value;
+
+            // SHOW MODAL
+            modal.style.display = 'flex';
+
+            // NÚT + -
+            const btnPlus = modal.querySelector('.btn-increase');
+            const btnMinus = modal.querySelector('.btn-decrease');
+            const input = modal.querySelector('.combo-qty');
+
+            btnPlus.onclick = () => input.value++;
+            btnMinus.onclick = () => input.value = Math.max(0, input.value - 1);
+
+            // THÊM COMBO
+            modal.querySelector('.modal-add').onclick = () => {
+                mainInput.value = input.value;
+                animateInput(mainInput);
+                updateCart();
+                modal.style.display = 'none';
+            };
+        });
+    });
+
+    // ========================
+    // CLOSE MODAL
+    // ========================
+    document.querySelector('.modal-close').addEventListener('click', () => {
+        document.getElementById('comboModal').style.display = 'none';
+    });
+
+    document.querySelector('#comboModal .popup-overlay')?.addEventListener('click', () => {
+        document.getElementById('comboModal').style.display = 'none';
     });
 
     // ========================
@@ -1283,6 +1419,14 @@
     const initPrice = parseInt("{{ request('price') ?? 0 }}");
     if (initPrice) {
         showCombosByPrice(initPrice);
+    }
+
+    function getTotalCombo() {
+        let total = 0;
+        document.querySelectorAll('.combo-qty').forEach(i => {
+            total += parseInt(i.value) || 0;
+        });
+        return total;
     }
 
     // INIT CART

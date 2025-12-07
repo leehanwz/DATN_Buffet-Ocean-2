@@ -375,9 +375,6 @@
                 </h3>
             </div>
             <div class="d-flex gap-2">
-                <button id="btnSendKitchen" class="btn-custom btn-add">
-                    <i class="fa-solid fa-fire"></i> Gửi bếp
-                </button>
                 <a href="{{ route('nhanVien.chi-tiet-order.create', ['order_id' => $order->id]) }}" class="btn-custom btn-add">
                     <i class="fa-solid fa-plus"></i> Thêm món
                 </a>
@@ -406,7 +403,15 @@
                                 @if($order->datBan->combos->isEmpty())
                                 Gọi món lẻ
                                 @else
-                                {{ $order->datBan->combos->pluck('ten_combo')->join(' , ') }}
+                                @php
+                                $comboText = $order->datBan->combos->map(function($combo) {
+                                $qty = $combo->pivot->so_luong ?? 1;
+                                return $combo->ten_combo . ($qty > 1 ? " x{$qty}" : "");
+                                })->join(' , ');
+                                @endphp
+
+                                {{ $comboText }}
+
                                 @endif
                             </span>
                         </div>
@@ -563,41 +568,36 @@
     </div>
 
     <script>
-        function showDelayAlert(text) {
-            let box = document.getElementById("delayAlert");
-            let textBox = document.getElementById("delayText");
-            let sound = document.getElementById("delaySound");
-
-            if (!box) return;
-
-            textBox.innerHTML = text;
-            box.classList.add("show");
-
-            // 👉 PHÁT ÂM THANH
-            if (sound) {
-                sound.currentTime = 0;
-                sound.play().catch(() => {});
-            }
-
-            setTimeout(() => {
-                box.classList.remove("show");
-            }, 4000);
-        }
-
         document.addEventListener("DOMContentLoaded", function() {
+
+            function showDelayAlert(text) {
+                let box = document.getElementById("delayAlert");
+                let textBox = document.getElementById("delayText");
+                let sound = document.getElementById("delaySound");
+                if (!box) return;
+
+                textBox.innerHTML = text;
+                box.classList.add("show");
+
+                if (sound) {
+                    sound.currentTime = 0;
+                    sound.play().catch(() => {});
+                }
+
+                setTimeout(() => box.classList.remove("show"), 4000);
+            }
 
             function updateCountdown() {
                 document.querySelectorAll(".countdown").forEach(el => {
 
                     let deadline = parseInt(el.dataset.deadline);
-                    let now = new Date().getTime();
+                    let now = Date.now();
                     let diff = deadline - now;
 
                     if (diff <= 0) {
 
-                        if (!el.dataset.alerted) { // CHỈ 1 LẦN
-                            let tenMon = el.dataset.tenMon || "Không rõ";
-                            showDelayAlert("⚠ Trễ món: " + tenMon);
+                        if (!el.dataset.alerted) {
+                            showDelayAlert("⚠ Trễ món: " + el.dataset.tenMon);
                             el.dataset.alerted = "1";
                         }
 
@@ -621,89 +621,14 @@
                     el.innerHTML = `⏳ ${minutes}:${seconds.toString().padStart(2,'0')}`;
                 });
             }
-        });
-        document.addEventListener("DOMContentLoaded", function() {
 
-            const ORDER_ID = {{$order -> id}};
-            // sửa thành : const ORDER_ID = {{$order -> id}};
-            const STORAGE_KEY = "kitchen_sent_" + ORDER_ID;
-            const TIME_PER_DISH = 15 * 60 * 1000; // 15 phút
+            // ✅ CHẠY NGAY KHI LOAD PAGE
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
 
-            let sentItems = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-
-            function saveStorage() {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(sentItems));
-            }
-
-            // 👉 Khi bấm GỬI BẾP
-            document.getElementById("btnSendKitchen").addEventListener("click", function() {
-
-                document.querySelectorAll("tr[data-id]").forEach(row => {
-
-                    let id = row.dataset.id;
-
-                    // ✅ Chỉ set countdown cho món chưa gửi
-                    if (!sentItems[id]) {
-                        sentItems[id] = Date.now() + TIME_PER_DISH;
-                    }
-                });
-
-                saveStorage();
-                startCountdown();
-                alert("✅ Đã gửi món mới xuống bếp!");
-            });
-
-            function startCountdown() {
-
-                setInterval(() => {
-
-                    document.querySelectorAll(".countdown").forEach(el => {
-
-                        let row = el.closest("tr");
-                        let id = row.dataset.id;
-
-                        // 👉 Nếu món CHƯA gửi thì không đếm
-                        if (!sentItems[id]) {
-                            el.innerHTML = "⏸ Chưa gửi";
-                            el.classList.remove("warning", "danger");
-                            return;
-                        }
-
-                        let deadline = sentItems[id];
-                        let diff = deadline - Date.now();
-
-                        if (diff <= 0) {
-
-                            if (!el.dataset.alerted) {
-                                showDelayAlert("⚠ Trễ món: " + el.dataset.tenMon);
-                                el.dataset.alerted = 1;
-                            }
-
-                            el.innerHTML = "⚠ Trễ món";
-                            el.classList.add("danger");
-                            row.classList.add("tre-mon");
-                            return;
-                        }
-
-                        let minutes = Math.floor(diff / 60000);
-                        let seconds = Math.floor((diff % 60000) / 1000);
-
-                        el.classList.remove("warning", "danger");
-
-                        if (minutes <= 2) el.classList.add("danger");
-                        else if (minutes <= 5) el.classList.add("warning");
-
-                        el.innerHTML = `⏳ ${minutes}:${seconds.toString().padStart(2,'0')}`;
-
-                    });
-
-                }, 1000);
-            }
-
-            // ✅ Khi load trang → auto chạy lại những món đang đếm
-            startCountdown();
         });
     </script>
+
 
     <div id="delayAlert" class="delay-alert">
         <i class="fa-solid fa-triangle-exclamation"></i>
