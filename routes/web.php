@@ -43,8 +43,7 @@ Route::prefix('/')->group(function () {
         Route::get('/dich-vu', 'service')->name('service');
         Route::get('/thuc-don', 'menu')->name('menu');
         Route::get('/lien-he', 'contact')->name('contact');
-        Route::post('/lien-he', 'sendContact')->name('contact.send'); // Route GỬI form (Thêm dòng này)
-     
+        Route::post('/lien-he', 'sendContact')->name('contact.send'); // Route GỬI form
         Route::get('/doi-ngu', 'team')->name('team');
         Route::get('/danh-gia', 'testimonial')->name('testimonial');
     });
@@ -259,14 +258,18 @@ Route::middleware(['auth', 'role:phuc_vu,le_tan'])->prefix('nhanVien')->name('nh
 
     // Thanh toán
     Route::prefix('thanh-toan')->name('thanh-toan.')->controller(ThanhToanController::class)->group(function () {
+        // thanh toán từ danh sách bàn
         Route::get('/ban/{banId}', 'thanhToanTuBan')->name('ban');
         Route::post('/ban/{banId}', 'luuThanhToanTuBan')->name('luu-ban');
+        // thanh toán từ bên order món
         Route::get('/order/{orderId}', 'thanhToan')->name('order');
         Route::post('/order/{orderId}', 'luuThanhToan')->name('luu');
+        // hóa đơn và in
         Route::get('/hoa-don/{hoaDonId}', 'hienThiHoaDon')->name('hien-thi-hoa-don');
         Route::get('/hoa-don/{hoaDonId}/in', 'inHoaDon')->name('in-hoa-don');
-        Route::get('/vnpay-payment/{banId}', 'vnpayPayment')->name('vnpay.payment');
-        Route::get('/vnpay/callback/{banId}', 'vnpayCallback')->name('vnpay.callback');
+        // thanh toán vnpay
+        Route::post('/vnpay-payment/{banId}', 'vnpayPayment')->name('vnpay.payment');
+        Route::get('/vnpay/callback', 'vnpayCallback')->name('vnpay.callback');
     });
 });
 

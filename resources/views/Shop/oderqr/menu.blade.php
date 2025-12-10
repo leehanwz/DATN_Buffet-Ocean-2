@@ -343,21 +343,63 @@
             text-transform: uppercase;
         }
 
+        /* ------------------------------------------- */
+        /* --- [NEW CSS] BADGE PHÂN LOẠI MÓN --- */
+        .stt-tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 6px;
+            text-transform: uppercase;
+            vertical-align: middle;
+            line-height: 1;
+        }
+
+        .stt-tag.tag-combo {
+            background-color: #e0f2fe;
+            color: #0284c7;
+            border: 1px solid #bae6fd;
+        }
+
+        .stt-tag.tag-extra {
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        /* ------------------------------------------- */
+
         /* --- MOBILE CUSTOMIZATION (FIX BANNER & HEADER) --- */
         @media (max-width: 1024px) {
 
             /* Ẩn Header, Footer, Banner mặc định của layout cha */
-            header, footer, nav,
-            .header, .footer,
-            .app-header, .app-footer,
-            .navbar, .navbar-light, .navbar-dark,
-            .page-header, .hero-header,
-            .container-xxl.bg-dark, .container-fluid.p-0,
-            .banner, .main-banner, .hero-section, .hero,
-            .top-bar, .breadcrumbs, .breadcrumb-area,
+            header,
+            footer,
+            nav,
+            .header,
+            .footer,
+            .app-header,
+            .app-footer,
+            .navbar,
+            .navbar-light,
+            .navbar-dark,
+            .page-header,
+            .hero-header,
+            .container-xxl.bg-dark,
+            .container-fluid.p-0,
+            .banner,
+            .main-banner,
+            .hero-section,
+            .hero,
+            .top-bar,
+            .breadcrumbs,
+            .breadcrumb-area,
             .sticky-top,
-            div[class*="banner"], section[class*="banner"],
-            div[class*="hero-header"], div[class*="page-header"] {
+            div[class*="banner"],
+            section[class*="banner"],
+            div[class*="hero-header"],
+            div[class*="page-header"] {
                 display: none !important;
             }
 
@@ -1092,7 +1134,8 @@
 
         /* --- FIX Z-INDEX GHI CHÚ CAO HƠN ORDER --- */
         #note-modal {
-            z-index: 999999 !important; /* Đặt thật cao */
+            z-index: 999999 !important;
+            /* Đặt thật cao */
         }
 
         .form-control-note {
@@ -1457,6 +1500,19 @@
             style: 'currency',
             currency: 'VND'
         }).format(a);
+
+        // =========================================================
+        // === Sửa lỗi: Thêm định nghĩa hàm mở/đóng giỏ hàng tại đây ===
+        // =========================================================
+        function openCartModal() {
+            updateCartUI(); // Gọi hàm cập nhật UI trước khi mở
+            document.getElementById('cart-modal').classList.add('active');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').classList.remove('active');
+        }
+        // =========================================================
 
         // --- ẨN BANNER TỰ ĐỘNG ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -2001,8 +2057,28 @@
                     const timerHtml = showTimer ?
                         `<div class="timer-badge" data-target="${targetTime}"><i class="fa-solid fa-hourglass-half"></i> <span>--:--</span></div>` :
                         '';
+
+                    // --- [SỬA ĐỔI] HIỂN THỊ BADGE COMBO/GỌI THÊM ---
+                    let typeBadge = '';
+                    if (i.loai_mon === 'combo') {
+                        typeBadge = `<span class="stt-tag tag-combo">Combo</span>`;
+                    } else {
+                        typeBadge = `<span class="stt-tag tag-extra">Thêm</span>`;
+                    }
+                    // ------------------------------------------------
+
                     htmlContent +=
-                        `<div class="status-card ${s.cls}"><div class="stt-header"><div class="stt-name">${i.mon_an.ten_mon} <span class="stt-qty">x${i.so_luong}</span></div><div class="badge-status"><i class="fa-solid fa-${s.ic}"></i> ${s.txt}</div></div>${i.ghi_chu ? `<div class="stt-note"><i class="fa-regular fa-comment-dots"></i> ${i.ghi_chu}</div>` : ''}${ (showTimer || canCancel) ? `<div class="stt-footer">${timerHtml}${canCancel ? `<div class="btn-cancel-item" onclick="cancelOrderItem(${i.id})"><i class="fa-regular fa-trash-can"></i> Hủy</div>` : ''}</div>` : '' }</div>`;
+                        `<div class="status-card ${s.cls}">
+                            <div class="stt-header">
+                                <div class="stt-name">
+                                    ${typeBadge} ${i.mon_an.ten_mon} 
+                                    <span class="stt-qty">x${i.so_luong}</span>
+                                </div>
+                                <div class="badge-status"><i class="fa-solid fa-${s.ic}"></i> ${s.txt}</div>
+                            </div>
+                            ${i.ghi_chu ? `<div class="stt-note"><i class="fa-regular fa-comment-dots"></i> ${i.ghi_chu}</div>` : ''}
+                            ${ (showTimer || canCancel) ? `<div class="stt-footer">${timerHtml}${canCancel ? `<div class="btn-cancel-item" onclick="cancelOrderItem(${i.id})"><i class="fa-regular fa-trash-can"></i> Hủy</div>` : ''}</div>` : '' }
+                        </div>`;
                 });
                 c.innerHTML = htmlContent;
                 updateTimers();
@@ -2058,50 +2134,50 @@
             }
         }
 
-function startCountdown() {
-            // 1. Nếu chưa có đơn gọi món (chưa có orderStartTime)
+        function startCountdown() {
+            // 1. Kiểm tra xem đã có món ăn nào được gọi chưa
+            // (Biến orderStartTime được tính trong hàm loadOrderStatus dựa trên món đầu tiên)
             if (!orderStartTime) {
-                if (window.countdownInterval) clearInterval(window.countdownInterval);
-                // Hiển thị "--" thay vì số phút
-                document.getElementById('countdown-timer').innerText = "--"; 
+                if (window.usageTimerInterval) clearInterval(window.usageTimerInterval);
+                document.getElementById('countdown-timer').innerText = "Chưa gọi món";
+                document.getElementById('countdown-timer').style.color = "#94a3b8"; // Màu xám
                 return;
             }
 
-            // 2. Nếu đã có gọi món, bắt đầu tính giờ từ lúc gọi món đó
+            // 2. Lấy mốc thời gian bắt đầu gọi món
             const startMilli = orderStartTime;
 
-            // Nếu không giới hạn thời gian (bookingDuration = 0)
-            if (bookingDuration <= 0) return document.getElementById('countdown-timer').innerText = "∞";
+            // Xóa interval cũ để tránh chạy chồng chéo
+            if (window.usageTimerInterval) clearInterval(window.usageTimerInterval);
 
-            const endMilli = startMilli + bookingDuration * 60000;
+            // 3. Hàm chạy đồng hồ đếm xuôi (Usage Timer)
+            const runTimer = () => {
+                const now = new Date().getTime();
+                let distance = now - startMilli;
 
-            if (window.countdownInterval) clearInterval(window.countdownInterval);
-            
-            window.countdownInterval = setInterval(() => {
-                const d = endMilli - new Date().getTime();
-                
-                if (d < 0) {
-                    document.getElementById('countdown-timer').innerText = "Hết giờ";
-                    document.getElementById('countdown-timer').style.color = "#ff4d4f";
-                    clearInterval(window.countdownInterval);
-                    return;
-                }
+                // Nếu thời gian âm (do lệch đồng hồ thiết bị), set về 0
+                if (distance < 0) distance = 0;
 
-                const h = Math.floor(d / 3600000);
-                const m = Math.floor((d % 3600000) / 60000);
-                
+                const h = Math.floor(distance / 3600000);
+                const m = Math.floor((distance % 3600000) / 60000);
+
+                // Format hiển thị: 1h 30p hoặc 45p
+                const hStr = h > 0 ? `${h}h ` : '';
                 const mStr = m < 10 ? '0' + m : m;
-                document.getElementById('countdown-timer').innerText = h > 0 ? `${h}h ${mStr}p` : `${mStr}p`;
-            }, 1000);
-        }
 
-        function openCartModal() {
-            updateCartUI();
-            document.getElementById('cart-modal').classList.add('active');
-        }
+                const el = document.getElementById('countdown-timer');
+                if (el) {
+                    el.innerText = `${hStr}${mStr}p`;
+                    el.style.color = "#20d489"; // Màu xanh lá (đang ăn)
+                    el.style.fontWeight = "800";
+                }
+            };
 
-        function closeCartModal() {
-            document.getElementById('cart-modal').classList.remove('active');
+            // Chạy ngay lập tức 1 lần để không bị delay hiển thị
+            runTimer();
+
+            // Cập nhật mỗi giây
+            window.usageTimerInterval = setInterval(runTimer, 1000);
         }
     </script>
 @endsection
