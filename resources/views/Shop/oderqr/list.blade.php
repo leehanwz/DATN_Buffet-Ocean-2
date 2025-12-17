@@ -35,7 +35,7 @@
 
                     {{-- QR code lớn --}}
                     <div class="qr-image mb-3">
-                        {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(350)->generate($finalUrl) !!}
+                        {{-- {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(350)->generate($finalUrl) !!} --}}
                     </div>
 
 
