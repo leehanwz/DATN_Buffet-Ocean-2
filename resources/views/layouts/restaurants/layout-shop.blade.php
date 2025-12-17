@@ -70,7 +70,7 @@
                         {{-- Combo Buffet hoạt động --}}
                         <a href="{{ route('home') }}" class="nav-item nav-link active">Home</a>
 
-                        <a href="{{ route('combos.index') }}" class="nav-item nav-link">Combo Buffet</a>
+                        <a href="{{ route('combos.index') }}" class="nav-item nav-link">Thực đơn</a>
 
                         {{-- Route chưa dùng --}}
                         {{-- <a href="{{route('contact')}}" class="nav-item nav-link">Contact</a> --}}
@@ -244,5 +244,6 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('restaurant/js/main.js') }}"></script>
+    @stack('scripts') {{-- Thêm dòng này --}}
 </body>
 </html>
