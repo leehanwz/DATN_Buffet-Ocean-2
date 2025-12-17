@@ -65,11 +65,19 @@
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0"
                                 style="background-color: #343a40;">
 
-                                <li><span
-                                        class="dropdown-item text-muted small px-3 pt-2 pb-0 border-bottom border-secondary"
-                                        style="font-size: 0.85em;">
-                                        <i class="fas fa-id-badge me-2"></i> Vai trò: **{{ Auth::user()->vai_tro }}**
-                                    </span></li>
+                                <li>
+                                    <span class="dropdown-item text-muted small px-3 pt-2 pb-0 border-bottom border-secondary" 
+                                          style="font-size: 0.85em;">
+                                        <i class="fas fa-id-badge me-2"></i> Vai trò: 
+                                        @switch(Auth::user()->vai_tro)
+                                            @case('quan_ly') Quản lý @break
+                                            @case('phuc_vu') Phục vụ @break
+                                            @case('bep') Bếp @break
+                                            @case('le_tan') Lễ tân @break
+                                            @default Nhân viên
+                                        @endswitch
+                                    </span>
+                                </li>
 
                                 <li><span
                                         class="dropdown-item text-white-50 px-3 pt-0 pb-2 border-bottom border-secondary"

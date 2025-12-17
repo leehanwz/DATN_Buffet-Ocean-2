@@ -74,7 +74,7 @@
                         }
                     @endphp
 
-                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12 d-flex">
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-6 d-flex">
                         <div class="table-card {{ $cardClass }} flex-fill d-flex flex-column">
                             <i class="bi bi-disc table-icon-bg"></i>
                             <div class="p-3 h-100 d-flex flex-column justify-content-between">
@@ -220,63 +220,284 @@
 </script>
 
 <style>
-    /* CSS CHO PHẦN THÔNG BÁO */
-    #sound-toggle-btn.active {
-        background-color: #198754 !important; color: #fff !important; border-color: #198754 !important;
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Nunito:wght@400;600;700&display=swap');
+
+    :root {
+        --primary: #fea116;
+        --primary-hover: #db8a10;
+        --dark: #0f172b;
+        --light: #F1F8FF;
+        --text-main: #1e293b;
+        --white: #ffffff;
+        --radius: 12px; /* Bo góc mềm mại hơn */
+        --shadow-card: 0 4px 15px rgba(0, 0, 0, 0.05);
     }
+
+    body {
+        font-family: 'Nunito', sans-serif;
+        background-color: var(--light);
+        color: var(--text-main);
+        padding-bottom: 80px; /* Tránh bị Toast che mất nội dung cuối */
+    }
+
+    /* --- ANIMATION --- */
+    .app-content { animation: fadeIn 0.5s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
     .spin-slow { animation: spin 3s linear infinite; }
     .spin-fast { animation: spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* TOAST */
-    #custom-toast {
-        visibility: hidden; min-width: 300px; 
-        background-color: #212529; color: #fff; 
-        border-radius: 50px; padding: 12px 25px;
-        position: fixed; z-index: 9999; left: 50%; bottom: 30px; 
-        transform: translateX(-50%); 
-        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        display: flex; align-items: center; gap: 15px; 
-        border: 2px solid #fea116;
+    /* --- HEADER SECTION --- */
+    .page-header-title {
+        font-family: 'Heebo', sans-serif;
+        font-weight: 800;
+        color: var(--dark);
+        text-transform: uppercase;
+        position: relative;
+        padding-left: 15px;
+        font-size: 1.5rem;
     }
-    #custom-toast.show { visibility: visible; animation: fadeUp 0.5s forwards, fadeOut 0.5s 4.5s forwards; }
-    
-    @keyframes fadeUp { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
-    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-    
-    .bell-shake { color: #fea116; animation: shake 0.5s infinite; }
-    @keyframes shake { 0% { transform: rotate(0); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } 100% { transform: rotate(0); } }
+    .page-header-title::before {
+        content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+        height: 70%; width: 5px; background-color: var(--primary); border-radius: 2px;
+    }
 
-    /* CSS GỐC CỦA BẠN */
-    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Nunito:wght@400;600;700&display=swap');
-    :root { --primary: #fea116; --primary-hover: #db8a10; --dark: #0f172b; --light: #F1F8FF; --text-main: #1e293b; --white: #ffffff; --radius: 8px; --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05); }
-    body { font-family: 'Nunito', sans-serif; background-color: var(--light); color: var(--text-main); }
-    .app-content { animation: fadeIn 0.5s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .page-header-title { font-family: 'Heebo', sans-serif; font-weight: 800; color: var(--dark); text-transform: uppercase; position: relative; padding-left: 15px; font-size: 1.5rem; }
-    .page-header-title::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); height: 70%; width: 5px; background-color: var(--primary); border-radius: 2px; }
-    .card-zone { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow-card); overflow: hidden; border: none; }
-    .card-zone-header { background: var(--dark); color: var(--primary); padding: 12px 20px; font-family: 'Heebo', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 3px solid var(--primary); }
-    .table-card { background: var(--white); border-radius: var(--radius); border: 1px solid #e2e8f0; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 2px 5px rgba(0,0,0,0.02); height: 100%; min-height: 180px; }
-    .table-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-color: var(--primary); }
-    .table-icon-bg { position: absolute; top: -15px; right: -15px; font-size: 5rem; color: rgba(254, 161, 22, 0.08); transform: rotate(20deg); pointer-events: none; }
-    .card-active { background: #fff8e6; border: 1px solid var(--primary); }
+    /* --- ZONE CARD --- */
+    .card-zone {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        border: none;
+    }
+    .card-zone-header {
+        background: var(--dark);
+        color: var(--primary);
+        padding: 12px 20px;
+        font-family: 'Heebo', sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 3px solid var(--primary);
+        font-size: 1rem;
+    }
+
+    /* --- TABLE CARD (QUAN TRỌNG) --- */
+    .table-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        border: 1px solid #e2e8f0;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        height: 100%;
+        min-height: 190px; /* Chiều cao cố định để các thẻ bằng nhau */
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Hiệu ứng hover chỉ áp dụng trên PC */
+   /* --- RESPONSIVE MOBILE (DƯỚI 768PX) --- */
+   @media (max-width: 768px) {
+        /* 1. Tinh chỉnh Header (Tiêu đề to nhất) */
+        .page-header-title {
+            font-size: 1.2rem; /* Giảm cỡ chữ tiêu đề */
+            padding-left: 10px;
+        }
+        /* Ẩn luôn dòng mô tả nhỏ "Theo dõi trạng thái..." cho đỡ chật */
+        .text-muted.small.ms-3 {
+            display: none;
+        }
+        /* Kéo Header và Nút bật tiếng gần nhau hơn */
+        .d-flex.justify-content-between.align-items-center.mb-5 {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 10px;
+            margin-bottom: 15px !important; /* Giảm khoảng cách xuống thân trang */
+            margin-top: 10px !important;
+        }
+        
+        /* 2. Tinh chỉnh Banner Khu vực (Cái thanh màu đen) */
+        .card-zone-header {
+            padding: 8px 12px; /* Làm thanh này mỏng lại */
+            font-size: 0.85rem; /* Chữ bé lại xíu */
+        }
+        /* Giảm khoảng cách giữa các khu vực (đè lên class mb-5 gốc) */
+        .card-zone.mb-5 {
+            margin-bottom: 20px !important; 
+        }
+
+        /* 3. Nút bật tiếng & Trạng thái */
+        .d-flex.gap-2.align-items-center {
+            width: 100%;
+            justify-content: space-between;
+        }
+        #sound-toggle-btn { 
+            flex-grow: 1; 
+            padding: 5px; /* Nút mỏng hơn */
+            font-size: 0.9rem;
+        }
+        
+        /* 4. Thẻ bàn (Giữ nguyên như cũ nhưng tinh chỉnh padding) */
+        .table-card {
+            min-height: 160px; /* Giảm chiều cao tối thiểu thêm chút nữa */
+        }
+        .table-card .p-3 {
+            padding: 8px !important; /* Padding siêu nhỏ */
+        }
+        .table-number { font-size: 1.3rem; }
+        .table-icon-bg { font-size: 2.5rem; top: -5px; right: -5px; }
+        
+        /* Chỉnh chữ trong thẻ bàn */
+        .fw-bold.text-dark.text-truncate { font-size: 0.85rem; }
+        .small { font-size: 0.7rem; }
+        
+        /* Nút thao tác */
+        .btn-ocean, .btn-ocean-outline {
+            font-size: 0.75rem;
+            padding: 5px;
+        }
+
+        /* Toast thông báo */
+        #custom-toast {
+            bottom: 15px;
+            padding: 8px 15px;
+            width: 90%;
+            min-width: auto;
+        }
+        #custom-toast i.fs-4 { font-size: 1.2rem !important; }
+    }
+
+    .table-icon-bg {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        font-size: 4rem;
+        color: rgba(254, 161, 22, 0.08);
+        transform: rotate(20deg);
+        pointer-events: none;
+    }
+
+    /* Trạng thái bàn */
+    .card-active { background: #fffbf2; border: 1px solid var(--primary); }
     .card-active .table-number { color: #d97706; }
+    
     .card-reserved { background: #f0fdf4; border: 1px dashed #22c55e; }
-    .card-maintenance { background: #f1f5f9; border: 1px solid #cbd5e1; opacity: 0.8; }
-    .card-maintenance .table-number { color: #64748b; }
-    .table-number { font-family: 'Heebo', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--dark); line-height: 1; }
-    .info-box { min-height: 40px; }
-    .badge-custom { padding: 5px 10px; border-radius: 4px; font-weight: 700; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; display: inline-block; }
+    
+    .card-maintenance { background: #f8fafc; border: 1px solid #cbd5e1; opacity: 0.7; }
+    .card-maintenance .table-number { color: #94a3b8; }
+
+    /* Số bàn */
+    .table-number {
+        font-family: 'Heebo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--dark);
+        line-height: 1;
+    }
+
+    .info-box { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; min-height: 50px; }
+    
+    /* Badges */
+    .badge-custom {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.65rem;
+        letter-spacing: 0.5px;
+        display: inline-block;
+        white-space: nowrap;
+    }
     .badge-free { background: #e2e8f0; color: #475569; }
     .badge-active { background: var(--primary); color: #fff; }
     .badge-reserved { background: #22c55e; color: #fff; }
     .badge-maintenance { background: #64748b; color: #fff; }
-    .btn-ocean { background: var(--primary); color: #fff; border: none; border-radius: 4px; font-weight: 700; padding: 8px; width: 100%; display: block; text-align: center; text-decoration: none; transition: 0.2s; font-size: 0.9rem; }
-    .btn-ocean:hover { background: var(--primary-hover); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(254, 161, 22, 0.3); }
-    .btn-ocean-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); border-radius: 4px; font-weight: 700; padding: 6px; width: 100%; display: block; text-align: center; text-decoration: none; transition: 0.2s; font-size: 0.9rem; }
-    .btn-ocean-outline:hover { background: var(--primary); color: #fff; }
-    @media (max-width: 768px) { .table-number { font-size: 1.5rem; } .table-card { min-height: auto; } }
+
+    /* Buttons */
+    .btn-ocean {
+        background: var(--primary); color: #fff;
+        border: none; border-radius: 6px;
+        font-weight: 700; padding: 8px; width: 100%;
+        display: block; text-align: center; text-decoration: none;
+        transition: 0.2s; font-size: 0.9rem;
+    }
+    .btn-ocean:active { transform: scale(0.98); } /* Hiệu ứng nhấn trên mobile */
+    
+    .btn-ocean-outline {
+        background: transparent; border: 1px solid var(--primary);
+        color: var(--primary); border-radius: 6px;
+        font-weight: 700; padding: 7px; width: 100%;
+        display: block; text-align: center; text-decoration: none;
+        transition: 0.2s; font-size: 0.9rem;
+    }
+    .btn-ocean-outline:active { background: #fff8e6; }
+
+    /* --- TOAST & SOUND BTN --- */
+    #sound-toggle-btn.active { background-color: #198754 !important; color: #fff !important; border-color: #198754 !important; }
+    
+    #custom-toast {
+        visibility: hidden; min-width: 300px; max-width: 90%;
+        background-color: #212529; color: #fff;
+        border-radius: 50px; padding: 12px 20px;
+        position: fixed; z-index: 9999;
+        left: 50%; bottom: 30px; transform: translateX(-50%);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        display: flex; align-items: center; gap: 15px;
+        border: 2px solid #fea116;
+        font-size: 0.9rem;
+    }
+    #custom-toast.show { visibility: visible; animation: fadeUp 0.5s forwards, fadeOut 0.5s 4.5s forwards; }
+    @keyframes fadeUp { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    .bell-shake { color: #fea116; animation: shake 0.5s infinite; }
+    @keyframes shake { 0% { transform: rotate(0); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } 100% { transform: rotate(0); } }
+
+    /* --- RESPONSIVE MOBILE (DƯỚI 768PX) --- */
+    @media (max-width: 768px) {
+        /* Header: Xếp dọc trên điện thoại */
+        .d-flex.justify-content-between.align-items-center.mb-5 {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 15px;
+            margin-bottom: 20px !important;
+        }
+        
+        /* Nút bật tiếng full chiều rộng để dễ bấm */
+        .d-flex.gap-2.align-items-center {
+            width: 100%;
+            justify-content: space-between;
+        }
+        #sound-toggle-btn { flex-grow: 1; }
+        
+        /* Thẻ bàn nhỏ gọn hơn */
+        .table-card {
+            min-height: 170px; /* Giảm chiều cao */
+        }
+        .table-card .p-3 {
+            padding: 10px !important; /* Giảm padding */
+        }
+        .table-number { font-size: 1.4rem; }
+        .table-icon-bg { font-size: 3rem; top: -5px; right: -5px; }
+        
+        /* Chỉnh chữ nhỏ lại một chút */
+        .fw-bold.text-dark.text-truncate { font-size: 0.9rem; }
+        .small { font-size: 0.75rem; }
+        
+        /* Nút thao tác */
+        .btn-ocean, .btn-ocean-outline {
+            font-size: 0.8rem;
+            padding: 6px;
+        }
+
+        /* Toast hiện cao hơn chút trên mobile */
+        #custom-toast {
+            bottom: 20px;
+            padding: 10px 15px;
+        }
+        #custom-toast i.fs-4 { font-size: 1.2rem !important; }
+    }
 </style>
 @endsection
