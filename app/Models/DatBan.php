@@ -22,6 +22,7 @@ class DatBan extends Model
         'gio_den',
         'thoi_luong_phut',
         'tien_coc',
+        'payos_order_code',
         'trang_thai',
         'xac_thuc_ma',
         'la_dat_online',
@@ -39,9 +40,9 @@ class DatBan extends Model
      */
     public function chiTietDatBan()
     {
-        return $this->hasMany(ChiTietDatBan::class, 'dat_ban_id');
+        // 🔴 SỬA: Đổi từ ChiTietDatBan::class thành DatBanCombo::class
+        return $this->hasMany(DatBanCombo::class, 'dat_ban_id', 'id');
     }
-
     /**
      * [MỚI] Quan hệ Many-to-Many: Lấy trực tiếp danh sách các ComboBuffet
      * Dùng để hiển thị tên combo, giá...
@@ -53,12 +54,40 @@ class DatBan extends Model
                     ->withTimestamps();
     }
 
-    /* * Quan hệ cũ (1 bàn 1 combo) - Tạm thời comment lại hoặc xóa đi
-     * public function comboBuffet()
-     * {
-     * return $this->belongsTo(ComboBuffet::class, 'combo_id');
-     * }
+    /**
+     * Quan hệ tương thích ngược: Lấy chi tiết combo đầu tiên
+     * Dùng để tương thích với code cũ đang sử dụng comboBuffet
      */
+    public function comboBuffetChiTiet()
+    {
+        return $this->hasOne(ChiTietDatBan::class, 'dat_ban_id')->orderBy('id');
+    }
+
+    /**
+     * Quan hệ tương thích ngược: Lấy combo đầu tiên từ danh sách combos
+     * Dùng để tương thích với code cũ đang sử dụng comboBuffet
+     * Sử dụng hasOneThrough để lấy combo đầu tiên thông qua chiTietDatBan
+     */
+    public function comboBuffet()
+    {
+        return $this->hasOneThrough(
+            ComboBuffet::class,
+            ChiTietDatBan::class,
+            'dat_ban_id', // Foreign key on chi_tiet_dat_ban table
+            'id', // Foreign key on combo_buffet table
+            'id', // Local key on dat_ban table
+            'combo_id' // Local key on chi_tiet_dat_ban table
+        );
+    }
+
+    /**
+     * Accessor: Tính tổng số khách từ nguoi_lon + tre_em
+     * Dùng để tương thích với code cũ đang sử dụng so_khach
+     */
+    public function getSoKhachAttribute()
+    {
+        return ($this->nguoi_lon ?? 0) + ($this->tre_em ?? 0);
+    }
 
     public function nhanVien()
     {

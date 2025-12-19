@@ -56,17 +56,44 @@
                     </div>
                     {{-- Nút Logout (Ví dụ) --}}
                 </div>
-                {{-- Form Logout POST --}}
-                <a href="#" class="btn btn-primary py-2 px-4"
-                    onclick="event.preventDefault(); document.getElementById('logout-form-nhanvien').submit();">
-                    <i class="fa fa-sign-out-alt me-2"></i> Đăng xuất
-                </a>
+                    @if (Auth::check())
+                        <div class="nav-item dropdown">
+                            <a href="#" class="btn btn-warning py-2 px-4 dropdown-toggle shadow-sm"
+                                data-bs-toggle="dropdown" aria-expanded="false" title="Tài khoản nhân viên">
+                                <i class="fa fa-user me-2"></i> {{ Auth::user()->ho_ten }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0"
+                                style="background-color: #343a40;">
 
-                {{-- Form ẩn để thực hiện POST request --}}
-                <form id="logout-form-nhanvien" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-                
+                                <li><span
+                                        class="dropdown-item text-muted small px-3 pt-2 pb-0 border-bottom border-secondary"
+                                        style="font-size: 0.85em;">
+                                        <i class="fas fa-id-badge me-2"></i> Vai trò: **{{ Auth::user()->vai_tro }}**
+                                    </span></li>
+
+                                <li><span
+                                        class="dropdown-item text-white-50 px-3 pt-0 pb-2 border-bottom border-secondary"
+                                        style="font-size: 0.85em;">
+                                        <i class="fas fa-envelope me-2"></i> {{ Auth::user()->email }}
+                                    </span></li>
+
+                                <li>
+                                    <a class="dropdown-item text-danger fw-bold" href="#"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form-nhanvien').submit();">
+                                        <i class="fa fa-sign-out-alt me-2"></i> Đăng xuất
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-primary py-2 px-4">Đăng nhập</a>
+                    @endif
+                    {{-- Form ẩn để thực hiện POST request --}}
+                    <form id="logout-form-nhanvien" action="{{ route('logout') }}" method="POST"
+                        style="display: none;">
+                        @csrf
+                    </form>
+
         </div>
     </div>
     </nav>
@@ -86,6 +113,7 @@
                 </ol>
             </nav>
         </div>
+
     </div>
     </div>
     {{-- Bọc trong container để nội dung không bị dính sát lề --}}
@@ -137,25 +165,6 @@
                     </div>
                 </div>
             </div>
-<<<<<<< HEAD
-            <div class="container">
-                <div class="copyright">
-                    <div class="row">
-                        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                            &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
-
-							<!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-							Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a><br><br>
-                            Distributed By <a class="border-bottom" href="https://themewagon.com" target="_blank">ThemeWagon</a>
-                        </div>
-                        <div class="col-md-6 text-center text-md-end">
-                            <div class="footer-menu">
-                                <a href="">Home</a>
-                                <a href="">Cookies</a>
-                                <a href="">Help</a>
-                                <a href="">FQAs</a>
-                            </div>
-=======
         </div>
         <div class="container">
             <div class="copyright">
@@ -172,7 +181,6 @@
                             <a href="">Cookies</a>
                             <a href="">Help</a>
                             <a href="">FQAs</a>
->>>>>>> origin/Trung
                         </div>
                     </div>
                 </div>

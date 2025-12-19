@@ -51,14 +51,14 @@
                                                 value="{{ old('gia', $san_pham->gia) }}" required>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    {{-- <div class="col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label">Thời gian chế biến (phút) <span
                                                     class="text-danger">*</span></label>
                                             <input type="number" class="form-control" min="1" name="thoi_gian_che_bien"
                                                 value="{{ old('thoi_gian_che_bien', $san_pham->thoi_gian_che_bien) }}" required>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
 
                                 <div class="mb-3">
@@ -85,13 +85,28 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label">Loại món</label>
+
+                                            @php
+                                            $loaiMonDB = [
+                                            'Sống',
+                                            'Chín',
+                                            'Nướng',
+                                            'Xào / Luộc',
+                                            'Bánh ngọt',
+                                            'Trái cây',
+                                            'Nước có ga',
+                                            'Nước không ga',
+                                            'Trà / Cà phê',
+                                            ];
+                                            @endphp
+
                                             <select name="loai_mon" class="form-control">
-                                                <option value="">-- Chọn loại món --</option>
-                                                @foreach(['Khai vị','Món chính','Tráng miệng','Đồ uống'] as $loai)
-                                                <option value="{{ $loai }}"
-                                                    {{ old('loai_mon', $san_pham->loai_mon) == $loai ? 'selected' : '' }}>
-                                                    {{ $loai }}
-                                                </option>
+                                                <option value="">— Chọn loại món —</option>
+                                                @foreach($loaiMonDB as $loai)
+<option value="{{ $loai }}"
+    {{ old('loai_mon', $san_pham->loai_mon ?? '') == $loai ? 'selected' : '' }}>
+    {{ $loai }}
+</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -153,18 +168,18 @@
 
                                     {{-- Vòng lặp hiển thị ảnh cũ --}}
                                     @forelse ($san_pham->thuVienAnh as $anh)
-                                        <div class="position-relative border p-1" id="anh_cu_{{ $anh->id }}">
-                                            <img src="{{ asset($anh->duong_dan_anh) }}" style="width: 80px; height: 80px; object-fit: cover;" class="img-thumbnail">
+                                    <div class="position-relative border p-1" id="anh_cu_{{ $anh->id }}">
+                                        <img src="{{ asset($anh->duong_dan_anh) }}" style="width: 80px; height: 80px; object-fit: cover;" class="img-thumbnail">
 
-                                            {{-- Nút xóa ảnh cũ --}}
-                                            <button type="button"
-                                                    class="btn-close position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger p-2"
-                                                    aria-label="Close"
-                                                    onclick="removeCurrentImage({{ $anh->id }})">
-                                            </button>
-                                        </div>
+                                        {{-- Nút xóa ảnh cũ --}}
+                                        <button type="button"
+                                            class="btn-close position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger p-2"
+                                            aria-label="Close"
+                                            onclick="removeCurrentImage({{ $anh->id }})">
+                                        </button>
+                                    </div>
                                     @empty
-                                        <span class="text-muted small">Chưa có ảnh phụ nào.</span>
+                                    <span class="text-muted small">Chưa có ảnh phụ nào.</span>
                                     @endforelse
                                 </div>
 
@@ -211,9 +226,8 @@
     function previewGallery(event) {
         // ... (Giữ nguyên logic hàm previewGallery của bạn) ...
         const previewContainer = document.getElementById('gallery_preview');
-        if (previewContainer) {
-            previewContainer.innerHTML = '';
-        }
+        // Xóa nội dung cũ
+        previewContainer.innerHTML = '';
 
         const files = event.target.files;
         if (files.length === 0) {
@@ -223,9 +237,6 @@
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-
-            const wrapperDiv = document.createElement('div');
-            wrapperDiv.classList.add('position-relative', 'border', 'p-1');
 
             const img = document.createElement('img');
             img.src = URL.createObjectURL(file);
@@ -241,7 +252,7 @@
         }
     }
 
-    // HÀM XỬ LÝ XÓA ẢNH CŨ (Phạm vi toàn cục, đây là hàm đang bị lỗi ReferenceError)
+    // Hàm đánh dấu xóa ảnh cũ
     function removeCurrentImage(anhId) {
         // 1. Ẩn ảnh cũ khỏi giao diện
         const elementToRemove = document.getElementById(`anh_cu_${anhId}`);
@@ -249,12 +260,10 @@
             elementToRemove.remove();
         }
 
-        // 2. Thêm ID vào mảng xóa, chỉ khi nó chưa tồn tại
-        if (!anhXoaIds.includes(anhId)) {
-             anhXoaIds.push(anhId);
-        }
+        // 2. Thêm ID vào mảng xóa
+        anhXoaIds.push(anhId);
 
-        // 3. Cập nhật input ẩn
+        // 3. Cập nhật input ẩn để gửi dữ liệu về Controller
         document.getElementById('anh_xoa').value = anhXoaIds.join(',');
 
         // 4. Cập nhật trạng thái hiển thị
@@ -270,9 +279,15 @@
         alert('Ảnh sẽ được xóa khỏi cơ sở dữ liệu khi bạn bấm "Cập nhật"');
     }
 
-    // LOGIC KHỞI TẠO DOM (chỉ để cập nhật trạng thái)
+    // Khởi tạo preview cho ảnh chính với ID mới
     document.addEventListener('DOMContentLoaded', () => {
-        // Fix: Nếu không có ảnh cũ, gán lại text mặc định cho vùng ảnh hiện có
+        // Do trong file cũ, bạn dùng ID là 'preview', ta đổi thành 'preview_chinh' cho rõ ràng.
+        const inputAnhChinh = document.querySelector('input[name="hinh_anh"]');
+        if (inputAnhChinh) {
+            inputAnhChinh.setAttribute('onchange', "previewImage(event, 'preview_chinh')");
+        }
+
+        // Fix: Nếu không có ảnh cũ, gán lại text mặc định cho vùng preview
         const galleryCurrent = document.getElementById('gallery_current');
         if (galleryCurrent && galleryCurrent.querySelectorAll('.position-relative').length === 0) {
             galleryCurrent.innerHTML = '<span class="text-muted small">Chưa có ảnh phụ nào.</span>';

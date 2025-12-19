@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon; // Thêm dòng này để xử lý thời gian
 
 class ChiTietOrder extends Model
 {
@@ -20,6 +21,8 @@ class ChiTietOrder extends Model
         'loai_mon', // 'combo' hoặc 'goi_them'
     ];
 
+    // ================= RELATIONSHIPS =================
+
     public function orderMon()
     {
         return $this->belongsTo(OrderMon::class, 'order_id');
@@ -35,24 +38,37 @@ class ChiTietOrder extends Model
     }
 
 
-    // --- TẠM THỜI TẮT OBSERVER ĐỂ TRÁNH LỖI LOGIC TÍNH TIỀN ---
-    /*
-    protected static function booted()
-    {
-        static::saved(function ($chiTiet) {
-            // self::capNhatTongOrder($chiTiet->order_id);
-        });
+    // ================= ACCESSORS (Thuộc tính ảo) =================
 
-        static::deleted(function ($chiTiet) {
-            // self::capNhatTongOrder($chiTiet->order_id);
-        });
+    /**
+     * Thêm hàm này để tạo thuộc tính ảo 'deadline'
+     * Logic: Thời gian deadline = Giờ đặt + Thời gian chế biến
+     */
+    public function getDeadlineAttribute()
+    {
+        // Nếu chưa có thời gian tạo, trả về null
+        if (!$this->created_at) {
+            return null;
+        }
+
+        // Lấy thời gian chế biến từ bảng mon_an (nếu có)
+        // Nếu không tìm thấy món hoặc không set thời gian, mặc định là 15 phút
+        $phutCheBien = 15;
+
+        if ($this->monAn && isset($this->monAn->thoi_gian_che_bien)) {
+            $val = (int)$this->monAn->thoi_gian_che_bien;
+            if ($val > 0) {
+                $phutCheBien = $val;
+            }
+        }
+
+        // Trả về đối tượng Carbon (thời gian) đã cộng thêm phút
+        // Dùng copy() để không làm thay đổi giá trị gốc của created_at
+        return $this->created_at->copy()->addMinutes($phutCheBien);
     }
-    */
 
     /**
      * Tính thành tiền đơn giản
-     * - Nếu là món trong gói (combo) -> 0đ
-     * - Nếu là món gọi thêm -> Lấy giá món * số lượng
      */
     public function getThanhTienAttribute()
     {
@@ -64,10 +80,5 @@ class ChiTietOrder extends Model
         // Nếu là món gọi thêm thì tính tiền
         $gia = $this->monAn->gia ?? 0;
         return $gia * ($this->so_luong ?? 0);
-    }
-
-    public function getDeadlineAttribute()
-    {
-        return $this->created_at->addMinutes($this->monAn->thoi_gian_che_bien);
     }
 }

@@ -26,16 +26,10 @@ $this->call([
     // NhanVienSeeder::class,
     // OrderMonSeeder::class,
 
-<<<<<<< HEAD
-    VoucherSeeder::class,
-    ChiTietOrderSeeder::class,
-    HoaDonSeeder::class,
-=======
-    // VoucherSeeder::class,    
+    // VoucherSeeder::class,
     // ChiTietOrderSeeder::class,
     // HoaDonSeeder::class,
     DanhGiaSeeder::class,
->>>>>>> origin/Trung
 ]);
 
     }

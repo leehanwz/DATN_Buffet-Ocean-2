@@ -25,12 +25,11 @@ class HomeController extends Controller
             ->limit(10)
             ->get();
 
-        // Lấy TẤT CẢ combo đang mở bán
-        $combos = ComboBuffet::with('danhSachMon')
+        // Code mới đã sửa
+        $combos = ComboBuffet::with('monAn') // <--- Sửa ở đây
             ->where('trang_thai', 'dang_ban')
             ->orderBy('gia_co_ban', 'asc')
             ->get();
-
         // Lấy danh sách khu vực
         $khuVucs = KhuVuc::all();
 
@@ -76,11 +75,68 @@ class HomeController extends Controller
         return view('restaurants.team');
     }
 
-    public function menu()
-    {
-        $danhMucs = DanhMuc::where('hien_thi', 1)->with('monAn')->get();
-        return view('restaurants.menu', compact('danhMucs'));
-    }
+public function menu()
+{
+    // === 1. LẤY DỮ LIỆU CHO TRANG CHỦ (GIỐNG INDEX) ===
+
+    // Lấy TẤT CẢ combo đang mở bán
+    $combos = ComboBuffet::with(['monTrongCombo.monAn' => function($q) {
+            $q->where('trang_thai', 'con');
+        }])
+        ->where('trang_thai', 'dang_ban')
+        ->orderBy('gia_co_ban', 'asc')
+        ->get();
+
+    // Lấy danh sách khu vực (cho Modal đặt bàn)
+    $khuVucs = KhuVuc::all();
+
+    // Lấy danh sách bàn khả dụng
+    $banAns = BanAn::whereNotIn('trang_thai', ['dang_phuc_vu', 'da_dat', 'khong_su_dung'])->get();
+
+    // Lấy danh sách đánh giá
+    $danhGias = DanhGia::where('trang_thai', 'hien_thi')
+        ->orderBy('created_at', 'desc')
+        ->take(10)
+        ->get();
+
+    // === 2. LẤY DỮ LIỆU CHÍNH CHO TRANG THỰC ĐƠN ===
+
+    // Sử dụng Model 'DanhMuc' (khớp với file MonAn.php bạn gửi)
+    $danhMucs = DanhMuc::where('hien_thi', 1)
+        ->with(['monAn' => function($query) {
+            // CHỈ GIỮ LẠI: Món đang có trạng thái 'con'
+            // ĐÃ XÓA: ->where('loai_mon', 'Món gọi thêm') để hiển thị tất cả các loại món
+            $query->where('trang_thai', 'con')
+                  ->orderBy('ten_mon', 'asc');
+        }])
+        ->get()
+        // Lọc bỏ danh mục nào không có món (để tránh hiển thị tiêu đề rỗng)
+        ->filter(function($danhMuc) {
+            return $danhMuc->monAn->count() > 0;
+        })
+        // Sắp xếp thứ tự hiển thị danh mục
+        ->sortBy(function($danhMuc) {
+            $tenDanhMuc = $danhMuc->ten_danh_muc;
+
+            if (mb_stripos($tenDanhMuc, 'Khai Vị') !== false) {
+                return '0_' . $tenDanhMuc; // Đầu tiên
+            } elseif (mb_stripos($tenDanhMuc, 'Tráng Miệng') !== false) {
+                return '9_' . $tenDanhMuc; // Cuối cùng
+            } else {
+                return '1_' . $tenDanhMuc; // Ở giữa
+            }
+        })
+        ->values(); // Reset keys
+
+    // === 3. TRUYỀN TẤT CẢ DỮ LIỆU VÀO VIEW ===
+    return view('restaurants.menu', compact(
+        'combos',
+        'danhMucs',
+        'khuVucs',
+        'banAns',
+        'danhGias'
+    ));
+}
 
     /* ==========================================================
        CHỨC NĂNG LIÊN HỆ (CONTACT)
@@ -93,7 +149,29 @@ class HomeController extends Controller
 
     public function sendContact(Request $request)
     {
-        return back()->with('success', 'Cảm ơn bạn đã liên hệ!');
+        // 1. Kiểm tra dữ liệu đầu vào (Validate)
+        $data = $request->validate([
+            'ten_khach'   => 'required|string|max:255',
+            'sdt'         => 'required|string|max:20',
+            'so_sao'      => 'required|integer|min:1|max:5',
+            'noi_dung'    => 'required|string',
+            'email'       => 'nullable|email|max:255',
+            'nghe_nghiep' => 'nullable|string|max:255',
+        ], [
+            'required' => ':attribute không được để trống.',
+            'email'    => 'Email không đúng định dạng.',
+        ]);
+
+        // 2. Set trạng thái mặc định
+        // Để 'cho_duyet' nếu muốn admin duyệt mới hiện.
+        // Để 'hien_thi' nếu muốn hiện luôn lên trang chủ (Cẩn thận spam).
+        $data['trang_thai'] = 'cho_duyet';
+
+        // 3. Lưu vào database
+        DanhGia::create($data);
+
+        // 4. Thông báo xong
+        return back()->with('success', 'Cảm ơn bạn đã gửi đánh giá! Chúng tôi sẽ xem xét và hiển thị sớm nhất.');
     }
 
     /* ==========================================================
