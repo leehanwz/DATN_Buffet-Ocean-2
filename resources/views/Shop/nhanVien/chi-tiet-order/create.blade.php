@@ -396,6 +396,182 @@
             font-size: 0.8rem;
         }
     }
+
+
+    /* ================= MOBILE OPTIMIZATION CREATE ================= */
+    @media (max-width: 768px) {
+
+        /* Header gọn */
+        .header-title {
+            font-size: 1.4rem;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        /* Context box xếp dọc */
+        .context-box {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .context-box div[style*="width: 1px"] {
+            display: none;
+        }
+
+        /* Món ăn: 1 cột */
+        .dish-card {
+            padding: 8px;
+        }
+
+        .dish-thumb {
+            width: 60px;
+            height: 60px;
+        }
+
+        .dish-name {
+            font-size: 0.9rem;
+        }
+
+        /* Grid 1 cột */
+        .col-lg-6 {
+            width: 100%;
+        }
+
+        /* ẨN CART SIDEBAR */
+        .cart-panel {
+            display: none;
+        }
+
+        /* Bottom Cart */
+        .mobile-cart {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-top: 1px solid #e5e7eb;
+            padding: 10px 14px;
+            box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.08);
+            z-index: 9999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-cart button {
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 800;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Chừa chỗ cho bottom bar */
+        body {
+            padding-bottom: 70px;
+        }
+
+        /* Search full width */
+        .input-group {
+            max-width: 100% !important;
+        }
+    }
+
+    /* ===== MOBILE CART MODAL ===== */
+    .mobile-cart-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .4);
+        z-index: 10000;
+        display: none;
+    }
+
+    .mobile-cart-modal.show {
+        display: block;
+    }
+
+    .modal-sheet {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border-radius: 16px 16px 0 0;
+        max-height: 85%;
+        display: flex;
+        flex-direction: column;
+        animation: slideUp .25s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(100%);
+        }
+
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        padding: 14px;
+        font-weight: 800;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .modal-header button {
+        background: none;
+        border: none;
+        font-size: 18px;
+    }
+
+    .modal-body {
+        padding: 14px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .modal-footer {
+        padding: 14px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    /* ===== CLOSE BUTTON MOBILE CART ===== */
+.modal-header button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f1f5f9;          /* nền xám nhạt */
+    color: #1e293b;               /* chữ đậm */
+    border: none;
+    font-size: 18px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+.modal-header button:hover {
+    background: #fee2e2;          /* đỏ nhạt */
+    color: #dc2626;
+    transform: scale(1.05);
+}
+
+/* Khi bấm (mobile touch) */
+.modal-header button:active {
+    transform: scale(0.95);
+}
 </style>
 
 
@@ -606,232 +782,312 @@
             </div>
         </div>
     </div>
+    {{-- MOBILE CART BAR --}}
+    <div class="mobile-cart d-md-none">
+        <div onclick="openMobileCart()" style="cursor:pointer">
+            <strong id="mobile-cart-count">0 món</strong>
+            <div style="font-size:12px;color:#64748b">Xem món đã chọn</div>
+        </div>
+        <button onclick="submitMobileOrder()">
+            <i class="fa-solid fa-paper-plane"></i> GỬI
+        </button>
+        <!-- MOBILE CART MODAL -->
+        <div id="mobileCartModal" class="mobile-cart-modal d-md-none">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <strong>Món đã chọn</strong>
+                    <button onclick="closeMobileCart()">✕</button>
+                </div>
 
-    {{-- SCRIPT --}}
-    <script>
-        const orderId = {{ $order->id }};
-        // chạy lỗi thì thay thành : const orderId = {{ $order->id }};
-        let cart = [];
+                <div class="modal-body">
+                    <ul id="mobile-cart-items" class="list-unstyled mb-0"></ul>
+                </div>
 
-        // Render Cart UI
-        function renderCart() {
-            const ul = document.getElementById('cart-items');
-            ul.innerHTML = '';
+                <div class="modal-footer">
+                    <button onclick="submitMobileOrder()" class="btn-submit">
+                        <i class="fa-solid fa-paper-plane"></i> GỬI ORDER
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            if (cart.length === 0) {
-                ul.innerHTML = `<li class="text-center text-muted py-4 empty-cart-msg"><small>Chưa chọn món nào</small></li>`;
-                return;
-            }
+</main>
+{{-- SCRIPT --}}
+<script>
+    const orderId = {{ $order->id }};
+    // chạy lỗi thì thay thành : const orderId = {{ $order->id }};
+    let cart = [];
 
-            cart.forEach((item, index) => {
-                const li = document.createElement('li');
-                li.className = "cart-item";
-                li.innerHTML = `
-                    <div style="flex: 1;">
-                        <div class="item-name">
-                            ${item.ten_mon}
-                            <span class="item-qty">x${item.so_luong}</span>
-                            ${item.is_combo == 1 ? '<small style="color: #22c55e;">(Combo)</small>' : '<small style="color:#f97316;">(Gọi thêm)</small>'}
-                            </div>
-                        ${item.ghi_chu ? `<span class="item-note"><i class="fa-regular fa-comment"></i> ${item.ghi_chu}</span>` : ''}
-                    </div>
-                    <div style="flex-shrink: 0; display: flex;">
-                        <button class="btn-icon btn-edit-note" onclick="editNote(${index})" title="Ghi chú"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn-icon btn-remove" onclick="deleteItem(${index})" title="Xóa"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-                ul.appendChild(li);
-            });
+    // Render Cart UI
+    function renderCart() {
+        const ul = document.getElementById('cart-items');
+        const mobileCount = document.getElementById('mobile-cart-count');
+
+        ul.innerHTML = '';
+
+        if (cart.length === 0) {
+            ul.innerHTML = `<li class="text-center text-muted py-4 empty-cart-msg"><small>Chưa chọn món nào</small></li>`;
+            if (mobileCount) mobileCount.innerText = '0 món';
+            return;
         }
 
-        // Logic Add Cart
-        function addToCart(monId, tenMon, gia, loaiMon, isCombo) {
-            const existing = cart.find(i => i.mon_an_id == monId);
-            if (existing) {
-                existing.so_luong++;
-            } else {
-                cart.push({
-                    mon_an_id: monId,
-                    ten_mon: tenMon,
-                    so_luong: 1,
-                    ghi_chu: null,
-                    loai_mon: loaiMon,
-                    is_combo: isCombo
-                });
-            }
+        let totalQty = 0;
+
+        cart.forEach((item, index) => {
+            totalQty += item.so_luong;
+
+            const li = document.createElement('li');
+            li.className = "cart-item";
+            li.innerHTML = `
+            <div style="flex: 1;">
+                <div class="item-name">
+                    ${item.ten_mon}
+                    <span class="item-qty">x${item.so_luong}</span>
+                </div>
+                ${item.ghi_chu ? `<span class="item-note">${item.ghi_chu}</span>` : ''}
+            </div>
+            <div>
+                <button class="btn-icon btn-remove" onclick="deleteItem(${index})">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        `;
+            ul.appendChild(li);
+        });
+
+        if (mobileCount) mobileCount.innerText = `${totalQty} món`;
+    }
+
+    function submitMobileOrder() {
+        document.getElementById('submit-order-btn').click();
+    }
+
+
+    // Logic Add Cart
+    function addToCart(monId, tenMon, gia, loaiMon, isCombo) {
+        const existing = cart.find(i => i.mon_an_id == monId);
+        if (existing) {
+            existing.so_luong++;
+        } else {
+            cart.push({
+                mon_an_id: monId,
+                ten_mon: tenMon,
+                so_luong: 1,
+                ghi_chu: null,
+                loai_mon: loaiMon,
+                is_combo: isCombo
+            });
+        }
+        renderCart();
+    }
+
+    // Logic Delete
+    function deleteItem(index) {
+        // Không confirm để thao tác nhanh hơn, hoặc confirm nhẹ
+        cart.splice(index, 1);
+        renderCart();
+    }
+
+    // Logic Note
+    function editNote(index) {
+        const note = prompt(`Ghi chú cho món ${cart[index].ten_mon}:`, cart[index].ghi_chu || '');
+        if (note !== null) {
+            cart[index].ghi_chu = note.trim();
             renderCart();
         }
+    }
 
-        // Logic Delete
-        function deleteItem(index) {
-            // Không confirm để thao tác nhanh hơn, hoặc confirm nhẹ
-            cart.splice(index, 1);
-            renderCart();
-        }
+    // Event Listener: Click Card to Add
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', e => {
+            // Prevent bubbling if user clicks button inside card, or card itself
+            e.stopPropagation();
+            const card = e.target.closest('.mon-card');
 
-        // Logic Note
-        function editNote(index) {
-            const note = prompt(`Ghi chú cho món ${cart[index].ten_mon}:`, cart[index].ghi_chu || '');
-            if (note !== null) {
-                cart[index].ghi_chu = note.trim();
-                renderCart();
-            }
-        }
+            // Animation effect (optional)
+            card.style.transform = "scale(0.98)";
+            setTimeout(() => card.style.transform = "", 100);
 
-        // Event Listener: Click Card to Add
-        document.querySelectorAll('.add-to-cart').forEach(btn => {
-            btn.addEventListener('click', e => {
-                // Prevent bubbling if user clicks button inside card, or card itself
-                e.stopPropagation();
-                const card = e.target.closest('.mon-card');
-
-                // Animation effect (optional)
-                card.style.transform = "scale(0.98)";
-                setTimeout(() => card.style.transform = "", 100);
-
-                addToCart(
-                    card.dataset.id,
-                    card.dataset.ten,
-                    card.dataset.gia,
-                    card.dataset.loai,
-                    card.dataset.isCombo
-                );
-            });
+            addToCart(
+                card.dataset.id,
+                card.dataset.ten,
+                card.dataset.gia,
+                card.dataset.loai,
+                card.dataset.isCombo
+            );
         });
+    });
 
-        // Also allow clicking the whole card
+    // Also allow clicking the whole card
+    document.querySelectorAll('.mon-card').forEach(card => {
+        card.addEventListener('click', () => {
+            // Trigger the button click logic
+            card.querySelector('.add-to-cart').click();
+        });
+    });
+
+    // Submit Order
+    document.getElementById('submit-order-btn').addEventListener('click', async () => {
+        if (cart.length === 0) return alert('Vui lòng chọn món trước khi gửi!');
+
+        const btn = document.getElementById('submit-order-btn');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG GỬI...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch("{{ route('nhanVien.chi-tiet-order.store') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    order_id: orderId,
+                    items: cart
+                })
+            });
+
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message || 'Lỗi khi gửi order');
+
+            // Redirect back
+            window.location.href = "{{ route('nhanVien.order.page', $order->id) }}";
+        } catch (err) {
+            alert(err.message);
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> GỬI BẾP';
+            btn.disabled = false;
+        }
+    });
+
+    // Gán data-category cho card từ controller nếu chưa có
+    document.querySelectorAll('.mon-card').forEach(card => {
+        if (!card.dataset.category) {
+            card.dataset.category = card.dataset.danhmuc || ''; // fallback
+        }
+    });
+
+    document.querySelectorAll('.filter-row').forEach(row => {
+        row.addEventListener('wheel', function(e) {
+            e.preventDefault(); // ngăn cuộn dọc mặc định
+            row.scrollLeft += e.deltaY; // cuộn ngang thay vì dọc
+        });
+    });
+    const searchInput = document.getElementById('search-dish');
+
+    searchInput.addEventListener('input', () => {
+        const keyword = searchInput.value.toLowerCase();
+
         document.querySelectorAll('.mon-card').forEach(card => {
-            card.addEventListener('click', () => {
-                // Trigger the button click logic
-                card.querySelector('.add-to-cart').click();
-            });
+            const matchesType = Array.from(document.querySelectorAll('#filter-type .filter-btn.active'))
+                .map(b => b.dataset.value)
+                .includes(card.dataset.loai) ||
+                document.querySelectorAll('#filter-type .filter-btn.active').length === 0;
+
+            const matchesName = card.dataset.ten.toLowerCase().includes(keyword);
+
+            card.parentElement.style.display = (matchesType && matchesName) ? 'block' : 'none';
         });
+    });
+    document.getElementById('toggle-filter').addEventListener('click', () => {
+        const row = document.getElementById('filter-row');
+        row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+    });
 
-        // Submit Order
-        document.getElementById('submit-order-btn').addEventListener('click', async () => {
-            if (cart.length === 0) return alert('Vui lòng chọn món trước khi gửi!');
-
-            const btn = document.getElementById('submit-order-btn');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG GỬI...';
-            btn.disabled = true;
-
-            try {
-                const res = await fetch("{{ route('nhanVien.chi-tiet-order.store') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        order_id: orderId,
-                        items: cart
-                    })
-                });
-
-                const data = await res.json();
-                if (!data.success) throw new Error(data.message || 'Lỗi khi gửi order');
-
-                // Redirect back
-                window.location.href = "{{ route('nhanVien.order.page', $order->id) }}";
-            } catch (err) {
-                alert(err.message);
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> GỬI BẾP';
-                btn.disabled = false;
-            }
+    // Filter theo loại món
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.classList.toggle('active');
+            applyFilters();
         });
+    });
 
-        // Gán data-category cho card từ controller nếu chưa có
+    // Search theo tên món
+    document.getElementById('search-dish').addEventListener('input', applyFilters);
+
+    // Hàm áp dụng cả filter và search
+    function applyFilters() {
+        const keyword = document.getElementById('search-dish').value.toLowerCase();
+        const activeTypes = Array.from(document.querySelectorAll('.filter-btn.active')).map(b => b.dataset.value);
+
         document.querySelectorAll('.mon-card').forEach(card => {
-            if (!card.dataset.category) {
-                card.dataset.category = card.dataset.danhmuc || ''; // fallback
-            }
+            const matchesName = card.dataset.ten.toLowerCase().includes(keyword);
+            const matchesType = activeTypes.length === 0 || activeTypes.includes(card.dataset.loai);
+
+            card.parentElement.style.display = (matchesName && matchesType) ? 'block' : 'none';
         });
+    }
 
-        document.querySelectorAll('.filter-row').forEach(row => {
-            row.addEventListener('wheel', function(e) {
-                e.preventDefault(); // ngăn cuộn dọc mặc định
-                row.scrollLeft += e.deltaY; // cuộn ngang thay vì dọc
-            });
+    // Scroll ngang filter row
+    document.querySelectorAll('.filter-row').forEach(row => {
+        row.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            row.scrollLeft += e.deltaY;
         });
-        const searchInput = document.getElementById('search-dish');
+    });
+    document.getElementById('btn-call-all-combo').addEventListener('click', () => {
 
-        searchInput.addEventListener('input', () => {
-            const keyword = searchInput.value.toLowerCase();
+        const comboCards = document.querySelectorAll('.combo-item');
 
-            document.querySelectorAll('.mon-card').forEach(card => {
-                const matchesType = Array.from(document.querySelectorAll('#filter-type .filter-btn.active'))
-                    .map(b => b.dataset.value)
-                    .includes(card.dataset.loai) ||
-                    document.querySelectorAll('#filter-type .filter-btn.active').length === 0;
-
-                const matchesName = card.dataset.ten.toLowerCase().includes(keyword);
-
-                card.parentElement.style.display = (matchesType && matchesName) ? 'block' : 'none';
-            });
-        });
-        document.getElementById('toggle-filter').addEventListener('click', () => {
-            const row = document.getElementById('filter-row');
-            row.style.display = row.style.display === 'none' ? 'flex' : 'none';
-        });
-
-        // Filter theo loại món
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                btn.classList.toggle('active');
-                applyFilters();
-            });
-        });
-
-        // Search theo tên món
-        document.getElementById('search-dish').addEventListener('input', applyFilters);
-
-        // Hàm áp dụng cả filter và search
-        function applyFilters() {
-            const keyword = document.getElementById('search-dish').value.toLowerCase();
-            const activeTypes = Array.from(document.querySelectorAll('.filter-btn.active')).map(b => b.dataset.value);
-
-            document.querySelectorAll('.mon-card').forEach(card => {
-                const matchesName = card.dataset.ten.toLowerCase().includes(keyword);
-                const matchesType = activeTypes.length === 0 || activeTypes.includes(card.dataset.loai);
-
-                card.parentElement.style.display = (matchesName && matchesType) ? 'block' : 'none';
-            });
+        if (comboCards.length === 0) {
+            alert('Không có món combo!');
+            return;
         }
 
-        // Scroll ngang filter row
-        document.querySelectorAll('.filter-row').forEach(row => {
-            row.addEventListener('wheel', function(e) {
-                e.preventDefault();
-                row.scrollLeft += e.deltaY;
-            });
+        comboCards.forEach(card => {
+            addToCart(
+                card.dataset.id,
+                card.dataset.ten,
+                card.dataset.gia,
+                card.dataset.loai,
+                card.dataset.isCombo
+            );
         });
-        document.getElementById('btn-call-all-combo').addEventListener('click', () => {
 
-            const comboCards = document.querySelectorAll('.combo-item');
+        // hiệu ứng nhẹ
+        const btn = document.getElementById('btn-call-all-combo');
+        btn.classList.add('btn-success');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> ĐÃ THÊM';
+        setTimeout(() => {
+            btn.classList.remove('btn-success');
+            btn.innerHTML = '<i class="fa-solid fa-layer-group"></i> GỌI TẤT CẢ';
+        }, 800);
+    });
 
-            if (comboCards.length === 0) {
-                alert('Không có món combo!');
-                return;
-            }
+    function openMobileCart() {
+        renderMobileCart();
+        document.getElementById('mobileCartModal').classList.add('show');
+    }
 
-            comboCards.forEach(card => {
-                addToCart(
-                    card.dataset.id,
-                    card.dataset.ten,
-                    card.dataset.gia,
-                    card.dataset.loai,
-                    card.dataset.isCombo
-                );
-            });
+    function closeMobileCart() {
+        document.getElementById('mobileCartModal').classList.remove('show');
+    }
 
-            // hiệu ứng nhẹ
-            const btn = document.getElementById('btn-call-all-combo');
-            btn.classList.add('btn-success');
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> ĐÃ THÊM';
-            setTimeout(() => {
-                btn.classList.remove('btn-success');
-                btn.innerHTML = '<i class="fa-solid fa-layer-group"></i> GỌI TẤT CẢ';
-            }, 800);
+    function renderMobileCart() {
+        const ul = document.getElementById('mobile-cart-items');
+        ul.innerHTML = '';
+
+        if (cart.length === 0) {
+            ul.innerHTML = `<li class="text-center text-muted py-3">Chưa có món</li>`;
+            return;
+        }
+
+        cart.forEach((item, index) => {
+            ul.innerHTML += `
+            <li class="cart-item">
+                <div>
+                    <div class="item-name">
+                        ${item.ten_mon}
+                        <span class="item-qty">x${item.so_luong}</span>
+                    </div>
+                    ${item.ghi_chu ? `<div class="item-note">${item.ghi_chu}</div>` : ''}
+                </div>
+                <button class="btn-icon btn-remove" onclick="deleteItem(${index}); renderMobileCart();">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </li>
+        `;
         });
-    </script>
-    @endsection
+    }
+</script>
+@endsection

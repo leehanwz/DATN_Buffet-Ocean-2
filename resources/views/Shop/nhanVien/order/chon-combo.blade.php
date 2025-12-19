@@ -68,6 +68,91 @@
                 transform: translateY(0);
             }
         }
+
+        /* ================= MOBILE OPTIMIZE ================= */
+@media (max-width: 768px) {
+
+    /* HEADER gọn lại */
+    .page-header-title {
+        font-size: 1.2rem;
+    }
+
+    /* FILTER cuộn ngang */
+    .filter-menu {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .filter-btn {
+        flex: 0 0 auto;
+        font-size: 0.85rem;
+        padding: 6px 14px;
+    }
+
+    /* COMBO CARD dạng ngang */
+    .combo-card {
+        flex-direction: row;
+        height: auto;
+    }
+
+    .img-wrapper {
+        width: 120px;
+        height: 100%;
+        flex-shrink: 0;
+    }
+
+    .combo-img {
+        height: 100%;
+    }
+
+    .card-body-custom {
+        padding: 12px;
+    }
+
+    .combo-title {
+        font-size: 1rem;
+    }
+
+    .price-badge {
+        font-size: 0.85rem;
+        padding: 4px 8px;
+    }
+
+    /* +/- TO hơn cho dễ bấm */
+    .btn-qty {
+        width: 42px;
+        height: 42px;
+        font-size: 1.3rem;
+    }
+
+    .combo-qty {
+        font-size: 1.2rem;
+        width: 60px;
+    }
+
+    /* MODAL full màn hình */
+    .modal-content-custom {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        max-height: none;
+        border-radius: 0;
+    }
+
+    .modal-body-custom {
+        padding-bottom: 80px;
+    }
+
+    /* STICKY nút xác nhận */
+    .btn-confirm {
+        position: sticky;
+        bottom: 10px;
+        z-index: 100;
+    }
+}
+
     </style>
 
     <main class="app-content container-xxl py-4 px-4">

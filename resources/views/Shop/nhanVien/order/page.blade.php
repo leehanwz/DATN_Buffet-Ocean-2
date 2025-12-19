@@ -329,6 +329,74 @@
         background-color: #f1f5f9;
         z-index: 10;
     }
+
+    /* ================= MOBILE OPTIMIZATION ================= */
+    @media (max-width: 768px) {
+
+        /* Header page gọn lại */
+        h3 {
+            font-size: 1.3rem !important;
+        }
+
+        .btn-custom {
+            font-size: 0.75rem;
+            padding: 6px 10px;
+        }
+
+        /* Đưa card thông tin lên trên */
+        .order-md-2 {
+            order: 1 !important;
+        }
+
+        .order-md-1 {
+            order: 2 !important;
+        }
+
+        /* ẨN TABLE TRÊN MOBILE */
+        .table-desktop {
+            display: none;
+        }
+
+        /* CARD MÓN ĂN MOBILE */
+        .mobile-item {
+            background: #fff;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .mobile-item h6 {
+            font-weight: 800;
+            margin-bottom: 6px;
+            font-size: 1rem;
+        }
+
+        .mobile-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
+
+        .mobile-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .mobile-actions .btn-icon-small {
+            width: 36px;
+            height: 36px;
+        }
+
+        .countdown {
+            font-size: 0.75rem;
+        }
+    }
 </style>
 
 @section('content')
@@ -469,7 +537,7 @@
                         <p class="fw-bold">Chưa có món nào được gọi.</p>
                     </div>
                     @else
-                    <div class="table-scrollable">
+                    <div class="table-scrollable table-desktop">
                         <table class="table custom-table mb-0">
                             <thead>
                                 <tr>
@@ -483,7 +551,7 @@
                             <tbody>
                                 @foreach ($order->chiTietOrders as $ct)
                                 <tr data-id="{{ $ct->id }}">
-                                    <td>
+                                    <td data-label="Món ăn">
                                         <div style="font-weight: 700; color: var(--dark);">{{ $ct->monAn->ten_mon }}</div>
                                     </td>
                                     <td class="text-center">
@@ -564,7 +632,71 @@
                     @endif
                 </div>
             </div>
+        </div>{{-- MOBILE LIST --}}
+        <div class="d-md-none">
+            @foreach ($order->chiTietOrders as $ct)
+            <div class="mobile-item {{ $ct->trang_thai === 'cho_bep' ? 'border-warning' : '' }}">
+                <h6>{{ $ct->monAn->ten_mon }}</h6>
+
+                <div class="mobile-meta">
+                    <span>SL:
+                        @if($ct->so_luong_hien_thi === 'Chưa chọn')
+                        <span class="badge bg-secondary">Chưa chọn</span>
+                        @else
+                        x{{ $ct->so_luong_hien_thi }}
+                        @endif
+                    </span>
+
+                    @switch($ct->trang_thai)
+                    @case('cho_bep')
+                    <span class="badge-pill st-cho-bep">Chờ bếp</span>
+                    @break
+                    @case('dang_che_bien')
+                    <span class="badge-pill st-dang-lam">Đang làm</span>
+                    @break
+                    @case('da_len_mon')
+                    <span class="badge-pill st-da-len">Đã lên</span>
+                    @break
+                    @case('huy_mon')
+                    <span class="badge-pill st-huy">Đã hủy</span>
+                    @break
+                    @endswitch
+                </div>
+
+                @if($ct->ghi_chu)
+                <div class="text-muted fst-italic small mb-1">
+                    <i class="fa-regular fa-comment-dots"></i> {{ $ct->ghi_chu }}
+                </div>
+                @endif
+
+                @if(in_array($ct->trang_thai, ['cho_bep','dang_che_bien']))
+                <div class="countdown mt-1"
+                    data-deadline="{{ $ct->deadline->timestamp * 1000 }}"
+                    data-ten-mon="{{ $ct->monAn->ten_mon }}">
+                    ⏳ --:--
+                </div>
+                @endif
+
+                <div class="mobile-actions">
+                    <a href="{{ route('nhanVien.chi-tiet-order.edit', [$order->id, $ct->id]) }}"
+                        class="btn-icon-small btn-edit">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+
+                    <form action="{{ route('nhanVien.chi-tiet-order.destroy', $ct->id) }}"
+                        method="POST"
+                        onsubmit="return confirm('Xóa món {{ $ct->monAn->ten_mon }}?');">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn-icon-small btn-delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @endforeach
         </div>
+
     </div>
 
     <script>

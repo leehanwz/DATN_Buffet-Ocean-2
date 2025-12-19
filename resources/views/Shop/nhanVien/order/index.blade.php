@@ -278,5 +278,140 @@
     .btn-ocean-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); border-radius: 4px; font-weight: 700; padding: 6px; width: 100%; display: block; text-align: center; text-decoration: none; transition: 0.2s; font-size: 0.9rem; }
     .btn-ocean-outline:hover { background: var(--primary); color: #fff; }
     @media (max-width: 768px) { .table-number { font-size: 1.5rem; } .table-card { min-height: auto; } }
+
+    /* ===============================
+    UI PHƯƠNG ÁN 2 – POS STYLE
+    ================================ */
+
+    /* CARD BÀN */
+    .table-card {
+        border-radius: 14px;
+        padding: 0;
+        overflow: hidden;
+        border: none;
+        background: #fff;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    /* HEADER CARD */
+    .table-card-header {
+        padding: 10px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 800;
+        font-size: 1rem;
+    }
+
+    /* BODY */
+    .table-card-body {
+        padding: 12px 14px;
+        font-size: 0.85rem;
+    }
+
+    /* FOOTER */
+    .table-card-footer {
+        padding: 10px;
+        background: #f8fafc;
+    }
+
+    /* TRẠNG THÁI MÀU */
+    .card-free .table-card-header {
+        background: #e2e8f0;
+        color: #334155;
+    }
+
+    .card-active .table-card-header {
+        background: linear-gradient(135deg, #fea116, #ffb703);
+        color: #fff;
+    }
+
+    .card-reserved .table-card-header {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #fff;
+    }
+
+    .card-maintenance .table-card-header {
+        background: #64748b;
+        color: #fff;
+    }
+
+    /* CHẤM TRẠNG THÁI */
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    /* TÊN KHÁCH */
+    .customer-name {
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+    }
+
+    /* THÔNG TIN PHỤ */
+    .meta {
+        font-size: 0.75rem;
+        color: #475569;
+    }
+
+    /* NÚT */
+    .btn-action {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.9rem;
+    }
+
+    /* MOBILE ƯU TIÊN */
+    @media (max-width: 768px) {
+        .col-xl-2,
+        .col-lg-3,
+        .col-md-4 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        .table-card {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .table-card-header {
+            font-size: 0.95rem;
+        }
+
+        .btn-action {
+            font-size: 0.85rem;
+        }
+    }
+
+    /* SIÊU NHỎ (điện thoại bé) */
+    @media (max-width: 420px) {
+        .col-xl-2,
+        .col-lg-3,
+        .col-md-4,
+        .col-sm-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+    footer {
+    height: 60px;
+}
+
+@media (max-width: 768px) {
+    .app-content {
+        padding-bottom: 80px; /* chừa chỗ cho footer */
+    }
+}
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 60px;
+    }
+}
+
 </style>
 @endsection
