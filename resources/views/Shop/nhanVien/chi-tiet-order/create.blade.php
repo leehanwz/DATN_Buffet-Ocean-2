@@ -545,33 +545,36 @@
     }
 
     /* ===== CLOSE BUTTON MOBILE CART ===== */
-.modal-header button {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #f1f5f9;          /* nền xám nhạt */
-    color: #1e293b;               /* chữ đậm */
-    border: none;
-    font-size: 18px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
+    .modal-header button {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        /* nền xám nhạt */
+        color: #1e293b;
+        /* chữ đậm */
+        border: none;
+        font-size: 18px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
 
-/* Hover */
-.modal-header button:hover {
-    background: #fee2e2;          /* đỏ nhạt */
-    color: #dc2626;
-    transform: scale(1.05);
-}
+    /* Hover */
+    .modal-header button:hover {
+        background: #fee2e2;
+        /* đỏ nhạt */
+        color: #dc2626;
+        transform: scale(1.05);
+    }
 
-/* Khi bấm (mobile touch) */
-.modal-header button:active {
-    transform: scale(0.95);
-}
+    /* Khi bấm (mobile touch) */
+    .modal-header button:active {
+        transform: scale(0.95);
+    }
 </style>
 
 
@@ -1074,20 +1077,36 @@
 
         cart.forEach((item, index) => {
             ul.innerHTML += `
-            <li class="cart-item">
+        <li class="cart-item" style="flex-direction: column; align-items: stretch;">
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
                     <div class="item-name">
                         ${item.ten_mon}
                         <span class="item-qty">x${item.so_luong}</span>
                     </div>
-                    ${item.ghi_chu ? `<div class="item-note">${item.ghi_chu}</div>` : ''}
                 </div>
+
                 <button class="btn-icon btn-remove" onclick="deleteItem(${index}); renderMobileCart();">
                     <i class="fa-solid fa-trash"></i>
                 </button>
-            </li>
+            </div>
+
+            <!-- GHI CHÚ -->
+            <textarea
+                class="form-control mt-2"
+                rows="2"
+                placeholder="Ghi chú cho món (ít cay, không hành...)"
+                oninput="updateNote(${index}, this.value)"
+            >${item.ghi_chu ?? ''}</textarea>
+
+        </li>
         `;
         });
+    }
+
+    function updateNote(index, value) {
+        cart[index].ghi_chu = value.trim();
     }
 </script>
 @endsection
