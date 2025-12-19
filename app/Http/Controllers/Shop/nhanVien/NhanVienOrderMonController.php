@@ -312,7 +312,9 @@ class NhanVienOrderMonController extends Controller
     public function chonCombo($orderId)
     {
         $order = OrderMon::with('datBan')->findOrFail($orderId);
-        $combos = ComboBuffet::with('monTrongCombo.monAn')->get();
+        $combos = ComboBuffet::with('monTrongCombo.monAn')
+        ->where('trang_thai', 'dang_ban')
+        ->get();
 
         foreach ($combos as $combo) {
             $comboFolder = public_path('uploads/combo_buffet');
