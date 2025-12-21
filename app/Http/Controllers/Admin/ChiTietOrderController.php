@@ -137,12 +137,13 @@ class ChiTietOrderController extends Controller
             'trang_thai' => $request->trang_thai,
         ]);
 
-        // Cập nhật tổng tiền/tổng món
-        ChiTietOrder::capNhatTongOrder($ct->order_id);
-
         // Đồng bộ số lượng combo
         $order = OrderMon::with('datBan')->find($ct->order_id);
         $this->capNhatSoLuongCombo($order);
+
+        // Cập nhật tổng tiền/tổng món
+        // ChiTietOrder::capNhatTongOrder($ct->order_id);
+        OrderHelper::capNhatTongOrder($order);
 
         return redirect()->route('admin.chi-tiet-order.index', ['order_id' => $ct->order_id])
             ->with('success', 'Cập nhật món ăn thành công!');
