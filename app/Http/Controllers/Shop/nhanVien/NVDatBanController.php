@@ -237,10 +237,14 @@ public function ajaxCheckBanTrong(Request $request)
             'ban_id' => [
                 'required',
                 'exists:ban_an,id',
-                // Cho phép chọn bàn đang 'trong' (bao gồm cả bàn limited)
-                Rule::exists('ban_an', 'id')->where('trang_thai', 'trong'),
+                // Chỉ chặn bàn bị khóa (khong_su_dung)
+                // Logic kiểm tra xung đột lịch và trạng thái bàn sẽ được xử lý ở bước sau
+                Rule::exists('ban_an', 'id')->where('trang_thai', '!=', 'khong_su_dung'),
             ],
             'gio_den' => 'required|date',
+        ], [
+            'ban_id.required' => 'Vui lòng chọn bàn.',
+            'ban_id.exists' => 'Bàn được chọn không tồn tại hoặc đang bị khóa.',
         ]);
 
         $tongKhach = $request->nguoi_lon + $request->tre_em;
@@ -253,8 +257,20 @@ public function ajaxCheckBanTrong(Request $request)
         }
 
         $banAn = BanAn::find($request->ban_id);
+        
+        // Kiểm tra bàn có tồn tại không
+        if (!$banAn) {
+            return back()->withInput()->with('error', "Bàn được chọn không tồn tại.");
+        }
+        
+        // Kiểm tra bàn có bị khóa không
+        if ($banAn->trang_thai === 'khong_su_dung') {
+            return back()->withInput()->with('error', "Bàn này đang bị khóa, không thể sử dụng.");
+        }
+        
+        // Kiểm tra số ghế
         if ($banAn->so_ghe < $tongKhach) {
-            return back()->withInput()->with('error', "Bàn này không đủ ghế.");
+            return back()->withInput()->with('error', "Bàn này không đủ ghế. Bàn có {$banAn->so_ghe} ghế nhưng cần {$tongKhach} ghế.");
         }
 
         // Tính thời lượng mong muốn (Mặc định 120p)
@@ -361,14 +377,26 @@ public function ajaxCheckBanTrong(Request $request)
      */
     private function syncBookingDetails($datBan, $cartJson)
     {
-        if (empty($cartJson)) return;
+        // Kiểm tra cartJson có rỗng hoặc null không
+        if (empty($cartJson) || trim($cartJson) === '' || trim($cartJson) === '[]') {
+            return; // Không có combo/món nào được chọn
+        }
 
         $cartItems = json_decode($cartJson, true);
-        if (!is_array($cartItems)) return;
+        
+        // Kiểm tra decode có thành công và là mảng không
+        if (!is_array($cartItems) || empty($cartItems)) {
+            return; // Không có item nào trong cart
+        }
 
         foreach ($cartItems as $item) {
             $key = $item['key'] ?? '';
-            $qty = $item['quantity'] ?? 1;
+            $qty = (int)($item['quantity'] ?? 0);
+            
+            // Chỉ lưu nếu số lượng > 0
+            if ($qty <= 0) {
+                continue;
+            }
 
             if (Str::startsWith($key, 'combo_')) {
                 ChiTietDatBan::create([

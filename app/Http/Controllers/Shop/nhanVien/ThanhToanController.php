@@ -243,7 +243,27 @@ class ThanhToanController extends Controller
         $tienGiam = 0;
         if ($request->filled('voucher_id')) {
             $voucher = Voucher::find($request->voucher_id);
-            if ($voucher && $voucher->trang_thai == 'dang_ap_dung' && $voucher->ngay_ket_thuc >= now() && $voucher->so_luong > $voucher->so_luong_da_dung) {
+            if ($voucher) {
+                // Kiểm tra điều kiện voucher
+                if ($voucher->trang_thai != 'dang_ap_dung') {
+                    return redirect()->back()
+                        ->with('error', 'Voucher "' . $voucher->ma_voucher . '" không còn hiệu lực!')
+                        ->withInput();
+                }
+                
+                if ($voucher->ngay_ket_thuc < now()) {
+                    return redirect()->back()
+                        ->with('error', 'Voucher "' . $voucher->ma_voucher . '" đã hết hạn!')
+                        ->withInput();
+                }
+                
+                if ($voucher->so_luong <= $voucher->so_luong_da_dung) {
+                    return redirect()->back()
+                        ->with('error', 'Voucher "' . $voucher->ma_voucher . '" đã hết số lượng sử dụng!')
+                        ->withInput();
+                }
+                
+                // Tính tiền giảm nếu voucher hợp lệ
                 if ($voucher->loai_giam == 'phan_tram') {
                     $tienGiam = $tongTienOrder * ($voucher->gia_tri / 100);
                     if ($voucher->gia_tri_toi_da && $tienGiam > $voucher->gia_tri_toi_da) {
@@ -349,9 +369,9 @@ class ThanhToanController extends Controller
             $order->update(['trang_thai' => 'hoan_thanh']);
         }
 
-        // Chuyển hướng đến trang hiển thị hóa đơn
+        // Chuyển hướng về trang bàn ăn
         return redirect()
-            ->route('nhanVien.thanh-toan.hien-thi-hoa-don', $hoaDon->id)
+            ->route('nhanVien.ban-an.index')
             ->with('success', 'Hóa đơn đã được tạo với trạng thái chưa thanh toán!');
     }
 
@@ -466,6 +486,26 @@ class ThanhToanController extends Controller
         $tienGiam = 0;
 
         if ($voucher) {
+            // Kiểm tra điều kiện voucher
+            if ($voucher->trang_thai != 'dang_ap_dung') {
+                return redirect()->back()
+                    ->with('error', 'Voucher "' . $voucher->ma_voucher . '" không còn hiệu lực!')
+                    ->withInput();
+            }
+            
+            if ($voucher->ngay_ket_thuc < now()) {
+                return redirect()->back()
+                    ->with('error', 'Voucher "' . $voucher->ma_voucher . '" đã hết hạn!')
+                    ->withInput();
+            }
+            
+            if ($voucher->so_luong <= $voucher->so_luong_da_dung) {
+                return redirect()->back()
+                    ->with('error', 'Voucher "' . $voucher->ma_voucher . '" đã hết số lượng sử dụng!')
+                    ->withInput();
+            }
+            
+            // Tính tiền giảm nếu voucher hợp lệ
             if ($voucher->loai_giam == 'phan_tram') {
                 $tienGiam = $tongTienOrder * ($voucher->gia_tri / 100);
                 if ($voucher->gia_tri_toi_da && $tienGiam > $voucher->gia_tri_toi_da) {
@@ -848,6 +888,26 @@ class ThanhToanController extends Controller
         $tienGiam = 0;
 
         if ($voucher) {
+            // Kiểm tra điều kiện voucher
+            if ($voucher->trang_thai != 'dang_ap_dung') {
+                return redirect()->back()
+                    ->with('error', 'Voucher "' . $voucher->ma_voucher . '" không còn hiệu lực!')
+                    ->withInput();
+            }
+            
+            if ($voucher->ngay_ket_thuc < now()) {
+                return redirect()->back()
+                    ->with('error', 'Voucher "' . $voucher->ma_voucher . '" đã hết hạn!')
+                    ->withInput();
+            }
+            
+            if ($voucher->so_luong <= $voucher->so_luong_da_dung) {
+                return redirect()->back()
+                    ->with('error', 'Voucher "' . $voucher->ma_voucher . '" đã hết số lượng sử dụng!')
+                    ->withInput();
+            }
+            
+            // Tính tiền giảm nếu voucher hợp lệ
             if ($voucher->loai_giam == 'phan_tram') {
                 $tienGiam = $tongTienOrder * ($voucher->gia_tri / 100);
                 if ($voucher->gia_tri_toi_da && $tienGiam > $voucher->gia_tri_toi_da) {
@@ -1124,14 +1184,17 @@ class ThanhToanController extends Controller
 
         // Tính tổng số lượng đã order cho từng món (cả combo và goi_them)
         // Bỏ qua món đã hủy và món đang chờ bếp
+        // QUAN TRỌNG: Bao gồm món có trạng thái da_len_mon (đã lên món), dang_che_bien (đang nấu) và cho_cung_ung (chờ cung ứng - đã nấu xong, chờ nhân viên xác nhận)
         $tongSoLuongMon = [];
         foreach ($datBan->orderMon as $order) {
             foreach ($order->chiTietOrders as $ct) {
+                // Chỉ tính món đã lên (da_len_mon), đang nấu (dang_che_bien) và chờ cung ứng (cho_cung_ung), bỏ qua món đã hủy và chờ bếp
                 if ($ct->trang_thai != 'huy_mon' && $ct->trang_thai != 'cho_bep') {
                     $monAnId = $ct->mon_an_id;
                     if (!isset($tongSoLuongMon[$monAnId])) {
                         $tongSoLuongMon[$monAnId] = 0;
                     }
+                    $tongSoLuongMon[$monAnId] += $ct->so_luong;
                 }
             }
         }
@@ -1152,13 +1215,15 @@ class ThanhToanController extends Controller
         $daPhanBoVuot = [];
 
         // Tính tiền cho từng món (bỏ qua món đã hủy và món đang chờ bếp)
+        // QUAN TRỌNG: Bao gồm món có trạng thái da_len_mon (đã lên món), dang_che_bien (đang nấu) và cho_cung_ung (chờ cung ứng - đã nấu xong, chờ nhân viên xác nhận)
         foreach ($datBan->orderMon as $order) {
             foreach ($order->chiTietOrders as $ct) {
+                // Chỉ tính món đã lên (da_len_mon), đang nấu (dang_che_bien) và chờ cung ứng (cho_cung_ung), bỏ qua món đã hủy và chờ bếp
                 if ($ct->trang_thai != 'huy_mon' && $ct->trang_thai != 'cho_bep') {
                     $monAnId = $ct->mon_an_id;
 
                     if ($ct->loai_mon == 'goi_them') {
-                        // Món gọi thêm: tính tiền bình thường
+                        // Món gọi thêm: tính tiền bình thường (bao gồm cả món da_len_mon, dang_che_bien và cho_cung_ung)
                         $tongTienMonGoiThem += ($ct->monAn->gia ?? 0) * $ct->so_luong;
                     } elseif ($ct->loai_mon == 'combo') {
                         // Món combo: tính tiền theo giới hạn
@@ -1459,7 +1524,27 @@ class ThanhToanController extends Controller
         $voucher = $request->voucher_id ? Voucher::find($request->voucher_id) : null;
         $tienGiam = 0;
 
-        if ($voucher && $voucher->so_luong > $voucher->so_luong_da_dung) {
+        if ($voucher) {
+            // Kiểm tra điều kiện voucher
+            if ($voucher->trang_thai != 'dang_ap_dung') {
+                return redirect()->back()
+                    ->with('error', 'Voucher "' . $voucher->ma_voucher . '" không còn hiệu lực!')
+                    ->withInput();
+            }
+            
+            if ($voucher->ngay_ket_thuc < now()) {
+                return redirect()->back()
+                    ->with('error', 'Voucher "' . $voucher->ma_voucher . '" đã hết hạn!')
+                    ->withInput();
+            }
+            
+            if ($voucher->so_luong <= $voucher->so_luong_da_dung) {
+                return redirect()->back()
+                    ->with('error', 'Voucher "' . $voucher->ma_voucher . '" đã hết số lượng sử dụng!')
+                    ->withInput();
+            }
+            
+            // Tính tiền giảm nếu voucher hợp lệ
             if ($voucher->loai_giam == 'phan_tram') {
                 $tienGiam = $tongTienOrder * ($voucher->gia_tri / 100);
                 if ($voucher->gia_tri_toi_da && $tienGiam > $voucher->gia_tri_toi_da) $tienGiam = $voucher->gia_tri_toi_da;
@@ -1574,7 +1659,64 @@ class ThanhToanController extends Controller
         foreach ($datBan->orderMon as $o) $o->update(['trang_thai' => 'hoan_thanh']);
 
         return redirect()
-            ->route('nhanVien.thanh-toan.hien-thi-hoa-don', $hoaDon->id)
+            ->route('nhanVien.thanh-toan.in-hoa-don', $hoaDon->id)
             ->with('success', 'Thanh toán thành công!');
+    }
+
+    /**
+     * Danh sách hóa đơn chưa thanh toán
+     */
+    public function danhSachHoaDonChuaThanhToan()
+    {
+        $hoaDons = HoaDon::with([
+            'datBan.banAn.khuVuc',
+            'chiTietHoaDon'
+        ])
+        ->where('trang_thai', 'chua_thanh_toan')
+        ->orderByDesc('created_at')
+        ->paginate(15);
+
+        return view('Shop.nhanVien.thanh-toan.danh-sach-chua-thanh-toan', compact('hoaDons'));
+    }
+
+    /**
+     * Xác nhận đã thanh toán hóa đơn
+     */
+    public function xacNhanDaThanhToan($hoaDonId)
+    {
+        $hoaDon = HoaDon::with(['chiTietHoaDon', 'datBan'])->findOrFail($hoaDonId);
+
+        if ($hoaDon->trang_thai == 'da_thanh_toan') {
+            return redirect()
+                ->route('nhanVien.thanh-toan.danh-sach-chua-thanh-toan')
+                ->with('error', 'Hóa đơn này đã được thanh toán!');
+        }
+
+        // Lấy số tiền phải thanh toán từ chi tiết hóa đơn
+        $phaiThanhToan = 0;
+        if ($hoaDon->chiTietHoaDon && $hoaDon->chiTietHoaDon->phai_thanh_toan) {
+            $phaiThanhToan = $hoaDon->chiTietHoaDon->phai_thanh_toan;
+        } else {
+            // Nếu không có chi tiết, tính lại từ hóa đơn
+            $phaiThanhToan = $hoaDon->tong_tien - ($hoaDon->tien_giam ?? 0) + ($hoaDon->phu_thu ?? 0);
+            $tienCoc = $hoaDon->datBan->tien_coc ?? 0;
+            $phaiThanhToan = max(0, $phaiThanhToan - $tienCoc);
+        }
+
+        // Cập nhật trạng thái hóa đơn thành đã thanh toán
+        // Giữ nguyên phuong_thuc_tt là 'chua_thanh_toan', chỉ cập nhật trang_thai
+        $hoaDon->update([
+            'trang_thai' => 'da_thanh_toan',
+            'da_thanh_toan' => $phaiThanhToan,
+            // Không thay đổi phuong_thuc_tt, để nguyên 'chua_thanh_toan'
+            // View sẽ tự động hiển thị "Đã thanh toán" dựa vào trang_thai
+        ]);
+
+        // Không cần cập nhật chi tiết hóa đơn vì sẽ dựa vào trang_thai để hiển thị
+
+        // Chuyển hướng đến trang in hóa đơn
+        return redirect()
+            ->route('nhanVien.thanh-toan.in-hoa-don', $hoaDon->id)
+            ->with('success', 'Đã xác nhận thanh toán thành công!');
     }
 }

@@ -56,4 +56,9 @@ class DatBanCombo extends Model
     {
         return $this->combo();
     }
+public function monAn()
+{
+    // Giả sử Model món ăn là MonAn và khóa ngoại là mon_an_id
+    return $this->belongsTo(MonAn::class, 'mon_an_id');
+}
 }

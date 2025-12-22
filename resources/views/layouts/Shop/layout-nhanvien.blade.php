@@ -57,7 +57,12 @@
         {{-- NAVBAR START --}}
         <div class="container-xxl position-relative p-0">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
-                <a href="ban-an" class="navbar-brand p-0">
+                @php
+                    $user = Auth::user();
+                    $isLeTan = $user && $user->vai_tro === 'le_tan';
+                    $logoLink = $isLeTan ? route('nhanVien.ban-an.index') : route('nhanVien.order.index');
+                @endphp
+                <a href="{{ $logoLink }}" class="navbar-brand p-0">
                     <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Buffet Ocean</h1>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -67,44 +72,62 @@
 
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0 pe-4">
-                        {{-- Các route chức năng của nhân viên (Đã sắp xếp lại theo thứ tự hiển thị) --}}
-                        <a href="{{ route('nhanVien.ban-an.index') }}"
-                            class="nav-item nav-link {{ request()->routeIs('nhanVien.ban-an.*') ? 'active' : '' }}">Bàn
-                            ăn</a>
+                        @php
+                            $user = Auth::user();
+                            $isLeTan = $user && $user->vai_tro === 'le_tan';
+                        @endphp
+                        
+                        @if($isLeTan)
+                            {{-- Menu cho lễ tân - Quản lý bàn ăn và Đặt bàn --}}
+                            <a href="{{ route('nhanVien.ban-an.index') }}"
+                                class="nav-item nav-link {{ request()->routeIs('nhanVien.ban-an.*') ? 'active' : '' }}">Bàn ăn</a>
+                            
+                            <a href="{{ route('nhanVien.datban.index') }}"
+                                class="nav-item nav-link {{ request()->routeIs('nhanVien.datban.*') ? 'active' : '' }}">Đặt bàn</a>
+                            
+                            <a href="{{ route('nhanVien.thanh-toan.danh-sach-chua-thanh-toan') }}"
+                                class="nav-item nav-link {{ request()->routeIs('nhanVien.thanh-toan.danh-sach-chua-thanh-toan') ? 'active' : '' }}">Hóa đơn chưa thanh toán</a>
+                        @else
+                            {{-- Menu cho nhân viên phục vụ - Order và Hàng chờ phục vụ --}}
+                            <a href="{{ route('nhanVien.order.index') }}"
+                                class="nav-item nav-link {{ request()->routeIs('nhanVien.order.*') ? 'active' : '' }}">Order</a>
 
-
-                        <a href="{{ route('nhanVien.datban.index') }}"
-                            class="nav-item nav-link {{ request()->routeIs('nhanVien.datban.*') ? 'active' : '' }}">Đặt bàn</a>
-
-
-                        <a href="{{ route('nhanVien.order.index') }}"
-                            class="nav-item nav-link {{ request()->routeIs('nhanVien.order.*') ? 'active' : '' }}">Order</a>
-
-                        <a href="{{ route('nhanVien.phuc-vu.dashboard') }}"
-                            class="nav-item nav-link {{ request()->routeIs('nhanVien.phuc-vu.dashboard') ? 'active' : '' }}">Hàng Chờ Phục Vụ</a>
-
-
+                            <a href="{{ route('nhanVien.phuc-vu.dashboard') }}"
+                                class="nav-item nav-link {{ request()->routeIs('nhanVien.phuc-vu.dashboard') ? 'active' : '' }}">Hàng Chờ Phục Vụ</a>
+                        @endif
                     </div>
 
                     @if (Auth::check())
                         <div class="nav-item dropdown">
-                            <a href="#" class="btn btn-warning py-2 px-4 dropdown-toggle shadow-sm"
+                            <a href="#" class="btn btn-warning py-2 px-4 dropdown-toggle shadow-sm d-flex align-items-center"
                                 data-bs-toggle="dropdown" aria-expanded="false" title="Tài khoản nhân viên">
-                                <i class="fa fa-user me-2"></i> {{ Auth::user()->ho_ten }}
+                                @php
+                                    $user = Auth::user();
+                                    $avatarUrl = $user->hinh_anh ? asset($user->hinh_anh) : asset('restaurant/img/default-avatar.png');
+                                @endphp
+                                <img src="{{ $avatarUrl }}" alt="{{ $user->ho_ten }}" 
+                                     style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; margin-right: 8px;">
+                                <span>{{ $user->ho_ten }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0"
                                 style="background-color: #343a40;">
 
+                                <li class="px-3 pt-2 pb-2 text-center border-bottom border-secondary">
+                                    <img src="{{ $avatarUrl }}" alt="{{ $user->ho_ten }}" 
+                                         style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #ffc107;">
+                                    <div class="text-white mt-2"><strong>{{ $user->ho_ten }}</strong></div>
+                                </li>
+
                                 <li><span
                                         class="dropdown-item text-muted small px-3 pt-2 pb-0 border-bottom border-secondary"
                                         style="font-size: 0.85em;">
-                                        <i class="fas fa-id-badge me-2"></i> Vai trò: **{{ Auth::user()->vai_tro }}**
+                                        <i class="fas fa-id-badge me-2"></i> Vai trò: **{{ $user->vai_tro }}**
                                     </span></li>
 
                                 <li><span
                                         class="dropdown-item text-white-50 px-3 pt-0 pb-2 border-bottom border-secondary"
                                         style="font-size: 0.85em;">
-                                        <i class="fas fa-envelope me-2"></i> {{ Auth::user()->email }}
+                                        <i class="fas fa-envelope me-2"></i> {{ $user->email }}
                                     </span></li>
 
                                 <li>
@@ -212,7 +235,8 @@
                         </div>
                         <div class="col-md-6 text-center text-md-end">
                             <div class="footer-menu">
-                                <a href="">Trang chủ</a>
+                                <a href="{{ route('home') }}">Trang chủ</a>
+                                <a href="{{ route('login') }}">Đăng nhập</a>
                                 <a href="">Cookies</a>
                                 <a href="">Trợ giúp</a>
                                 <a href="">FAQs</a>
