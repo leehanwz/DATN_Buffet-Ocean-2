@@ -8,57 +8,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
-<<<<<<< HEAD
-        :root { --primary: #fea116; --primary-hover: #db8a10; --dark: #0f172b; --light: #F1F8FF; --text-main: #1e293b; --text-sub: #64748b; --white: #ffffff; --radius: 8px; --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05); }
-        body { font-family: 'Nunito', sans-serif; background-color: var(--light); color: var(--text-main); }
-        .page-header-title { font-weight: 800; color: var(--dark); text-transform: uppercase; position: relative; padding-left: 15px; font-size: 1.5rem; }
-        .page-header-title::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); height: 70%; width: 5px; background-color: var(--primary); border-radius: 2px; }
-        .btn-back { background: #fff; border: 1px solid #e2e8f0; color: var(--text-sub); padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: 0.2s; }
-        .btn-back:hover { background: #f1f5f9; color: var(--dark); border-color: #cbd5e1; }
-
-        /* Filter Menu */
-        .filter-menu { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .filter-btn { background: var(--white); border: 1px solid #e2e8f0; color: var(--text-sub); padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; }
-        .filter-btn:hover { background: #fff8e6; border-color: var(--primary); color: var(--primary-hover); transform: translateY(-2px); }
-        .filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); box-shadow: 0 4px 10px rgba(254, 161, 22, 0.4); }
-
-        /* Combo Card */
-        .combo-card { background: var(--white); border-radius: var(--radius); overflow: hidden; border: 1px solid #e2e8f0; box-shadow: var(--shadow-card); transition: 0.3s; display: flex; flex-direction: column; height: 100%; cursor: pointer; }
-        .combo-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); border-color: var(--primary); }
-        .combo-card.disabled { opacity: 0.5; pointer-events: none; filter: grayscale(80%); }
-        .img-wrapper { position: relative; height: 200px; overflow: hidden; }
-        .combo-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .combo-card:hover .combo-img { transform: scale(1.05); }
-        .price-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(15, 23, 43, 0.9); color: var(--primary); padding: 5px 12px; border-radius: 6px; font-family: 'Heebo', sans-serif; font-weight: 800; font-size: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.2); backdrop-filter: blur(4px); }
-        .card-body-custom { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-        .combo-title { font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 5px; line-height: 1.3; }
-
-        /* Input Qty */
-        .input-group-custom { background: #f8fafc; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 4px; }
-        .btn-qty { width: 36px; height: 36px; background: transparent; border: none; border-radius: 6px; font-weight: 800; color: var(--primary); font-size: 1.2rem; transition: 0.2s; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .btn-qty:hover { background: var(--primary); color: var(--white); }
-        .combo-qty { text-align: center; border: none; background: transparent; font-weight: 700; color: var(--dark); width: 50px; font-size: 1.1rem; }
-        .combo-qty:focus { outline: none; }
-
-        /* Footer Button */
-        .btn-confirm { width: 100%; padding: 14px; border: none; border-radius: var(--radius); background: var(--primary); color: var(--white); font-weight: 800; font-size: 1rem; text-transform: uppercase; box-shadow: 0 4px 15px rgba(254, 161, 22, 0.4); transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-confirm:hover { background: var(--primary-hover); transform: translateY(-2px); }
-
-        /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 43, 0.6); backdrop-filter: blur(4px); z-index: 1050; display: none; justify-content: center; align-items: center; }
-        .modal-overlay.show { display: flex; }
-        .modal-content-custom { background: var(--white); width: 90%; max-width: 500px; max-height: 90vh; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-        .modal-header-custom { padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
-        .modal-body-custom { padding: 20px; overflow-y: auto; }
-        .menu-list-item { display: flex; gap: 12px; padding: 10px; border: 1px solid #f1f5f9; border-radius: 8px; margin-bottom: 8px; align-items: center; }
-
-        /* Warning Message */
-        #warning-message {
-            border-left: 4px solid #f59e0b;
-            background-color: #fef3c7;
-            color: #92400e;
-            animation: slideDown 0.3s ease-out;
-=======
         :root {
             --primary: #fea116;
             --primary-hover: #e58e0a;
@@ -72,11 +21,10 @@
             --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
             --radius-md: 12px;
             --radius-lg: 16px;
->>>>>>> origin/dev
         }
 
         body { font-family: 'Nunito', sans-serif; background-color: var(--light); color: var(--text-main); -webkit-font-smoothing: antialiased; padding-bottom: 80px; /* Space for sticky footer */ }
-        
+
         /* --- HEADER --- */
         .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
         .page-title { font-size: 1.5rem; font-weight: 800; color: var(--dark); margin: 0; display: flex; align-items: center; gap: 10px; }
@@ -95,7 +43,7 @@
         .filter-wrapper { position: sticky; top: 0; z-index: 99; background: var(--light); padding: 10px 0; margin: 0 -12px 15px -12px; }
         .filter-menu { display: flex; gap: 10px; padding: 0 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .filter-menu::-webkit-scrollbar { display: none; }
-        
+
         .filter-btn { white-space: nowrap; background: var(--white); border: 1px solid var(--border); color: var(--text-sub); padding: 8px 24px; border-radius: 100px; font-weight: 700; font-size: 0.9rem; text-decoration: none; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
         .filter-btn:hover { transform: translateY(-2px); border-color: var(--primary); color: var(--primary); }
         .filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); box-shadow: 0 4px 12px rgba(254, 161, 22, 0.4); }
@@ -109,16 +57,16 @@
         .img-wrapper { position: relative; padding-top: 60%; /* 16:9 Aspect Ratio */ overflow: hidden; background: #eee; }
         .combo-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .combo-card:hover .combo-img { transform: scale(1.1); }
-        
+
         .price-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(15, 23, 43, 0.95); color: var(--white); padding: 6px 14px; border-radius: 10px; font-weight: 800; font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); backdrop-filter: blur(4px); display: flex; align-items: baseline; gap: 2px; }
         .price-badge span { color: var(--primary); }
 
         .card-body-custom { padding: 16px; flex: 1; display: flex; flex-direction: column; }
         .combo-title { font-size: 1.15rem; font-weight: 800; color: var(--dark); margin-bottom: 8px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.6em; }
         .combo-desc { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.6em; }
-        
+
         .btn-view-detail { color: var(--primary); font-weight: 700; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 15px; background: transparent; border: none; padding: 0; cursor: pointer; }
-        
+
         /* --- QUANTITY INPUT --- */
         .qty-control-wrapper { margin-top: auto; background: var(--light); border-radius: 50px; padding: 4px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border); }
         .btn-qty { width: 34px; height: 34px; border-radius: 50%; border: none; background: var(--white); color: var(--dark); display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -133,7 +81,7 @@
         .cart-label { font-size: 0.8rem; color: var(--text-sub); }
         .cart-total { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
         .btn-confirm { background: var(--dark); color: var(--white); border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px; transition: 0.3s; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-        
+
         /* --- MODAL --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1100; display: none; align-items: center; justify-content: center; padding: 15px; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.show { opacity: 1; }
@@ -148,16 +96,16 @@
         /* --- WARNING MESSAGE --- */
         #warning-message { position: absolute; top: -50px; left: 0; width: 100%; background: #fff3cd; color: #856404; padding: 10px 15px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; transition: 0.3s; opacity: 0; pointer-events: none; }
         #warning-message.show-warning { top: -45px; opacity: 1; }
-        
+
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         /* =================================================================
-           RESPONSIVE MOBILE 3 CỘT (QUAN TRỌNG) 
+           RESPONSIVE MOBILE 3 CỘT (QUAN TRỌNG)
            ================================================================= */
         @media (max-width: 768px) {
             .app-content { padding: 10px !important; }
             .page-title { font-size: 1.25rem; }
-            
+
             /* Context Box compact */
             .context-box { gap: 8px; padding: 10px; }
             .context-item { width: 48%; }
@@ -171,23 +119,23 @@
 
             /* CARD 3 CỘT - THU NHỎ MỌI THỨ */
             .combo-col { padding-left: 4px; padding-right: 4px; } /* Giảm khoảng cách cột */
-            
+
             .card-body-custom { padding: 8px 5px !important; } /* Padding thẻ bé lại */
 
             .img-wrapper { padding-top: 80%; } /* Ảnh vuông hơn */
-            
-            .price-badge { 
-                right: 4px; bottom: 4px; 
-                padding: 2px 6px; 
-                border-radius: 4px; 
-                font-size: 0.75rem; 
+
+            .price-badge {
+                right: 4px; bottom: 4px;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 0.75rem;
             }
             .currency-symbol { display: none; } /* Ẩn chữ đ */
 
-            .combo-title { 
+            .combo-title {
                 font-size: 0.75rem; /* ~12px */
-                margin-bottom: 4px; 
-                height: 2.5em; 
+                margin-bottom: 4px;
+                height: 2.5em;
                 line-height: 1.2;
             }
 
@@ -197,91 +145,6 @@
             .btn-qty { width: 24px; height: 24px; font-size: 0.7rem; }
             .combo-qty { width: 20px; font-size: 0.9rem; }
         }
-
-        /* ================= MOBILE OPTIMIZE ================= */
-@media (max-width: 768px) {
-
-    /* HEADER gọn lại */
-    .page-header-title {
-        font-size: 1.2rem;
-    }
-
-    /* FILTER cuộn ngang */
-    .filter-menu {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        padding-bottom: 8px;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .filter-btn {
-        flex: 0 0 auto;
-        font-size: 0.85rem;
-        padding: 6px 14px;
-    }
-
-    /* COMBO CARD dạng ngang */
-    .combo-card {
-        flex-direction: row;
-        height: auto;
-    }
-
-    .img-wrapper {
-        width: 120px;
-        height: 100%;
-        flex-shrink: 0;
-    }
-
-    .combo-img {
-        height: 100%;
-    }
-
-    .card-body-custom {
-        padding: 12px;
-    }
-
-    .combo-title {
-        font-size: 1rem;
-    }
-
-    .price-badge {
-        font-size: 0.85rem;
-        padding: 4px 8px;
-    }
-
-    /* +/- TO hơn cho dễ bấm */
-    .btn-qty {
-        width: 42px;
-        height: 42px;
-        font-size: 1.3rem;
-    }
-
-    .combo-qty {
-        font-size: 1.2rem;
-        width: 60px;
-    }
-
-    /* MODAL full màn hình */
-    .modal-content-custom {
-        width: 100%;
-        height: 100%;
-        max-width: none;
-        max-height: none;
-        border-radius: 0;
-    }
-
-    .modal-body-custom {
-        padding-bottom: 80px;
-    }
-
-    /* STICKY nút xác nhận */
-    .btn-confirm {
-        position: sticky;
-        bottom: 10px;
-        z-index: 100;
-    }
-}
-
     </style>
 
     <main class="app-content container-xxl py-3">
@@ -344,78 +207,41 @@
                         {{-- Image --}}
                         <div class="img-wrapper">
                             @php
-<<<<<<< HEAD
                                 $imgSrc = ($combo->anh && file_exists(public_path('uploads/'.$combo->anh)))
                                     ? asset('uploads/'.$combo->anh)
-                                    : 'https://placehold.co/600x400?text=Combo';
-                            @endphp
-                            <img src="{{ $imgSrc }}" class="combo-img" alt="{{ $combo->ten_combo }}">
-
-                            <div class="price-badge">
-                                <span class="badge-amount" data-base-price="{{ (int)$combo->gia_co_ban }}">{{ number_format($combo->gia_co_ban) }}</span>
-                                <span style="font-size:0.7em;">đ</span>
-=======
-                                $imgSrc = ($combo->anh && file_exists(public_path('uploads/'.$combo->anh))) 
-                                    ? asset('uploads/'.$combo->anh) 
                                     : 'https://placehold.co/600x400/png?text=Combo';
                             @endphp
                             <img src="{{ $imgSrc }}" class="combo-img" alt="{{ $combo->ten_combo }}">
                             <div class="price-badge">
-                                <span class="badge-amount" data-base-price="{{ (int)$combo->gia_co_ban }}">{{ number_format($combo->gia_co_ban) }}</span> 
+                                <span class="badge-amount" data-base-price="{{ (int)$combo->gia_co_ban }}">{{ number_format($combo->gia_co_ban) }}</span>
                                 <span class="currency-symbol">đ</span>
->>>>>>> origin/dev
                             </div>
                         </div>
 
                         {{-- Body --}}
                         <div class="card-body-custom">
-<<<<<<< HEAD
-                            <div class="mb-auto">
-                                <h5 class="combo-title">{{ $combo->ten_combo }}</h5>
-                                <div class="text-muted small mb-2" style="font-size: 0.85rem;">
-                                    @foreach($combo->monTrongCombo->take(3) as $mon)
-                                        @if($mon->monAn) • {{ $mon->monAn->ten_mon }} @endif
-                                    @endforeach
-                                    @if($combo->monTrongCombo->count() > 3)... @endif
-                                </div>
-                                <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 fw-bold mb-3 view-detail-btn"
-                                    style="color: var(--primary); font-size: 0.85rem;"
-                                    data-title="{{ $combo->ten_combo }}"
-                                    data-price="{{ (int)$combo->gia_co_ban }}"
-                                    data-menu="{{ htmlspecialchars(json_encode($combo->monTrongCombo->map(function($item){
-                                        return [
-                                            "name" => $item->monAn->ten_mon ?? "",
-                                            "desc" => $item->monAn->mo_ta ?? "",
-                                            "img" => $item->monAn->hinh_anh ?? "",
-                                            "limit" => $item->gioi_han_so_luong
-                                        ];
-                                    })), ENT_QUOTES, 'UTF-8') }}">
-                                    <i class="fa-solid fa-circle-info me-1"></i> Xem chi tiết menu
-                                </button>
-=======
                             <h5 class="combo-title" title="{{ $combo->ten_combo }}">{{ $combo->ten_combo }}</h5>
-                            
+
                             {{-- Ẩn mô tả trên mobile --}}
                             <div class="combo-desc d-none d-md-block">
                                 @foreach($combo->monTrongCombo->take(4) as $mon)
                                     @if($mon->monAn) {{ $mon->monAn->ten_mon }} • @endif
                                 @endforeach
->>>>>>> origin/dev
                             </div>
 
                             {{-- Nút xem chi tiết --}}
-                            <button type="button" class="btn-view-detail view-detail-btn" 
+                            <button type="button" class="btn-view-detail view-detail-btn"
                                 data-title="{{ $combo->ten_combo }}"
                                 data-price="{{ (int)$combo->gia_co_ban }}"
-                                data-menu="{{ htmlspecialchars(json_encode($combo->monTrongCombo->map(function($item){ 
+                                data-menu="{{ htmlspecialchars(json_encode($combo->monTrongCombo->map(function($item){
                                     return [
-                                        "name" => $item->monAn->ten_mon ?? "Món chưa đặt tên", 
-                                        "desc" => $item->monAn->mo_ta ?? "", 
-                                        "img" => $item->monAn->hinh_anh ?? "", 
+                                        "name" => $item->monAn->ten_mon ?? "Món chưa đặt tên",
+                                        "desc" => $item->monAn->mo_ta ?? "",
+                                        "img" => $item->monAn->hinh_anh ?? "",
                                         "limit" => $item->gioi_han_so_luong
-                                    ]; 
+                                    ];
                                 })), ENT_QUOTES, 'UTF-8') }}">
-                                <i class="fa-solid fa-circle-info"></i> 
+                                <i class="fa-solid fa-circle-info"></i>
                                 <span class="d-none d-md-inline">Xem thực đơn</span>
                                 <span class="d-md-none">Chi tiết</span>
                             </button>
@@ -440,7 +266,7 @@
             {{-- BOTTOM ACTION BAR (STICKY) --}}
             <div class="bottom-action-bar">
                 <div id="warning-message">
-                    <i class="fa-solid fa-circle-exclamation me-2"></i> 
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
                     Chọn đủ <span id="min-combo-count" class="fw-bold">{{ $order->datBan ? ($order->datBan->nguoi_lon + $order->datBan->tre_em) : 1 }}</span> combo
                 </div>
 
@@ -480,22 +306,13 @@
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
-<<<<<<< HEAD
-
-                    // Active style
-=======
->>>>>>> origin/dev
                     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-                    
+
                     // Scroll to center selected item on mobile
                     this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
                     const price = this.dataset.price;
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/dev
                     document.querySelectorAll('.combo-col').forEach(col => {
                         if (price === 'all' || col.dataset.price == price) {
                             col.style.display = 'block';
@@ -511,7 +328,7 @@
                 let currentVal = parseInt(input.value) || 0;
                 let newVal = Math.max(0, currentVal + change);
                 const card = input.closest('.combo-card');
-                
+
                 // Không cho tăng nếu đang bị disable do chọn sai giá
                 if(card.classList.contains('disabled') && newVal > 0) return;
 
@@ -543,22 +360,13 @@
                     const qty = parseInt(input.value) || 0;
                     const price = parseInt(input.dataset.price);
                     const card = input.closest('.combo-card');
-                    
+
                     totalQty += qty;
 
                     if (qty > 0) {
                         total += qty * price;
-<<<<<<< HEAD
                         selectedPrice = price;
-                        const title = card.querySelector('.combo-title').innerText;
-                        items.push(`<b>${title}</b> (x${qty})`);
-                        badgeAmount.innerText = (qty * price).toLocaleString();
-                        card.style.borderColor = 'var(--primary)';
-                        card.style.backgroundColor = '#fffbeb';
-=======
-                        selectedPrice = price; 
                         card.classList.add('active-card');
->>>>>>> origin/dev
                     } else {
                         card.classList.remove('active-card');
                     }
@@ -577,7 +385,7 @@
                 document.querySelectorAll('.combo-card').forEach(card => {
                     const input = card.querySelector('.combo-qty');
                     const price = parseInt(input.dataset.price);
-                    
+
                     if (selectedPrice !== null && price !== selectedPrice && input.value == 0) {
                         card.classList.add('disabled');
                         input.disabled = true;
@@ -596,13 +404,8 @@
                     const menu = JSON.parse(this.dataset.menu);
 
                     document.getElementById('modal-combo-title').innerText = title;
-<<<<<<< HEAD
-                    document.getElementById('modal-combo-price').innerText = price + ' đ';
-
-=======
                     document.getElementById('modal-combo-price').innerText = price + ' đ / người';
-                    
->>>>>>> origin/dev
+
                     const listEl = document.getElementById('modal-menu-list');
                     listEl.innerHTML = '';
 

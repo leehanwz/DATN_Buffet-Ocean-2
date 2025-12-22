@@ -177,7 +177,6 @@ Route::middleware(['auth', 'role:quan_ly'])->prefix('admin')->name('admin.')->gr
         Route::delete('/{id}', 'destroy')->name('destroy');
         Route::post('/{id}/toggle-status', 'toggleStatus')->name('toggle-status');
         Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
-        // Reset mật khẩu
         Route::post('/{id}/reset-mat-khau', 'resetMatKhau')->name('reset-mat-khau');
     });
 
@@ -259,6 +258,10 @@ Route::middleware(['auth', 'role:le_tan'])->prefix('nhanVien')->name('nhanVien.'
         Route::get('/hoa-don/{hoaDonId}', 'hienThiHoaDon')->name('hien-thi-hoa-don');
         Route::get('/hoa-don/{hoaDonId}/in', 'inHoaDon')->name('in-hoa-don');
 
+        // 6. Danh sách hóa đơn chưa thanh toán
+        Route::get('/hoa-don-chua-thanh-toan', 'danhSachHoaDonChuaThanhToan')->name('danh-sach-chua-thanh-toan');
+        Route::post('/hoa-don/{hoaDonId}/xac-nhan-thanh-toan', 'xacNhanDaThanhToan')->name('xac-nhan-thanh-toan');
+
         // 4. Thanh toán VNPAY
         Route::post('/vnpay-payment/{banId}', 'vnpayPayment')->name('vnpay.payment');
         Route::get('/vnpay/callback', 'vnpayCallback')->name('vnpay.callback');
@@ -268,7 +271,7 @@ Route::middleware(['auth', 'role:le_tan'])->prefix('nhanVien')->name('nhanVien.'
         Route::post('/payos-payment/{banId}', 'createPayOSPayment')->name('payos.create');
         Route::get('/payos/callback/{banId}', 'handlePayOSCallback')->name('payos.callback');
     });
-    
+
     // Đặt bàn cho nhân viên (Tạo booking tại quầy) - CHỈ LỄ TÂN
     Route::get('/dat-ban', [NVDatBanController::class, 'index'])->name('datban.index');
     Route::get('/dat-ban/create', [NVDatBanController::class, 'create'])->name('datban.create');
@@ -285,15 +288,15 @@ Route::middleware(['auth', 'role:phuc_vu'])->prefix('nhanVien')->name('nhanVien.
 Route::prefix('phuc-vu')->name('phuc-vu.')->controller(WaiterController::class)->group(function () {
     // Trang hiển thị danh sách món ăn đã xong (Bếp đã làm xong)
     Route::get('/dashboard', 'dashboard')->name('dashboard');
-    
+
     // API để nhân viên xác nhận đã bưng món (chuyển trạng thái sang 'da_len_mon')
     Route::post('/confirm-served/{id}', 'xacNhanDaBung')->name('confirm_served');
-    
+
     // API tự động cập nhật món ăn & thông báo
-    Route::get('/dashboard-api', 'getFoodQueueJson')->name('dashboard_api'); 
-    
+    Route::get('/dashboard-api', 'getFoodQueueJson')->name('dashboard_api');
+
     // [MỚI] API đánh dấu thông báo đã xem (Bị thiếu Route này)
-    Route::post('/mark-notif-read', 'markNotifRead')->name('mark_read'); 
+    Route::post('/mark-notif-read', 'markNotifRead')->name('mark_read');
 });
 // --------------------------------------------------
 
@@ -311,7 +314,7 @@ Route::prefix('phuc-vu')->name('phuc-vu.')->controller(WaiterController::class)-
     Route::put('chi-tiet-order/{ctId}', [NhanVienOrderMonController::class, 'update'])->name('chi-tiet-order.update');
     Route::delete('/chi-tiet-order/{id}', [NhanVienOrderMonController::class, 'destroy'])->name('chi-tiet-order.destroy');
 
-    
+
 });
 
 

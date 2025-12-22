@@ -134,11 +134,8 @@ class ChiTietOrderController extends Controller
             'trang_thai' => $request->trang_thai,
         ]);
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> origin/dev
         // Đồng bộ số lượng combo
         $order = OrderMon::with('datBan')->find($ct->order_id);
         $this->capNhatSoLuongCombo($order);

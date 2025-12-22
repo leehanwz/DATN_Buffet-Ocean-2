@@ -850,9 +850,9 @@
 function showBookingToast(ten, sdt, id) {
     // 👇 1. Sửa localStorage thành sessionStorage ở đây
     const shownBookings = JSON.parse(sessionStorage.getItem('shownBookings') || '[]');
-    
+
     // Nếu ID này đã báo rồi thì thôi
-    if (shownBookings.includes(id)) return; 
+    if (shownBookings.includes(id)) return;
 
     if (messageEl && overlay) {
         messageEl.innerHTML = `
@@ -866,7 +866,7 @@ function showBookingToast(ten, sdt, id) {
 
         // Lưu vào mảng
         shownBookings.push(id);
-        
+
         // 👇 2. Sửa localStorage thành sessionStorage ở đây nữa là xong
         sessionStorage.setItem('shownBookings', JSON.stringify(shownBookings));
     }
