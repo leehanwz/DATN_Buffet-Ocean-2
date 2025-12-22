@@ -8,53 +8,265 @@
 
 {{-- 2. CSS STYLING --}}
 <style>
-    :root { --primary: #fea116; --primary-dark: #d98a12; --dark: #0f172b; --white: #ffffff; --text-main: #1e293b; --text-sub: #64748b; --bg-light: #f8f9fa; --radius: 8px; --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.05); --anim-fast: 0.2s ease; --danger: #dc2626; --warning: #d97706; --success: #16a34a; }
+    :root {
+        --primary: #fea116;
+        --primary-dark: #d98a12;
+        --dark: #0f172b;
+        --white: #ffffff;
+        --text-main: #1e293b;
+        --text-sub: #64748b;
+        --bg-light: #f8f9fa;
+        --radius: 8px;
+        --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+        --anim-fast: 0.2s ease;
+        --danger: #dc2626;
+        --warning: #d97706;
+        --success: #16a34a;
+    }
 
-    body { font-family: 'Nunito', sans-serif; background-color: var(--bg-light); color: var(--text-main); }
-    .section-title { color: var(--primary); font-family: 'Heebo'; font-weight: 700; font-size: 1rem; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+    body {
+        font-family: 'Nunito', sans-serif;
+        background-color: var(--bg-light);
+        color: var(--text-main);
+    }
 
-    .main-card { background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid #f1f5f9; max-width: 1100px; margin: 0 auto; }
-    .card-header-custom { background: var(--dark); color: var(--white); padding: 18px 25px; display: flex; justify-content: space-between; align-items: center; }
-    .header-title { margin: 0; font-family: 'Heebo'; font-weight: 800; text-transform: uppercase; font-size: 1.1rem; letter-spacing: 0.5px; }
+    .section-title {
+        color: var(--primary);
+        font-family: 'Heebo';
+        font-weight: 700;
+        font-size: 1rem;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-    .section-box { background: #fff; padding: 25px; height: 100%; border-right: 1px solid #f1f5f9; }
+    .main-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-card);
+        border: 1px solid #f1f5f9;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .card-header-custom {
+        background: var(--dark);
+        color: var(--white);
+        padding: 18px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-title {
+        margin: 0;
+        font-family: 'Heebo';
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    .section-box {
+        background: #fff;
+        padding: 25px;
+        height: 100%;
+        border-right: 1px solid #f1f5f9;
+    }
 
     /* Form Elements */
-    .form-label-custom { font-size: 0.85rem; font-weight: 700; color: var(--text-sub); margin-bottom: 6px; display: block; }
-    .required-star { color: var(--danger); margin-left: 3px; }
-    .form-control-custom, .form-select-custom { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.95rem; color: var(--dark); font-weight: 600; transition: var(--anim-fast); }
-    .form-control-custom:focus, .form-select-custom:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(254, 161, 22, 0.15); }
-    .form-control-custom[readonly] { background-color: #f8fafc; color: #94a3b8; cursor: not-allowed; }
+    .form-label-custom {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-sub);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .required-star {
+        color: var(--danger);
+        margin-left: 3px;
+    }
+
+    .form-control-custom,
+    .form-select-custom {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        color: var(--dark);
+        font-weight: 600;
+        transition: var(--anim-fast);
+    }
+
+    .form-control-custom:focus,
+    .form-select-custom:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(254, 161, 22, 0.15);
+    }
+
+    .form-control-custom[readonly] {
+        background-color: #f8fafc;
+        color: #94a3b8;
+        cursor: not-allowed;
+    }
 
     /* COMBO PICKER STYLES */
-    .combo-picker-wrapper { border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; max-height: 350px; overflow-y: auto; background: #fff; }
-    .combo-item { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; transition: background 0.15s; }
-    .combo-item:last-child { border-bottom: none; }
-    .combo-item:hover { background-color: #fffbeb; }
+    .combo-picker-wrapper {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+        max-height: 350px;
+        overflow-y: auto;
+        background: #fff;
+    }
 
-    .combo-info { flex-grow: 1; padding-right: 15px; }
-    .combo-name { font-size: 0.95rem; font-weight: 700; color: var(--dark); margin-bottom: 2px; display: block;}
-    .combo-meta { font-size: 0.8rem; color: var(--text-sub); display: flex; gap: 10px; align-items: center; }
-    .combo-price-tag { color: var(--primary-dark); font-weight: 700; }
+    .combo-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.15s;
+    }
 
-    .combo-actions { display: flex; align-items: center; gap: 5px; }
-    .btn-qty { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #e2e8f0; background: #fff; color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
-    .btn-qty:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-    .input-qty { width: 40px; text-align: center; border: none; font-weight: 700; font-size: 1rem; color: var(--dark); background: transparent; }
-    .input-qty:focus { outline: none; }
+    .combo-item:last-child {
+        border-bottom: none;
+    }
+
+    .combo-item:hover {
+        background-color: #fffbeb;
+    }
+
+    .combo-info {
+        flex-grow: 1;
+        padding-right: 15px;
+    }
+
+    .combo-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 2px;
+        display: block;
+    }
+
+    .combo-meta {
+        font-size: 0.8rem;
+        color: var(--text-sub);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .combo-price-tag {
+        color: var(--primary-dark);
+        font-weight: 700;
+    }
+
+    .combo-actions {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-qty {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 0.8rem;
+    }
+
+    .btn-qty:hover {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+
+    .input-qty {
+        width: 40px;
+        text-align: center;
+        border: none;
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--dark);
+        background: transparent;
+    }
+
+    .input-qty:focus {
+        outline: none;
+    }
 
     /* Buttons */
-    .btn-submit { background: var(--primary); color: var(--white); border: none; padding: 12px 30px; border-radius: 6px; font-weight: 800; font-family: 'Heebo'; text-transform: uppercase; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(254, 161, 22, 0.3); transition: var(--anim-fast); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-    .btn-submit:hover { background: var(--primary-dark); transform: translateY(-2px); }
-    .btn-cancel { background: #f1f5f9; color: var(--text-sub); border: 1px solid #e2e8f0; padding: 12px 25px; border-radius: 6px; font-weight: 700; font-family: 'Heebo'; text-transform: uppercase; font-size: 0.9rem; text-decoration: none; display: inline-block; }
-    .btn-cancel:hover { background: #e2e8f0; color: var(--dark); }
+    .btn-submit {
+        background: var(--primary);
+        color: var(--white);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 6px;
+        font-weight: 800;
+        font-family: 'Heebo';
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 15px rgba(254, 161, 22, 0.3);
+        transition: var(--anim-fast);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-submit:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .btn-cancel {
+        background: #f1f5f9;
+        color: var(--text-sub);
+        border: 1px solid #e2e8f0;
+        padding: 12px 25px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-family: 'Heebo';
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-cancel:hover {
+        background: #e2e8f0;
+        color: var(--dark);
+    }
 
     /* Select Option Colors */
-    option.opt-free { color: var(--success); font-weight: bold; }
-    option.opt-limited { color: var(--warning); font-weight: bold; }
+    option.opt-free {
+        color: var(--success);
+        font-weight: bold;
+    }
+
+    option.opt-limited {
+        color: var(--warning);
+        font-weight: bold;
+    }
 
     /* Utility */
-    .d-none { display: none !important; }
+    .d-none {
+        display: none !important;
+    }
 </style>
 
 <div class="container py-5">
@@ -128,16 +340,16 @@
                                 <input type="datetime-local" name="gio_den" id="inpGioDen" class="form-control-custom" readonly required>
                             </div>
 
-<div class="mb-0">
-    <label class="form-label-custom">Nhân viên phụ trách</label>
-    <select name="nhan_vien_id" class="form-select-custom">
-        @foreach ($nhanViens->where('vai_tro', 'phuc_vu') as $nv)
-        <option value="{{ $nv->id }}" {{ (old('nhan_vien_id') == $nv->id || auth()->id() == $nv->id) ? 'selected' : '' }}>
-            {{ $nv->ho_ten }} (Phục vụ)
-        </option>
-        @endforeach
-    </select>
-</div>
+                            <div class="mb-0">
+                                <label class="form-label-custom">Nhân viên phụ trách</label>
+                                <select name="nhan_vien_id" class="form-select-custom">
+                                    @foreach ($nhanViens->where('vai_tro', 'phuc_vu') as $nv)
+                                    <option value="{{ $nv->id }}" {{ (old('nhan_vien_id') == $nv->id || auth()->id() == $nv->id) ? 'selected' : '' }}>
+                                        {{ $nv->ho_ten }} (Phục vụ)
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -165,7 +377,7 @@
                                         <option value="">-- Chọn mức giá --</option>
                                         @php $giaList = $combos->pluck('gia_co_ban')->unique()->sort(); @endphp
                                         @foreach($giaList as $gia)
-                                            <option value="{{ $gia }}">{{ number_format($gia) }}đ</option>
+                                        <option value="{{ $gia }}">{{ number_format($gia) }}đ</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -190,10 +402,10 @@
                                             <div class="combo-actions">
                                                 <button type="button" class="btn-qty btn-minus"><i class="fa-solid fa-minus"></i></button>
                                                 <input type="number"
-                                                       class="input-qty combo-input"
-                                                       data-combo-id="{{ $c->id }}"
-                                                       data-combo-key="combo_{{ $c->id }}"
-                                                       value="0" min="0" max="100" readonly>
+                                                    class="input-qty combo-input"
+                                                    data-combo-id="{{ $c->id }}"
+                                                    data-combo-key="combo_{{ $c->id }}"
+                                                    value="0" min="0" max="100" readonly>
                                                 <button type="button" class="btn-qty btn-plus"><i class="fa-solid fa-plus"></i></button>
                                             </div>
                                         </div>
@@ -361,17 +573,10 @@
         if (e.target.classList.contains('input-qty')) {
             let minVal = parseInt(e.target.getAttribute('min')) || 0;
             let inputVal = parseInt(e.target.value) || 0;
-<<<<<<< HEAD
 
-            // Nếu nhập số < tổng khách, tự động đặt về tổng khách
-            if (inputVal < tongKhach && tongKhach > 0) {
-                e.target.value = tongKhach;
-=======
-            
             // Nếu nhập số < min, tự động đặt về min
             if (inputVal < minVal && minVal > 0) {
                 e.target.value = minVal;
->>>>>>> origin/dev
             }
         }
     });
@@ -549,7 +754,10 @@
                     // CHỈ thêm combo vào cart nếu số lượng > 0
                     // (Đảm bảo chỉ thêm combo mà người dùng thực sự chọn)
                     if (qty > 0) {
-                        cartItems.push({ key: key, quantity: qty });
+                        cartItems.push({
+                            key: key,
+                            quantity: qty
+                        });
                     }
                 });
                 // Luôn set cart_data, kể cả khi rỗng (để tránh lỗi)
@@ -558,5 +766,4 @@
         }
     });
 </script>
-
 @endsection
