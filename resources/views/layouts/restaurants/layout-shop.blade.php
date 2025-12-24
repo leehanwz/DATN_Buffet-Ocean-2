@@ -1,5 +1,10 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="vi">
+=======
+<html lang="en">
+
+>>>>>>> dev
 <head>
     <meta charset="utf-8">
     {{-- <title>Restoran - Bootstrap Restaurant Template</title> --}}
@@ -14,15 +19,20 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<<<<<<< HEAD
     <link
         href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap"
         rel="stylesheet">
+=======
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+>>>>>>> dev
 
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Libraries Stylesheet -->
+<<<<<<< HEAD
     <link href="{{ asset('restaurant/lib/animate/animate.min.css') }}" rel="stylesheet">
     <link href="{{ asset('restaurant/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
     <link href="{{ asset('restaurant/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css') }}" rel="stylesheet" />
@@ -32,13 +42,28 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ asset('restaurant/css/style.css') }}" rel="stylesheet">
+=======
+    <link href="{{asset('restaurant/lib/animate/animate.min.css')}}" rel="stylesheet">
+    <link href="{{asset('restaurant/lib/owlcarousel/assets/owl.carousel.min.css')}}" rel="stylesheet">
+    <link href="{{asset('restaurant/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css')}}" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{{asset('restaurant/css/bootstrap.min.css')}}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="{{asset('restaurant/css/style.css')}}" rel="stylesheet">
+>>>>>>> dev
 </head>
 
 <body>
     <div class="container-xxl bg-white p-0">
         <!-- Spinner Start -->
+<<<<<<< HEAD
         <div id="spinner"
             class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+=======
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+>>>>>>> dev
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
@@ -53,12 +78,17 @@
                     <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Restoran</h1>
                     <!-- <img src="img/logo.png" alt="Logo"> -->
                 </a>
+<<<<<<< HEAD
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarCollapse">
+=======
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+>>>>>>> dev
                     <span class="fa fa-bars"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0 pe-4">
+<<<<<<< HEAD
 
                         {{-- Các route chưa dùng --}}
                         {{-- 
@@ -78,6 +108,23 @@
 
                     {{-- Nút đặt bàn vẫn giữ --}}
                     <a href="{{ route('booking.index') }}" class="btn btn-primary py-2 px-4">Book A Table</a>
+=======
+                        <a href="{{route('home')}}" class="nav-item nav-link active">Home</a>
+                        <a href="{{route('about')}}" class="nav-item nav-link">About</a>
+                        <a href="{{route('service')}}" class="nav-item nav-link">Service</a>
+                        <a href="{{route('menu')}}" class="nav-item nav-link">Menu</a>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                            <div class="dropdown-menu m-0">
+                                <a href="{{route('booking')}}" class="dropdown-item">Booking</a>
+                                <a href="{{route('team')}}" class="dropdown-item">Our Team</a>
+                                <a href="{{route('testimonial')}}" class="dropdown-item">Testimonial</a>
+                            </div>
+                        </div>
+                        <a href="{{route('contact')}}" class="nav-item nav-link">Contact</a>
+                    </div>
+                    <a href="{{route('booking')}}" class="btn btn-primary py-2 px-4">Book A Table</a>
+>>>>>>> dev
                 </div>
             </nav>
 
@@ -101,7 +148,11 @@
             @yield('content')
         </main>
 
+<<<<<<< HEAD
         <!-- Footer Start -->
+=======
+ <!-- Footer Start -->
+>>>>>>> dev
         <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
             <div class="container py-5">
                 <div class="row g-5">
@@ -119,6 +170,7 @@
                         <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
                         <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
                         <div class="d-flex pt-2">
+<<<<<<< HEAD
                             <a class="btn btn-outline-light btn-social" href=""><i
                                     class="fab fa-twitter"></i></a>
                             <a class="btn btn-outline-light btn-social" href=""><i
@@ -141,15 +193,34 @@
                             <p class="text-gray-600 line-clamp-3">Nội dung tóm tắt: Hướng dẫn chi tiết cách chọn lựa loại rượu vang phù hợp nhất, từ Cabernet Sauvignon đến Merlot, để nâng tầm hương vị món bò bít tết...</p>
                             <a href="#" class="text-red-500 font-semibold mt-3 inline-block hover:underline">Đọc tiếp &rarr;</a>
                         </div>
+=======
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Opening</h4>
+                        <h5 class="text-light fw-normal">Monday - Saturday</h5>
+                        <p>09AM - 09PM</p>
+                        <h5 class="text-light fw-normal">Sunday</h5>
+                        <p>10AM - 08PM</p>
+>>>>>>> dev
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Newsletter</h4>
                         <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
                         <div class="position-relative mx-auto" style="max-width: 400px;">
+<<<<<<< HEAD
                             <input class="form-control border-primary w-100 py-3 ps-4 pe-5" type="text"
                                 placeholder="Your email">
                             <button type="button"
                                 class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+=======
+                            <input class="form-control border-primary w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                            <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+>>>>>>> dev
                         </div>
                     </div>
                 </div>
@@ -158,6 +229,7 @@
                 <div class="copyright">
                     <div class="row">
                         <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+<<<<<<< HEAD
                             &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
 
                             <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
@@ -220,6 +292,23 @@
                     <a href="#" class="hover:text-red-500 transition duration-200">📘</a> <!-- Facebook -->
                     <a href="#" class="hover:text-red-500 transition duration-200">📸</a> <!-- Instagram -->
                     <a href="#" class="hover:text-red-500 transition duration-200">🐦</a> <!-- Twitter -->
+=======
+                            &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved. 
+							
+							<!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+							Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a><br><br>
+                            Distributed By <a class="border-bottom" href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                        </div>
+                        <div class="col-md-6 text-center text-md-end">
+                            <div class="footer-menu">
+                                <a href="">Home</a>
+                                <a href="">Cookies</a>
+                                <a href="">Help</a>
+                                <a href="">FQAs</a>
+                            </div>
+                        </div>
+                    </div>
+>>>>>>> dev
                 </div>
             </div>
         </div>
@@ -243,7 +332,14 @@
     <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
     <!-- Template Javascript -->
+<<<<<<< HEAD
     <script src="{{ asset('restaurant/js/main.js') }}"></script>
     @stack('scripts') {{-- Thêm dòng này --}}
 </body>
 </html>
+=======
+    <script src="{{asset('restaurant/js/main.js')}}"></script>
+</body>
+
+</html>
+>>>>>>> dev

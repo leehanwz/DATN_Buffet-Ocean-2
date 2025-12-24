@@ -1,4 +1,8 @@
 Software License Agreement
+<<<<<<< HEAD
+=======
+==========================
+>>>>>>> dev
 
 **CKEditor SCAYT Plugin**
 Copyright &copy; 2012, [CKSource](http://cksource.com) - Frederico Knabben. All rights reserved.

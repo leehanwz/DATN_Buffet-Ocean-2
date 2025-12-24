@@ -114,6 +114,7 @@
             }
         }
     });
+<<<<<<< HEAD
 
     // --- PHẦN ĐÃ SỬA LỖI ---
     // Khởi tạo DateTimePicker (Sửa 'now' thành 'new Date()')
@@ -138,3 +139,8 @@
     });
     
 })(jQuery);
+=======
+    
+})(jQuery);
+
+>>>>>>> dev

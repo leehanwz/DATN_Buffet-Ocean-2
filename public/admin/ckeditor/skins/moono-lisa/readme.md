@@ -1,4 +1,8 @@
 "Moono-lisa" Skin
+<<<<<<< HEAD
+=======
+=================
+>>>>>>> dev
 
 This skin has been made a **default skin** starting from CKEditor 4.6.0 and is maintained by the core developers.
 

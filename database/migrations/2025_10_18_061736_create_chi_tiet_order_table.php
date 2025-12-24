@@ -11,6 +11,7 @@ return new class extends Migration
     {
         Schema::create('chi_tiet_order', function (Blueprint $table) {
             $table->id();
+<<<<<<< HEAD
 
             // <-- SỬA ĐỔI: Dùng cú pháp foreignId() ngắn gọn
             $table->foreignId('order_id')
@@ -40,6 +41,18 @@ return new class extends Migration
             $table->string('ghi_chu')->nullable();
             $table->timestamps();
 
+=======
+            $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('mon_an_id');
+            $table->integer('so_luong')->nullable();
+            $table->string('loai_mon')->nullable();
+            $table->string('trang_thai')->nullable();
+            $table->string('ghi_chu')->nullable();
+            $table->timestamps();
+
+            $table->foreign('order_id')->references('id')->on('order_mon')->onDelete('cascade');
+            $table->foreign('mon_an_id')->references('id')->on('mon_an')->onDelete('cascade');
+>>>>>>> dev
         });
     }
 
@@ -47,4 +60,8 @@ return new class extends Migration
     {
         Schema::dropIfExists('chi_tiet_order');
     }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> dev

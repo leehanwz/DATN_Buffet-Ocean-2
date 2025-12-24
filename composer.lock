@@ -4,6 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "164886f594d7f3ae111ffac2e7561d94",
     "packages": [
         {
@@ -61,6 +62,11 @@
             "time": "2022-12-07T17:46:57+00:00"
         },
         {
+=======
+    "content-hash": "499ff201ed8537cc67e26201ae6954a0",
+    "packages": [
+        {
+>>>>>>> dev
             "name": "brick/math",
             "version": "0.14.0",
             "source": {
@@ -190,6 +196,7 @@
             "time": "2024-02-09T16:56:22+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "composer/semver",
             "version": "3.4.4",
             "source": {
@@ -317,6 +324,8 @@
             "time": "2025-09-16T12:23:56+00:00"
         },
         {
+=======
+>>>>>>> dev
             "name": "dflydev/dot-access-data",
             "version": "v3.0.3",
             "source": {
@@ -1513,6 +1522,7 @@
             "time": "2025-09-19T13:47:56+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "laravel/sanctum",
             "version": "v4.2.1",
             "source": {
@@ -1576,6 +1586,8 @@
             "time": "2025-11-21T13:59:03+00:00"
         },
         {
+=======
+>>>>>>> dev
             "name": "laravel/serializable-closure",
             "version": "v2.0.6",
             "source": {
@@ -2758,6 +2770,7 @@
             "time": "2025-05-08T08:14:37+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "payos/payos",
             "version": "2.0.0",
             "source": {
@@ -2817,6 +2830,8 @@
             "time": "2025-11-05T06:55:01+00:00"
         },
         {
+=======
+>>>>>>> dev
             "name": "phpoption/phpoption",
             "version": "1.9.4",
             "source": {
@@ -2892,6 +2907,7 @@
             "time": "2025-08-21T11:53:16+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "psr-discovery/discovery",
             "version": "1.2.0",
             "source": {
@@ -3115,6 +3131,8 @@
             "time": "2024-12-05T17:18:21+00:00"
         },
         {
+=======
+>>>>>>> dev
             "name": "psr/clock",
             "version": "1.0.0",
             "source": {
@@ -3803,6 +3821,7 @@
             "time": "2025-09-04T20:59:21+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "simplesoftwareio/simple-qrcode",
             "version": "4.2.0",
             "source": {
@@ -3871,6 +3890,8 @@
             "time": "2021-02-08T20:43:55+00:00"
         },
         {
+=======
+>>>>>>> dev
             "name": "symfony/clock",
             "version": "v7.3.0",
             "source": {
@@ -6621,6 +6642,7 @@
     ],
     "packages-dev": [
         {
+<<<<<<< HEAD
             "name": "barryvdh/laravel-ide-helper",
             "version": "v3.6.1",
             "source": {
@@ -6767,6 +6789,8 @@
             "time": "2025-07-17T06:07:30+00:00"
         },
         {
+=======
+>>>>>>> dev
             "name": "brianium/paratest",
             "version": "v7.14.1",
             "source": {
@@ -6860,6 +6884,7 @@
             "time": "2025-10-06T08:26:52+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "composer/class-map-generator",
             "version": "1.7.0",
             "source": {
@@ -7008,6 +7033,8 @@
             "time": "2024-11-12T16:29:46+00:00"
         },
         {
+=======
+>>>>>>> dev
             "name": "doctrine/deprecations",
             "version": "1.1.5",
             "source": {

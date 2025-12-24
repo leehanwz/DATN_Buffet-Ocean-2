@@ -1,4 +1,8 @@
 Software License Agreement
+<<<<<<< HEAD
+=======
+==========================
+>>>>>>> dev
 
 CKEditor - The text editor for Internet - https://ckeditor.com/
 Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.

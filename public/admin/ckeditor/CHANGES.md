@@ -1,4 +1,8 @@
 CKEditor 4 Changelog
+<<<<<<< HEAD
+=======
+====================
+>>>>>>> dev
 
 ## CKEditor 4.13.1
 

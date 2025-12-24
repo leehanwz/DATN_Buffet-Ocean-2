@@ -19,8 +19,12 @@ class BanAnSeeder extends Seeder
                 'ma_qr' => strtoupper($faker->bothify('QR##??')),
                 'duong_dan_qr' => $faker->url(),
                 'so_ghe' => $faker->numberBetween(2, 10),
+<<<<<<< HEAD
                 // sửa enum cho khớp migration
                 'trang_thai' => $faker->randomElement(['trong', 'dang_phuc_vu', 'da_dat', 'khong_su_dung']),
+=======
+                'trang_thai' => $faker->randomElement(['Trống', 'Đang phục vụ', 'Đặt trước']),
+>>>>>>> dev
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

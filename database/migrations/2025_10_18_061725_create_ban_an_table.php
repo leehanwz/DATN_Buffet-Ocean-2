@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('ma_qr')->nullable();
             $table->string('duong_dan_qr')->nullable();
             $table->integer('so_ghe');
+<<<<<<< HEAD
             $table->enum('trang_thai', ['trong', 'dang_phuc_vu', 'da_dat', 'khong_su_dung'])->default('trong');
             $table->timestamps();
 
@@ -23,6 +24,12 @@ return new class extends Migration
                 ->references('id')
                 ->on('khu_vuc')
                 ->onDelete('cascade');
+=======
+            $table->string('trang_thai');
+            $table->timestamps();
+
+            $table->foreign('khu_vuc_id')->references('id')->on('khu_vuc')->onDelete('cascade');
+>>>>>>> dev
         });
     }
 

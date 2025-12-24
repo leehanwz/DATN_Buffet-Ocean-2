@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+<<<<<<< HEAD
 $this->call([
     // KhuVucSeeder::class,
     // BanAnSeeder::class,
@@ -32,5 +33,15 @@ $this->call([
     DanhGiaSeeder::class,
 ]);
 
+=======
+        $this->call([
+            KhuVucSeeder::class,
+            BanAnSeeder::class,
+            DanhMucMonSeeder::class,
+            MonAnSeeder::class,
+            ComboBuffetSeeder::class,
+            MonTrongComboSeeder::class,
+        ]);
+>>>>>>> dev
     }
 }

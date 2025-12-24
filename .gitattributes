@@ -9,5 +9,8 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+<<<<<<< HEAD
 *.php text eol=lf
 *.blade.php text eol=lf
+=======
+>>>>>>> dev
