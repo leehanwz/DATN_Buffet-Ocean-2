@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< HEAD
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Console\Scheduling\Schedule;
 use App\Models\DatBan;
@@ -37,11 +36,3 @@ Artisan::command('booking:update-tables', function () {
 return function (Schedule $schedule) {
     $schedule->command('booking:update-tables')->everyMinute();
 };
-=======
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
-
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
->>>>>>> dev

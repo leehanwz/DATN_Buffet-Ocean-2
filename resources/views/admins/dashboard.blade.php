@@ -295,8 +295,8 @@
 
                 {{-- BẢNG 3 --}}
                 <div class="col-md-12">
-                    <div class="title">
-                        <h3 class="tile-title">Trạng thái thanh toán (Đơn hàng mới nhất)</h3>
+                    <div class="tile">
+                        <h3 class="tile-title">Hóa đơn chưa thanh toán</h3>
                         <div style="overflow-x:auto;">
                             <table class="table">
                                 <thead class="table-dark">
@@ -310,15 +310,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($donHangMoi as $don)
+                                    @forelse ($donHangMoi as $don)
                                     <tr>
                                         <td>{{ $don->id }}</td>
                                         <td>{{ $don->datBan->ten_khach ?? 'Ẩn' }}</td>
                                         <td>{{ number_format($don->tong_tien) }} đ</td>
                                         <td>
-                                            <span class="badge {{ ($don->da_thanh_toan ?? 0) > 0 ? 'bg-success' : 'bg-warning' }}">
-                                                {{ ($don->da_thanh_toan ?? 0) > 0 ? 'Đã thanh toán' : 'Chưa thanh toán' }}
-                                            </span>
+                                            <span class="badge bg-warning">Chưa thanh toán</span>
                                         </td>
                                         <td>
                                             @if($don->phuong_thuc_tt == 'tien_mat')
@@ -329,13 +327,19 @@
                                                 <span class="badge bg-info">Thẻ ATM</span>
                                             @elseif($don->phuong_thuc_tt == 'vnpay')
                                                 <span class="badge bg-warning">VNPay</span>
+                                            @elseif($don->phuong_thuc_tt == 'chua_thanh_toan' || !$don->phuong_thuc_tt)
+                                                <span class="badge bg-dark">Chưa thanh toán</span>
                                             @else
-                                                <span class="badge bg-dark">{{ $don->phuong_thuc_tt ?? '---' }}</span>
+                                                <span class="badge bg-dark">{{ $don->phuong_thuc_tt }}</span>
                                             @endif
                                         </td>
                                         <td>{{ \Carbon\Carbon::parse($don->created_at)->format('d/m/Y') }}</td>
                                     </tr>
-                                    @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">Không có hóa đơn chưa thanh toán.</td>
+                                    </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -493,7 +497,7 @@
     <div class="text-center" style="font-size: 13px">
         <p><b>
             © <script>document.write(new Date().getFullYear())</script>
-            Phần mềm quản lý bán hàng | Dev By PH55158 / Trường
+            Phần mềm quản lý bán hàng | WD-02 Buffet ocean
         </b></p>
     </div>
 
@@ -512,14 +516,24 @@
     const dateRangePicker = flatpickr("#date-range", {
         mode: "range",
         dateFormat: "d/m/Y",
+        altInput: true,
+        altFormat: "d/m/Y",
         locale: {
             firstDayOfWeek: 1
         },
         onChange: function(selectedDates, dateStr, instance) {
             if (selectedDates.length === 2) {
+                // Format ngày theo Y-m-d để tránh lỗi timezone
+                const formatDate = (date) => {
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+                };
+                
                 selectedDateRange = {
-                    from: selectedDates[0].toISOString().split('T')[0],
-                    to: selectedDates[1].toISOString().split('T')[0]
+                    from: formatDate(selectedDates[0]),
+                    to: formatDate(selectedDates[1])
                 };
             }
         }
@@ -578,6 +592,11 @@
                 });
 
                 if (barChart) barChart.destroy();
+                
+                // Tạo mảng màu động dựa trên số lượng combo
+                const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'];
+                const backgroundColor = res.comboLabels.map((_, index) => colors[index % colors.length]);
+                
                 barChart = new Chart(document.getElementById('barChart'), {
                     type: 'bar',
                     data: {
@@ -585,8 +604,29 @@
                         datasets: [{
                             label: 'Doanh thu theo combo',
                             data: res.comboData,
-                            backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0']
+                            backgroundColor: backgroundColor
                         }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' đ';
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
 
@@ -626,8 +666,13 @@
             from: urlParams.get('date_from'),
             to: urlParams.get('date_to')
         };
-        const fromDate = new Date(selectedDateRange.from);
-        const toDate = new Date(selectedDateRange.to);
+        // Parse ngày từ Y-m-d format để tránh lỗi timezone
+        const parseDate = (dateStr) => {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        };
+        const fromDate = parseDate(selectedDateRange.from);
+        const toDate = parseDate(selectedDateRange.to);
         dateRangePicker.setDate([fromDate, toDate]);
     }
 

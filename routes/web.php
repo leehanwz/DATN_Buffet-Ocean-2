@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-<<<<<<< HEAD
 // Controllers (Đảm bảo tất cả các Controller cần thiết được import)
 use App\Http\Controllers\Shop\HomeController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -176,6 +175,7 @@ Route::middleware(['auth', 'role:quan_ly'])->prefix('admin')->name('admin.')->gr
         Route::get('/{id}/edit', 'edit')->name('edit');
         Route::put('/{id}', 'update')->name('update');
         Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::post('/{id}/toggle-status', 'toggleStatus')->name('toggle-status');
         Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
         Route::post('/{id}/reset-mat-khau', 'resetMatKhau')->name('reset-mat-khau');
     });
@@ -191,6 +191,7 @@ Route::middleware(['auth', 'role:quan_ly'])->prefix('admin')->name('admin.')->gr
         Route::get('/{id}/edit', 'edit')->name('edit');
         Route::post('/{id}/update', 'update')->name('update');
         Route::post('/{id}/delete', 'destroy')->name('destroy');
+        Route::post('/{id}/toggle-status', 'toggleStatus')->name('toggle-status');
         Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
     });
 
@@ -201,6 +202,7 @@ Route::middleware(['auth', 'role:quan_ly'])->prefix('admin')->name('admin.')->gr
         Route::post('/{id}/update', 'update')->name('update');
         Route::post('/{id}/delete', 'destroy')->name('destroy');
         Route::post('/{id}/regenerate-qr', 'regenerateQr')->name('qr');
+        Route::post('/{id}/toggle-status', 'toggleStatus')->name('toggle-status');
         Route::patch('/{id}/trang-thai', 'capNhatTrangThai')->name('cap-nhat-trang-thai');
         Route::get('/qr-tool', 'showQrGeneratorPage')->name('qr_tool');
         Route::get('/ajax/get-available-tables', 'ajaxGetAvailableTables')->name('ajax.get-available-tables');
@@ -211,6 +213,7 @@ Route::middleware(['auth', 'role:quan_ly'])->prefix('admin')->name('admin.')->gr
     Route::prefix('dat-ban')->name('dat-ban.')->controller(DatBanController::class)->group(function () {
         Route::get('/ajax-get-combos-by-loai', 'ajaxGetCombosByLoai')->name('ajax-get-combos-by-loai');
         Route::get('/ajax-get-available-tables', 'ajaxGetAvailableTables')->name('ajax-get-available-tables');
+        Route::get('/check-ban-trong', 'ajaxCheckBanTrong')->name('check-ban-trong');
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
         Route::post('/store', 'store')->name('store');
@@ -254,6 +257,10 @@ Route::middleware(['auth', 'role:le_tan'])->prefix('nhanVien')->name('nhanVien.'
         // 3. Hóa đơn & In
         Route::get('/hoa-don/{hoaDonId}', 'hienThiHoaDon')->name('hien-thi-hoa-don');
         Route::get('/hoa-don/{hoaDonId}/in', 'inHoaDon')->name('in-hoa-don');
+        
+        // 6. Danh sách hóa đơn chưa thanh toán
+        Route::get('/hoa-don-chua-thanh-toan', 'danhSachHoaDonChuaThanhToan')->name('danh-sach-chua-thanh-toan');
+        Route::post('/hoa-don/{hoaDonId}/xac-nhan-thanh-toan', 'xacNhanDaThanhToan')->name('xac-nhan-thanh-toan');
 
         // 4. Thanh toán VNPAY
         Route::post('/vnpay-payment/{banId}', 'vnpayPayment')->name('vnpay.payment');
@@ -316,67 +323,3 @@ Route::middleware(['auth', 'role:bep'])->prefix('bep')->name('bep.')->group(func
     Route::get('/', [BepController::class, 'dashboard'])->name('dashboard');
     Route::post('/update-status', [BepController::class, 'updateMonStatus'])->name('update-status');
 });
-=======
-// shop
-Route::get('/', function () {
-    return view('restaurants.home');
-})->name('home');
-
-Route::get('/about', function () {
-    return view('restaurants.about');
-})->name('about');
-
-Route::get('/contact', function () {
-    return view('restaurants.contact');
-})->name('contact');
-
-Route::get('/booking', function () {
-    return view('restaurants.booking');
-})->name('booking');
-
-Route::get('/menu', function () {
-    return view('restaurants.menu');
-})->name('menu');
-
-Route::get('/service', function () {
-    return view('restaurants.service');
-})->name('service');
-
-Route::get('/team', function () {
-    return view('restaurants.team');
-})->name('team');
-
-Route::get('/testimonial', function () {
-    return view('restaurants.testimonial');
-})->name('testimonial');
-
-// admin
-Route::get('/admin/dashboard', function () {
-    return view('admins.dashboard');
-})->name('dashboard');
-
-Route::get('/admin/san-pham', function () {
-    return view('admins.san-pham');
-})->name('san-pham');
-
-Route::get('/admin/form-add-san-pham', function () {
-    return view('admins.form-add-san-pham');
-})->name('form-add-san-pham');
-
-Route::get('/admin/nhan-vien', function () {
-    return view('admins.nhan-vien');
-})->name('nhan-vien');
-
-Route::get('/admin/don-hang', function () {
-    return view('admins.don-hang');
-})->name('don-hang');
-
-// auth
-Route::get('/auth/login', function () {
-    return view('auths.login');
-})->name('login');
-
-Route::get('/auth/forgot', function () {
-    return view('auths.forgot');
-})->name('forgot');
->>>>>>> dev
